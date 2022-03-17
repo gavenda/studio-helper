@@ -215,7 +215,7 @@ object Jukebox : KoinComponent {
         val trackLoaded: suspend (Track) -> Unit = { track ->
             track.meta = AudioTrackMeta(mention, userId)
 
-            val started = guild.player.addFirst(track)
+            val started = guild.player.addFirst(track, update = true)
 
             if (started) {
                 respond(
