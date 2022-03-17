@@ -50,3 +50,13 @@ val String.escapedBrackets: String
         return replace("[", "\\[")
             .replace("]", "\\]")
     }
+
+/**
+ * Append unless max length is reached.
+ */
+fun StringBuilder.appendIfNotMax(text: String, max: Int) {
+    val sum = length + text.length
+    if (sum < max) {
+        append(text)
+    }
+}

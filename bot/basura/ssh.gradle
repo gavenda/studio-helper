@@ -1,0 +1,35 @@
+remotes {
+    raspi {
+        host = 'pi.monarch.home'
+        user = 'basura'
+        password = new File("${project.projectDir}/ssh/basura.password").text
+    }
+
+    raspiAdmin {
+        host = 'pi.monarch.home'
+        user = 'pi'
+        password = new File("${project.projectDir}/ssh/pi.password").text
+    }
+}
+
+tasks.register('deploy') {
+    doLast {
+        ssh.run {
+            session(remotes.raspi) {
+                remove '/bot/basura/bin', '/bot/basura/lib'
+                put from: "$buildDir/install/basura", into: '/bot', fileTransfer: 'scp'
+            }
+        }
+    }
+}
+
+tasks.register('restartRemote') {
+    dependsOn tasks.deploy
+    doLast {
+        ssh.run {
+            session(remotes.raspiAdmin) {
+                execute 'sudo systemctl restart basura'
+            }
+        }
+    }
+}

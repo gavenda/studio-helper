@@ -1,0 +1,82 @@
+package bogus.extension.anilist.command
+
+import bogus.extension.anilist.AniListExtension
+import bogus.extension.anilist.AniListExtension.log
+import bogus.extension.anilist.PAGINATOR_TIMEOUT
+import bogus.extension.anilist.embed.createStaffEmbed
+import bogus.extension.anilist.graphql.AniList
+import bogus.extension.anilist.paginator.respondingStandardPaginator
+import bogus.util.abbreviate
+import bogus.util.action
+import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
+import com.kotlindiscord.kord.extensions.commands.converters.impl.string
+import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.PublicInteractionContext
+import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.core.behavior.interaction.suggestString
+import kotlinx.coroutines.Dispatchers
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+suspend fun AniListExtension.staff() {
+    publicSlashCommand(::StaffArgs) {
+        name = "staff"
+        description = "Looks up the name of an anime/manga staff."
+        action(Dispatchers.IO) {
+            findStaff(arguments.query)
+        }
+    }
+
+    publicMessageCommand {
+        name = "Search Staff"
+        action(Dispatchers.IO) {
+            findStaff(targetMessages.first().content)
+        }
+    }
+}
+
+private suspend fun ApplicationCommandContext.findStaff(query: String) {
+    if (this !is PublicInteractionContext) return
+
+    val aniList by inject<AniList>()
+    val staffs = aniList.findStaff(query)
+
+    log.info { "Looking up staff [ query = $query, userId = ${user.id} ]" }
+
+    if (staffs == null || staffs.isEmpty()) {
+        respond {
+            content = translate("staff.error.noMatchingStaff")
+        }
+        return
+    }
+    val paginator = respondingStandardPaginator {
+        timeoutSeconds = PAGINATOR_TIMEOUT
+        staffs.forEach { staff ->
+            page {
+                apply(createStaffEmbed(staff))
+            }
+        }
+    }
+
+    paginator.send()
+}
+
+internal class StaffArgs : KoinComponent, Arguments() {
+    val aniList by inject<AniList>()
+    val query by string {
+        name = "query"
+        description = "Name of the anime/manga staff."
+        autoComplete {
+            if (!focusedOption.focused) return@autoComplete
+            val typed = focusedOption.value
+
+            suggestString {
+                aniList.findStaffNames(typed).take(25).forEach { staffName ->
+                    choice(staffName.abbreviate(80), staffName.abbreviate(80))
+                }
+            }
+        }
+    }
+}

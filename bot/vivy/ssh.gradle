@@ -1,0 +1,35 @@
+remotes {
+    raspi {
+        host = 'pi.monarch.home'
+        user = 'vivy'
+        password = new File("${project.projectDir}/ssh/vivy.password").text
+    }
+
+    raspiAdmin {
+        host = 'pi.monarch.home'
+        user = 'pi'
+        password = new File("${project.projectDir}/ssh/pi.password").text
+    }
+}
+
+tasks.register('deploy') {
+    doLast {
+        ssh.run {
+            session(remotes.raspi) {
+                remove '/bot/vivy/bin', '/bot/vivy/lib'
+                put from: "$buildDir/install/vivy", into: '/bot', fileTransfer: 'scp'
+            }
+        }
+    }
+}
+
+tasks.register('restartRemote') {
+    dependsOn tasks.deploy
+    doLast {
+        ssh.run {
+            session(remotes.raspiAdmin) {
+                execute 'sudo systemctl restart vivy'
+            }
+        }
+    }
+}
