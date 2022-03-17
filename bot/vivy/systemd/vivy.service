@@ -1,0 +1,20 @@
+[Unit]
+Description=Vivy
+After=network-online.target
+
+[Service]
+Type=simple
+User=vivy
+Group=vivy
+ExecStart=/bin/bash /bot/vivy/bin/vivy
+WorkingDirectory=/bot/vivy
+EnvironmentFile=/bot/vivy/.env
+Restart=always
+
+# Note: Sending a SIGINT (as in CTRL-C) results in an exit code of 130 (which is normal)
+KillMode=process
+KillSignal=SIGINT
+SuccessExitStatus=130
+
+[Install]
+WantedBy=multi-user.target
