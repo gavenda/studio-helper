@@ -13,6 +13,7 @@ remotes {
 }
 
 tasks.register('deploy') {
+    group = 'distribution'
     doLast {
         ssh.run {
             session(remotes.raspi) {
@@ -24,6 +25,7 @@ tasks.register('deploy') {
 }
 
 tasks.register('restartRemote') {
+    group = 'distribution'
     dependsOn tasks.deploy
     doLast {
         ssh.run {

@@ -19,6 +19,7 @@ import dev.schlaubi.lavakord.audio.player.Track
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
@@ -39,7 +40,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val link = Lava.linkFor(guildId)
     private val player = link.player
     private val trackAttempts = ConcurrentHashMap<String, Int>()
-    private val queueUpdates = MutableSharedFlow<Long>()
+    private val queueUpdates = MutableStateFlow(System.currentTimeMillis())
     private val emptyQueueMessage = {
         tp.translate(
             key = "player.queue.message",
@@ -74,6 +75,9 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     val playing: Boolean
         get() = playingTrack != null
 
+    /**
+     * Returns true if the player is bound to a text channel.
+     */
     val bound: Boolean
         get() = boundPaginator != null
 
@@ -189,7 +193,8 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
                 }
 
                 boundPaginator?.send()
-            }.launchIn(CoroutineScope(Dispatchers.IO))
+            }
+            .launchIn(CoroutineScope(Dispatchers.IO))
     }
 
     suspend fun volumeTo(value: Int) {
