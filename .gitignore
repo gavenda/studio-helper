@@ -8,8 +8,8 @@ build
 # Ignore log directory
 log
 
-# Ignore db directory
-db
+# Ignore root db directory
+/db
 
 # Ignore .env file
 .env
