@@ -4,10 +4,7 @@ import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.paginator.MessageQueuePaginator
 import bogus.extension.music.paginator.MutablePages
 import bogus.extension.music.paginator.messageQueuePaginator
-import bogus.util.abbreviate
-import bogus.util.escapedBrackets
-import bogus.util.isUrl
-import bogus.util.toYesNo
+import bogus.util.*
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.pagination.pages.Page
 import dev.kord.common.Color
@@ -32,7 +29,6 @@ import java.util.concurrent.atomic.AtomicLong
 /**
  * The guild's music player.
  */
-@OptIn(FlowPreview::class)
 class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val tp by inject<TranslationsProvider>()
     private val queue = LinkedBlockingDeque<Track>()
@@ -40,7 +36,6 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val link = Lava.linkFor(guildId)
     private val player = link.player
     private val trackAttempts = ConcurrentHashMap<String, Int>()
-    private val queueUpdates = MutableStateFlow(System.currentTimeMillis())
     private val emptyQueueMessage = {
         tp.translate(
             key = "player.queue.message",
@@ -176,25 +171,6 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
 
             updateBoundQueue()
         }
-
-        queueUpdates.asSharedFlow()
-            .debounce(500)
-            .onEach {
-                log.debug { "Queue updated" }
-                if (boundPaginator == null) return@onEach
-
-                val embedBuilders = buildQueueMessage()
-                val mutablePages = (boundPaginator?.pages as MutablePages)
-
-                mutablePages.clear()
-
-                embedBuilders.forEach { embedBuilder ->
-                    mutablePages.addPage(Page { embedBuilder() })
-                }
-
-                boundPaginator?.send()
-            }
-            .launchIn(CoroutineScope(Dispatchers.IO))
     }
 
     suspend fun volumeTo(value: Int) {
@@ -276,9 +252,20 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         }
     }
 
-    private suspend fun updateBoundQueue() {
-        log.debug { "Emitting update" }
-        queueUpdates.emit(System.currentTimeMillis())
+    private val updateBoundQueue = debounce(250) {
+        if (boundPaginator == null) return@debounce
+
+        val embedBuilders = buildQueueMessage()
+        val mutablePages = (boundPaginator?.pages as MutablePages)
+
+        mutablePages.clear()
+
+        embedBuilders.forEach { embedBuilder ->
+            mutablePages.addPage(Page { embedBuilder() })
+        }
+
+        boundPaginator?.send()
+        log.info { "Queue updated" }
     }
 
     suspend fun bind(textChannel: MessageChannelBehavior): Snowflake? {
