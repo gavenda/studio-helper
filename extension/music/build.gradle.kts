@@ -14,6 +14,8 @@ dependencies {
     implementation("dev.schlaubi.lavakord:kord:3.5.1")
     implementation("de.sonallux.spotify:spotify-web-api-java:2.4.0")
 
+    // LRU Cache
+
     // DB
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.flywaydb:flyway-core:8.4.3")

@@ -6,6 +6,7 @@ import bogus.extension.anilist.PAGINATOR_TIMEOUT
 import bogus.extension.anilist.embed.createCharacterEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.paginator.respondingStandardPaginator
+import bogus.util.LRUCache
 import bogus.util.abbreviate
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -65,21 +66,30 @@ private suspend fun ApplicationCommandContext.findCharacter(query: String) {
 }
 
 internal class CharacterArgs : KoinComponent, Arguments() {
+    companion object {
+        val cache = LRUCache<String, List<String>>(50)
+    }
+
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime/manga character."
 
         autoComplete {
-            if (!focusedOption.focused) return@autoComplete
-            val typed = focusedOption.value
+            val input = focusedOption.value
+            val cacheLookup = cache[input]
 
-            suggestString {
-                aniList.findCharacterNames(typed)
-                    .take(25)
-                    .forEach { characterName ->
-                        choice(characterName.abbreviate(80), characterName.abbreviate(80))
-                    }
+            if (cacheLookup != null) {
+                suggestString {
+                    cacheLookup.forEach { choice(it, it) }
+                }
+            } else {
+                suggestString {
+                    aniList.findCharacterNames(input)
+                        .apply { cache[input] = this }
+                        .map { it.abbreviate(80) }
+                        .forEach { choice(it, it) }
+                }
             }
         }
     }

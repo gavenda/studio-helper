@@ -3,7 +3,9 @@ package bogus.extension.anilist.command
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.AniListExtension.log
 import bogus.extension.anilist.graphql.AniList
+import bogus.extension.anilist.model.MediaType
 import bogus.extension.anilist.sendMediaResult
+import bogus.util.LRUCache
 import bogus.util.abbreviate
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -75,61 +77,86 @@ private suspend fun ApplicationCommandContext.findMedia(
 }
 
 internal class FindArgs : KoinComponent, Arguments() {
+    companion object {
+        val cache = LRUCache<String, List<String>>(50)
+    }
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime/manga."
         autoComplete {
-            if (!focusedOption.focused) return@autoComplete
-            val typed = focusedOption.value
+            val input = focusedOption.value
+            val cacheLookup = cache[input]
 
-            suggestString {
-                aniList.findMediaTitles(typed)
-                    .take(25)
-                    .forEach { media ->
-                        choice(media.abbreviate(100), media)
-                    }
+            if (cacheLookup != null) {
+                suggestString {
+                    cacheLookup.forEach { choice(it, it) }
+                }
+            } else {
+                suggestString {
+                    aniList.findMediaTitles(input)
+                        .apply { cache[input] = this }
+                        .map { it.abbreviate(80) }
+                        .forEach { choice(it, it) }
+                }
             }
         }
     }
 }
 
 internal class FindAnimeArgs : KoinComponent, Arguments() {
+    companion object {
+        val cache = LRUCache<String, List<String>>(50)
+    }
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime."
 
         autoComplete {
-            if (!focusedOption.focused) return@autoComplete
-            val typed = focusedOption.value
+            val input = focusedOption.value
+            val cacheLookup = cache[input]
 
-            suggestString {
-                aniList.findMediaTitles(typed, bogus.extension.anilist.model.MediaType.ANIME)
-                    .take(25)
-                    .forEach { media ->
-                        choice(media.abbreviate(100), media)
-                    }
+            if (cacheLookup != null) {
+                suggestString {
+                    cacheLookup.forEach { choice(it, it) }
+                }
+            } else {
+                suggestString {
+                    aniList.findMediaTitles(input, MediaType.ANIME)
+                        .apply { cache[input] = this }
+                        .map { it.abbreviate(80) }
+                        .forEach { choice(it, it) }
+                }
             }
         }
     }
 }
 
 internal class FindMangaArgs : KoinComponent, Arguments() {
+    companion object {
+        val cache = LRUCache<String, List<String>>(50)
+    }
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the manga."
 
         autoComplete {
-            if (!focusedOption.focused) return@autoComplete
-            val typed = focusedOption.value
+            val input = focusedOption.value
+            val cacheLookup = cache[input]
 
-            suggestString {
-                aniList.findMediaTitles(typed, bogus.extension.anilist.model.MediaType.MANGA).take(25)
-                    .forEach { media ->
-                        choice(media.abbreviate(80), media.abbreviate(80))
-                    }
+            if (cacheLookup != null) {
+                suggestString {
+                    cacheLookup.forEach { choice(it, it) }
+                }
+            } else {
+                suggestString {
+                    aniList.findMediaTitles(input, MediaType.MANGA)
+                        .apply { cache[input] = this }
+                        .map { it.abbreviate(80) }
+                        .forEach { choice(it, it) }
+                }
             }
         }
     }

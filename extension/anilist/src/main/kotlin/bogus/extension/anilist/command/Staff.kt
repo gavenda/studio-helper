@@ -6,6 +6,7 @@ import bogus.extension.anilist.PAGINATOR_TIMEOUT
 import bogus.extension.anilist.embed.createStaffEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.paginator.respondingStandardPaginator
+import bogus.util.LRUCache
 import bogus.util.abbreviate
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -64,17 +65,27 @@ private suspend fun ApplicationCommandContext.findStaff(query: String) {
 }
 
 internal class StaffArgs : KoinComponent, Arguments() {
+    companion object {
+        val cache = LRUCache<String, List<String>>(50)
+    }
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime/manga staff."
         autoComplete {
-            if (!focusedOption.focused) return@autoComplete
-            val typed = focusedOption.value
+            val input = focusedOption.value
+            val cacheLookup = cache[input]
 
-            suggestString {
-                aniList.findStaffNames(typed).take(25).forEach { staffName ->
-                    choice(staffName.abbreviate(80), staffName.abbreviate(80))
+            if (cacheLookup != null) {
+                suggestString {
+                    cacheLookup.forEach { choice(it, it) }
+                }
+            } else {
+                suggestString {
+                    aniList.findStaffNames(input)
+                        .apply { cache[input] = this }
+                        .map { it.abbreviate(80) }
+                        .forEach { choice(it, it) }
                 }
             }
         }

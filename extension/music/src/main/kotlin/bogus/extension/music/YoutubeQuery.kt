@@ -21,7 +21,7 @@ internal suspend fun youtubeQuery(query: String): List<String> {
 
     val responseList = responsePattern.findAll(response).map { it.groupValues[1] }.toList()
 
-    logger.info { "response=$responseList" }
+    logger.debug { "response=$responseList" }
 
     return responseList
 }

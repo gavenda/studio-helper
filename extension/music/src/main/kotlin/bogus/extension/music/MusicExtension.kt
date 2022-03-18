@@ -21,7 +21,6 @@ import dev.kord.gateway.Intent
 import dev.schlaubi.lavakord.kord.lavakord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import org.flywaydb.core.Flyway
 import org.koin.core.component.inject

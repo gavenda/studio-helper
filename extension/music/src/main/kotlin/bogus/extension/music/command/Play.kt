@@ -3,7 +3,7 @@ package bogus.extension.music.command
 import bogus.extension.music.*
 import bogus.extension.music.check.hasDJRole
 import bogus.extension.music.check.inVoiceChannel
-import bogus.extension.music.youtubeQuery
+import bogus.util.LRUCache
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -126,6 +126,11 @@ private suspend fun EphemeralSlashCommand<*>.now() {
 }
 
 internal class PlayArgs : KoinComponent, Arguments() {
+
+    companion object {
+        val cache = LRUCache<String, List<String>>(50)
+    }
+
     private val tp by inject<TranslationsProvider>()
     val query by string {
         name = "query"
@@ -135,13 +140,21 @@ internal class PlayArgs : KoinComponent, Arguments() {
         )
 
         autoComplete {
-            if (!focusedOption.focused) return@autoComplete
-
             val input = focusedOption.value
-            val youtubeResult = youtubeQuery(input)
+            val cacheLookup = cache[input]
 
-            suggestString {
-                youtubeResult.take(25).forEach { choice(it, it) }
+            if (cacheLookup != null) {
+                suggestString {
+                    cacheLookup.forEach { choice(it, it) }
+                }
+            } else {
+                val youtubeResult = youtubeQuery(input)
+
+                suggestString {
+                    youtubeResult.take(25)
+                        .apply { cache[input] = this }
+                        .forEach { choice(it, it) }
+                }
             }
         }
     }
