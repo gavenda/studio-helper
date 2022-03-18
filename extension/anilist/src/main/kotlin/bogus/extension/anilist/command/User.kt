@@ -115,9 +115,10 @@ suspend fun AniListExtension.user() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
+            val targetUser = targetUsers.first()
 
             val dbUsername = db.users.firstOrNull {
-                (it.discordId eq user.idLong) and (it.discordGuildId eq guild.idLong)
+                (it.discordId eq targetUser.idLong) and (it.discordGuildId eq guild.idLong)
             }?.aniListUsername
 
             if (dbUsername == null) {
