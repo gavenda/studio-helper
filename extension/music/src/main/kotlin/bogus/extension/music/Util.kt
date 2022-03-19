@@ -55,7 +55,7 @@ var Track.meta
 val BlockingDeque<Track>.duration: Long
     get() =
         // Streams don't have a valid time.
-        filterNot { it.isStream }
+        filter { it.isSeekable }
             .sumOf { it.length.inWholeMilliseconds }
 
 /**

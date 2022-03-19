@@ -13,18 +13,15 @@ import dev.kord.core.behavior.channel.MessageChannelBehavior
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.schlaubi.lavakord.audio.*
 import dev.schlaubi.lavakord.audio.player.Track
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingDeque
-import java.util.concurrent.atomic.AtomicLong
 
 /**
  * The guild's music player.
@@ -43,6 +40,10 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         )
     }
 
+    // Backing properties
+    private var _looped = false
+    private var _loopedAll = false
+
     /**
      * Tune music player effects.
      */
@@ -51,7 +52,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     /**
      * Last played song in milliseconds.
      */
-    val lastPlayMillis = AtomicLong(System.currentTimeMillis())
+    val lastPlayMillis = atomic(System.currentTimeMillis())
 
     /**
      * The track request list of this player.
@@ -84,12 +85,12 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     /**
      * The remaining duration of this player in milliseconds.
      */
-    private val remainingDuration: Long
+    val remainingDuration: Long
         get() {
             val playingTrack = player.playingTrack
             var duration = 0L
             if (playingTrack != null) {
-                if (playing && playingTrack.isStream.not()) {
+                if (playing && playingTrack.isSeekable) {
                     duration = playingTrack.length.inWholeMilliseconds - playingTrack.position.inWholeMilliseconds
                 }
             }
@@ -100,12 +101,12 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     /**
      * The total duration of this player in milliseconds.
      */
-    private val totalDuration: Long
+    val totalDuration: Long
         get() {
             val playingTrack = player.playingTrack
             var duration = 0L
             if (playingTrack != null) {
-                if (playing && playingTrack.isStream.not()) {
+                if (playing && playingTrack.isSeekable) {
                     duration = playingTrack.length.inWholeMilliseconds
                 }
             }
@@ -118,14 +119,10 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     val paused: Boolean
         get() = player.paused
 
-    private var _looped = false
-
     /**
      * If this player is looping the current song.
      */
     val looped get() = _looped
-
-    private var _loopedAll = false
 
     /**
      * If this player is looping all the songs. This will make the player add newly played tracks back to the queue.
@@ -144,7 +141,9 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
 
         player.on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
             updateBoundQueue()
-            updateLastPlayMillis(track.length.inWholeMilliseconds)
+            if (track.isSeekable) {
+                updateLastPlayMillis(track.length.inWholeMilliseconds)
+            }
         }
 
         player.on<TrackEndEvent>(CoroutineScope(Dispatchers.IO)) {
@@ -180,12 +179,12 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         }
     }
 
-    suspend fun toggleLoop() {
+    fun toggleLoop() {
         _looped = !_looped
         updateBoundQueue()
     }
 
-    suspend fun toggleLoopAll() {
+    fun toggleLoopAll() {
         _loopedAll = !_loopedAll
         updateBoundQueue()
     }
@@ -224,7 +223,9 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private suspend fun play(): Boolean {
         if (playing.not()) {
             val track = queue.poll() ?: return false
-            updateLastPlayMillis(track.length.inWholeMilliseconds)
+            if (track.isSeekable) {
+                updateLastPlayMillis(track.length.inWholeMilliseconds)
+            }
             player.playTrack(track)
             return true
         }
@@ -234,7 +235,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     /**
      * Shuffles the playing track queue.
      */
-    suspend fun shuffle() {
+    fun shuffle() {
         val shuffledQueue = queue.shuffled()
 
         queue.clear()
@@ -289,6 +290,10 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         updateLastPlayMillis(0)
     }
 
+    /**
+     * Update last play millis (for auto discsonnect)
+     * @param trackDuration the last track duration in milliseconds
+     */
     private fun updateLastPlayMillis(trackDuration: Long) {
         val disconnectAllowance = Duration.ofSeconds(DISCONNECT_DURATION).toMillis()
         val newDuration = System.currentTimeMillis() + trackDuration + disconnectAllowance
@@ -298,7 +303,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     /**
      * Removes a certain range in the queue.
      */
-    suspend fun remove(start: Int, end: Int): List<Track> {
+    fun remove(start: Int, end: Int): List<Track> {
         if (queue.isEmpty()) return emptyList()
 
         val startCoerced = start.coerceIn(0, queue.size)

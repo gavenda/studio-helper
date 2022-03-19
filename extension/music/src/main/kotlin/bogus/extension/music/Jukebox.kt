@@ -85,8 +85,8 @@ object Jukebox : KoinComponent {
 
     suspend fun tryToDisconnect() {
         players.forEach { (guildId, player) ->
-            val lastPlayMillis = player.lastPlayMillis.get()
-            if (!player.playing && lastPlayMillis < System.currentTimeMillis()) {
+            val lastPlayMillis = player.lastPlayMillis.value
+            if (!player.playing && System.currentTimeMillis() > lastPlayMillis) {
                 val link = Lava.linkFor(guildId)
                 if (link.state == Link.State.CONNECTED) {
                     link.disconnectAudio()
