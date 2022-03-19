@@ -6,6 +6,7 @@ import bogus.extension.music.check.inVoiceChannel
 import bogus.util.LRUCache
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
+import com.kotlindiscord.kord.extensions.checks.hasRole
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand

@@ -13,27 +13,33 @@ suspend fun <T : Event> CheckContext<T>.hasDJRole() {
     }
 
     val log = KotlinLogging.logger { }
-    val user = userFor(event)
     val guild = guildFor(event)
+    val member = memberFor(event)
+    val role = guild?.roles?.firstOrNull { it.name == "DJ" }
 
-    if (user == null) {
-        log.failed("No user")
-        fail()
-    } else {
-        val role = guild?.roles?.firstOrNull {
-            it.name == "DJ"
-        }
-        val member = guild?.getMember(user.id) ?: return
-
-        if (role == null) {
-            log.passed()
-            pass()
-        } else if (member.roles.toList().contains(role)) {
-            log.passed()
-            pass()
-        } else {
-            log.failed("No DJ role")
-            fail(translate("check.dj.fail", "music", arrayOf(role.mention)))
-        }
+    if (role == null) {
+        log.passed()
+        pass()
+        return
     }
+    if (member == null) {
+        log.nullMember(event)
+        fail()
+        return
+    }
+    if (member.asMember().roles.toList().contains(role)) {
+        log.passed()
+
+        pass()
+        return
+    }
+
+    log.failed("""msg="no dj role" member="$member"""")
+
+    fail(
+        translate(
+            key = "check.dj.fail",
+            replacements = arrayOf(role.mention),
+        )
+    )
 }
