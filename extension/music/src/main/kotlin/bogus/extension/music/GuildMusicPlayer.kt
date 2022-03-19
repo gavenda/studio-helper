@@ -16,6 +16,8 @@ import dev.schlaubi.lavakord.audio.player.Track
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -30,13 +32,55 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val tp by inject<TranslationsProvider>()
     private val queue = LinkedBlockingDeque<Track>()
     private val log = KotlinLogging.logger {}
+    private val mutex = Mutex()
     private val link = Lava.linkFor(guildId)
-    private val player = link.player
+    private val player = link.player.apply {
+        on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
+            log.error { """msg=Track error" error="${exception.message}"""" }
+            updateBoundQueue()
+        }
+
+        on<TrackStuckEvent>(CoroutineScope(Dispatchers.IO)) {
+            log.error { """msg="Track stuck" track="$track" duration="${threshold.inWholeMilliseconds}ms""""" }
+        }
+
+        on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
+            updateBoundQueue()
+            if (track.isSeekable) {
+                updateLastPlayMillis(track.length.inWholeMilliseconds)
+            }
+        }
+
+        on<TrackEndEvent>(CoroutineScope(Dispatchers.IO)) {
+            if (looped) {
+                queue.offerFirst(track)
+            }
+            if (loopedAll) {
+                queue.offer(track)
+            }
+
+            when (reason) {
+                TrackEndEvent.EndReason.LOAD_FAILED -> {
+                    log.debug { """msg="Track load failed" track="${track.title}"""" }
+                    val retried = retryTrack(track)
+                    if (retried.not()) {
+                        playFromQueue()
+                    }
+                }
+                else -> {
+                    log.debug { """msg="Track end" track="${track.title}"""" }
+                    playFromQueue()
+                }
+            }
+
+            updateBoundQueue()
+        }
+    }
+
     private val trackAttempts = ConcurrentHashMap<String, Int>()
     private val emptyQueueMessage = {
         tp.translate(
-            key = "player.queue.message",
-            bundleName = TRANSLATION_BUNDLE
+            key = "player.queue.message", bundleName = TRANSLATION_BUNDLE
         )
     }
 
@@ -129,49 +173,6 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
      */
     val loopedAll get() = _loopedAll
 
-    init {
-        player.on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error { """msg=Track error" error="${exception.message}"""" }
-            updateBoundQueue()
-        }
-
-        player.on<TrackStuckEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error { """msg="Track stuck" track="$track" duration="${threshold.inWholeMilliseconds}ms""""" }
-        }
-
-        player.on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
-            updateBoundQueue()
-            if (track.isSeekable) {
-                updateLastPlayMillis(track.length.inWholeMilliseconds)
-            }
-        }
-
-        player.on<TrackEndEvent>(CoroutineScope(Dispatchers.IO)) {
-            if (looped) {
-                queue.offerFirst(track)
-            }
-            if (loopedAll) {
-                queue.offer(track)
-            }
-
-            when (reason) {
-                TrackEndEvent.EndReason.LOAD_FAILED -> {
-                    log.debug { """msg="Track load failed" track="${track.title}"""" }
-                    val retried = retryTrack(track)
-                    if (retried.not()) {
-                        playFromQueue()
-                    }
-                }
-                else -> {
-                    log.debug { """msg="Track end" track="${track.title}"""" }
-                    playFromQueue()
-                }
-            }
-
-            updateBoundQueue()
-        }
-    }
-
     suspend fun volumeTo(value: Int) {
         if (effects.volume != value) {
             effects.applyVolume(value)
@@ -220,7 +221,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
      * Plays a song from the queue. Not to be confused with [resume] and [pause].
      * @return whether we started playing
      */
-    private suspend fun play(): Boolean {
+    private suspend fun play(): Boolean = mutex.withLock {
         if (playing.not()) {
             val track = queue.poll() ?: return false
             if (track.isSeekable) {
@@ -266,7 +267,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         }
 
         boundPaginator?.send()
-        log.info { "Queue updated" }
+        log.debug { "Queue updated" }
     }
 
     suspend fun bind(textChannel: MessageChannelBehavior): Snowflake? {
@@ -291,7 +292,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     }
 
     /**
-     * Update last play millis (for auto discsonnect)
+     * Update last play millis (for auto disconnect)
      * @param trackDuration the last track duration in milliseconds
      */
     private fun updateLastPlayMillis(trackDuration: Long) {
@@ -343,7 +344,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     /**
      * Clears the queue.
      */
-    suspend fun clear() {
+    fun clear() {
         queue.clear()
         updateBoundQueue()
     }
@@ -369,9 +370,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         tracksChunked.forEachIndexed { _, requests ->
             val description = buildString {
                 requests.forEach { request ->
-                    val trackTitle = request.title
-                        .abbreviate(EmbedBuilder.Limits.title)
-                        .escapedBrackets
+                    val trackTitle = request.title.abbreviate(EmbedBuilder.Limits.title).escapedBrackets
                     val trackUri = request.uri
                     val trackDuration = request.length.humanReadableTime
                     val metadata = request.meta
@@ -407,6 +406,8 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
                 }
             } else "-"
         }
+
+        val identifier = player.playingTrack?.identifier
 
         return {
             title = "Vivy's Song List"
@@ -446,6 +447,10 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
                 name = "Volume"
                 value = "${effects.volume}%"
                 inline = true
+            }
+
+            if (identifier != null) {
+                image = youtubeThumbnail(identifier)
             }
         }
     }

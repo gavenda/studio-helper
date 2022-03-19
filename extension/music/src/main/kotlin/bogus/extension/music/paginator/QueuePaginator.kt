@@ -1,6 +1,10 @@
 package bogus.extension.music.paginator
 
-import bogus.extension.music.GuildMusicPlayer
+import bogus.extension.music.*
+import bogus.extension.music.EmojiPause
+import bogus.extension.music.EmojiPlay
+import bogus.extension.music.EmojiShuffle
+import bogus.extension.music.EmojiSkip
 import bogus.extension.music.check.hasDJRole
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -47,16 +51,14 @@ abstract class QueuePaginator(
         null
     }
 
-    private val emojiPlay = ReactionEmoji.Custom(Snowflake(904451990623514645), "play", false)
-    private val emojiSkip = ReactionEmoji.Custom(Snowflake(904451990225051701), "skip", false)
-    private val emojiPause = ReactionEmoji.Custom(Snowflake(904469954215157771), "pause", false)
-    private val emojiShuffle = ReactionEmoji.Custom(Snowflake(904477192283631627), "shuffle", false)
-    private val emojiNext = ReactionEmoji.Custom(Snowflake(905638284468830229), "next", false)
-    private val emojiPrev = ReactionEmoji.Custom(Snowflake(905638284074557461), "previous", false)
-
     open var playPauseButton: PublicInteractionButton? = null
     open var skipButton: PublicInteractionButton? = null
     open var shuffleButton: PublicInteractionButton? = null
+    open var volumeUpButton: PublicInteractionButton? = null
+    open var volumeDownButton: PublicInteractionButton? = null
+    open var repeatSingleButton: PublicInteractionButton? = null
+    open var repeatAllButton: PublicInteractionButton? = null
+    open var stopButton: PublicInteractionButton? = null
 
     /** Button builder representing the button that switches to the previous page. **/
     open var backButton: PublicInteractionButton? = null
@@ -76,9 +78,9 @@ abstract class QueuePaginator(
             style = ButtonStyle.Secondary
 
             if (player.paused) {
-                emoji(emojiPlay)
+                emoji(EmojiPlay)
             } else {
-                emoji(emojiPause)
+                emoji(EmojiPause)
             }
 
             check {
@@ -100,7 +102,7 @@ abstract class QueuePaginator(
         skipButton = components.publicButton {
             deferredAck = true
             style = ButtonStyle.Secondary
-            emoji(emojiSkip)
+            emoji(EmojiSkip)
 
             check {
                 anyGuild()
@@ -116,7 +118,7 @@ abstract class QueuePaginator(
         shuffleButton = components.publicButton {
             deferredAck = true
             style = ButtonStyle.Secondary
-            emoji(emojiShuffle)
+            emoji(EmojiShuffle)
 
             check {
                 anyGuild()
@@ -129,10 +131,89 @@ abstract class QueuePaginator(
             }
         }
 
+        volumeDownButton = components.publicButton {
+            deferredAck = true
+            style = ButtonStyle.Secondary
+            emoji(EmojiVolumeDown)
 
-        if (pages.groups.values.any { it.size > 1 }) {
-            addNavigationButtons()
+            check {
+                anyGuild()
+                hasDJRole()
+            }
+
+            action(Dispatchers.IO) {
+                val volume = (player.effects.volume - 10).coerceIn(0, 100)
+                player.volumeTo(volume)
+                task?.restart()
+            }
         }
+
+        volumeUpButton = components.publicButton {
+            deferredAck = true
+            style = ButtonStyle.Secondary
+            emoji(EmojiVolumeUp)
+
+            check {
+                anyGuild()
+                hasDJRole()
+            }
+
+            action(Dispatchers.IO) {
+                val volume = (player.effects.volume + 10).coerceIn(0, 100)
+                player.volumeTo(volume)
+                task?.restart()
+            }
+        }
+
+        repeatAllButton = components.publicButton {
+            deferredAck = true
+            style = ButtonStyle.Secondary
+            emoji(EmojiRepeatAll)
+
+            check {
+                anyGuild()
+                hasDJRole()
+            }
+
+            action(Dispatchers.IO) {
+                player.toggleLoopAll()
+                task?.restart()
+            }
+        }
+
+        repeatSingleButton = components.publicButton {
+            deferredAck = true
+            style = ButtonStyle.Secondary
+            emoji(EmojiRepeatSingle)
+
+            check {
+                anyGuild()
+                hasDJRole()
+            }
+
+            action(Dispatchers.IO) {
+                player.toggleLoop()
+                task?.restart()
+            }
+        }
+
+        stopButton = components.publicButton {
+            deferredAck = true
+            style = ButtonStyle.Danger
+            emoji(EmojiStop)
+
+            check {
+                anyGuild()
+                hasDJRole()
+            }
+
+            action(Dispatchers.IO) {
+                player.stop()
+                task?.restart()
+            }
+        }
+
+        addNavigationButtons()
 
         components.sort()
     }
@@ -184,7 +265,7 @@ abstract class QueuePaginator(
         backButton = components.publicButton {
             deferredAck = true
             style = ButtonStyle.Primary
-            emoji(emojiPrev)
+            emoji(EmojiPrev)
 
             action(Dispatchers.IO) {
                 if (currentPageNum == 0) {
@@ -201,7 +282,7 @@ abstract class QueuePaginator(
         nextButton = components.publicButton {
             deferredAck = true
             style = ButtonStyle.Primary
-            emoji(emojiNext)
+            emoji(EmojiNext)
 
             action(Dispatchers.IO) {
                 if (currentPageNum >= pages.groups[currentGroup]!!.size - 1) {
@@ -219,23 +300,23 @@ abstract class QueuePaginator(
     /**
      * Convenience function that enables and disables buttons as necessary, depending on the current page number.
      */
-    suspend fun updateButtons() {
+    fun updateButtons() {
         if (player.paused) {
-            playPauseButton?.emoji(emojiPlay)
+            playPauseButton?.emoji(EmojiPlay)
         } else {
-            playPauseButton?.emoji(emojiPause)
+            playPauseButton?.emoji(EmojiPause)
         }
 
-        if (pages.groups.values.any { it.size > 1 }) {
-            if (backButton == null && nextButton == null) {
-                addNavigationButtons()
-                components.sort()
-            }
+        if (player.loopedAll) {
+            repeatAllButton?.emoji(EmojiRepeatAllOn)
         } else {
-            backButton?.let { components.remove(it) }
-            nextButton?.let { components.remove(it) }
-            backButton = null
-            nextButton = null
+            repeatAllButton?.emoji(EmojiRepeatAll)
+        }
+
+        if (player.looped) {
+            repeatSingleButton?.emoji(EmojiRepeatSingleOn)
+        } else {
+            repeatSingleButton?.emoji(EmojiRepeatSingle)
         }
     }
 }

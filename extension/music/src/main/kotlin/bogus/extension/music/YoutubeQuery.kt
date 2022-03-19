@@ -5,7 +5,9 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import mu.KotlinLogging
 
-// https://regex101.com/r/Jg94Ag/1
+/**
+ * https://regex101.com/r/Jg94Ag/1
+ */
 private val responsePattern = Regex("""\["(.+?(?="))".+?(?=]])]]""")
 private val youtubeEndpoint = Url("https://suggestqueries-clients6.youtube.com/complete/search?client=youtube")
 private val client = HttpClient()
@@ -24,4 +26,8 @@ internal suspend fun youtubeQuery(query: String): List<String> {
     logger.debug { "response=$responseList" }
 
     return responseList
+}
+
+internal fun youtubeThumbnail(videoId: String): String {
+    return "https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
 }
