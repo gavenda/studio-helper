@@ -21,6 +21,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.ktorm.database.Database
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingDeque

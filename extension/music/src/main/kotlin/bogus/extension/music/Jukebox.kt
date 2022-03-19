@@ -73,7 +73,8 @@ object Jukebox : KoinComponent {
                     textMessage.delete("Crash cleanup")
                 }
 
-                bind(textChannel)
+                dbGuild.lastMessageId = bind(textChannel)?.value?.toLong()
+                dbGuild.flushChanges()
 
                 log.info { """msg="Guild bound" guild=${guild.id}""" }
             }
