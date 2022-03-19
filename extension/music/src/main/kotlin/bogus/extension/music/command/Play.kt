@@ -46,6 +46,7 @@ private suspend fun EphemeralSlashCommand<*>.later() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> respondChoices(choices, select) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,
@@ -78,6 +79,7 @@ private suspend fun EphemeralSlashCommand<*>.next() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> respondChoices(choices, select) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,
@@ -110,6 +112,7 @@ private suspend fun EphemeralSlashCommand<*>.now() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> respondChoices(choices, select) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,

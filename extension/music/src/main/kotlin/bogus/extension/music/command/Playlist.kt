@@ -351,6 +351,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> select(choices.first()) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,

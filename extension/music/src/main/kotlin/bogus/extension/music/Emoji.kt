@@ -1,6 +1,8 @@
 package bogus.extension.music
 
+import dev.kord.common.entity.DiscordPartialEmoji
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.OptionalBoolean
 import dev.kord.core.entity.ReactionEmoji
 
 internal val EmojiPlay = ReactionEmoji.Custom(
@@ -67,4 +69,9 @@ internal val EmojiStop = ReactionEmoji.Custom(
     id = Snowflake(904469668725669938),
     name = "stop",
     isAnimated = false
+)
+internal val EmojiMusicNote = DiscordPartialEmoji(
+    id = Snowflake(954684659411849256),
+    name = "musicnote",
+    animated = OptionalBoolean.Value(false)
 )

@@ -1,9 +1,16 @@
 package bogus.extension.music
 
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
+import com.kotlindiscord.kord.extensions.commands.application.message.EphemeralMessageCommandContext
+import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommandContext
+import com.kotlindiscord.kord.extensions.components.components
+import com.kotlindiscord.kord.extensions.components.ephemeralSelectMenu
+import com.kotlindiscord.kord.extensions.types.edit
+import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.GuildBehavior
 import dev.schlaubi.lavakord.audio.Link
 import dev.schlaubi.lavakord.audio.player.Track
+import dev.schlaubi.lavakord.rest.TrackResponse
 import java.util.concurrent.BlockingDeque
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -86,3 +93,51 @@ val Long.humanReadableTime: String
             )
         }
     }
+
+suspend fun EphemeralSlashCommandContext<*>.respondChoices(choices: List<TrackResponse.PartialTrack>, select: suspend (TrackResponse.PartialTrack) -> String) {
+    respond {
+        components {
+            ephemeralSelectMenu {
+                content = translate("jukebox.response.choices")
+                choices.map { it.info }.forEach {
+                    option(it.title, it.uri) {
+                        emoji = EmojiMusicNote
+                    }
+                }
+                action {
+                    val selectedTrack = selected.first()
+                    val track = choices.first { it.info.uri == selectedTrack }
+
+                    edit {
+                        content = select(track)
+                        components { removeAll() }
+                    }
+                }
+            }
+        }
+    }
+}
+
+suspend fun EphemeralMessageCommandContext.respondChoices(choices: List<TrackResponse.PartialTrack>, select: suspend (TrackResponse.PartialTrack) -> String) {
+    respond {
+        components {
+            ephemeralSelectMenu {
+                content = translate("jukebox.response.choices")
+                choices.map { it.info }.forEach {
+                    option(it.title, it.uri) {
+                        emoji = EmojiMusicNote
+                    }
+                }
+                action {
+                    val selectedTrack = selected.first()
+                    val track = choices.first { it.info.uri == selectedTrack }
+
+                    edit {
+                        content = select(track)
+                        components { removeAll() }
+                    }
+                }
+            }
+        }
+    }
+}

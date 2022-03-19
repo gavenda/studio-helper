@@ -5,11 +5,12 @@ import bogus.extension.music.Jukebox
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.check.hasDJRole
 import bogus.extension.music.check.inVoiceChannel
+import bogus.extension.music.respondChoices
+import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralMessageCommand
-import kotlinx.coroutines.Dispatchers
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.types.respond
+import kotlinx.coroutines.Dispatchers
 
 suspend fun MusicExtension.playLater() {
     ephemeralMessageCommand {
@@ -27,6 +28,7 @@ suspend fun MusicExtension.playLater() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> respondChoices(choices, select) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,
@@ -58,6 +60,7 @@ suspend fun MusicExtension.playNext() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> respondChoices(choices, select) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,
@@ -89,6 +92,7 @@ suspend fun MusicExtension.playNow() {
                     respond = {
                         respond { content = it }
                     },
+                    respondMultiple = { choices, select -> respondChoices(choices, select) },
                     identifiers = identifiers,
                     guild = guild,
                     mention = user.mention,

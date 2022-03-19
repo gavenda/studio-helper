@@ -108,6 +108,7 @@ object Jukebox : KoinComponent {
 
     data class PlayRequest(
         val respond: suspend (String) -> Unit,
+        val respondMultiple: suspend (List<TrackResponse.PartialTrack>, suspend (TrackResponse.PartialTrack) -> String) -> Unit,
         val identifiers: List<String>,
         val guild: GuildBehavior,
         val mention: String,
@@ -120,7 +121,7 @@ object Jukebox : KoinComponent {
      * @return response, empty string if successful.
      */
     suspend fun playNow(request: PlayRequest): String = mutex.withLock {
-        val (respond, identifiers, guild, mention, userId, locale) = request
+        val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
 
         if (identifiers.isEmpty()) {
             log.info { """msg="No identifiers found", identifiers="${request.identifiers}" user=$userId guild=${guild.id}""" }
@@ -133,7 +134,7 @@ object Jukebox : KoinComponent {
         val identifier = identifiers.first()
         val item = guild.link.loadItem(identifier)
 
-        val trackLoaded: suspend (Track) -> Unit = { track ->
+        val trackLoaded: suspend (Track) -> String = { track ->
             track.meta = AudioTrackMeta(mention, userId)
 
             if (guild.player.playing) {
@@ -147,13 +148,11 @@ object Jukebox : KoinComponent {
                 guild.player.addFirst(track, update = true)
             }
 
-            respond(
-                tp.translate(
-                    key = "jukebox.response.play-now",
-                    bundleName = TRANSLATION_BUNDLE,
-                    locale,
-                    replacements = arrayOf(track.title.escapedBackticks)
-                )
+            tp.translate(
+                key = "jukebox.response.play-now",
+                bundleName = TRANSLATION_BUNDLE,
+                locale,
+                replacements = arrayOf(track.title.escapedBackticks)
             )
         }
 
@@ -165,7 +164,9 @@ object Jukebox : KoinComponent {
                 respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
             }
             TrackResponse.LoadType.SEARCH_RESULT -> {
-                trackLoaded(item.tracks.first().toTrack())
+                respondMultiple(item.tracks) {
+                    trackLoaded(it.toTrack())
+                }
             }
             TrackResponse.LoadType.NO_MATCHES -> {
                 respond(
@@ -199,7 +200,7 @@ object Jukebox : KoinComponent {
      * @return response, empty string if successful.
      */
     suspend fun playNext(request: PlayRequest): String = mutex.withLock {
-        val (respond, identifiers, guild, mention, userId, locale) = request
+        val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
 
         if (identifiers.isEmpty()) {
             log.info { """msg="No identifiers found" identifiers="${request.identifiers}" user=$userId guild=${guild.id}""" }
@@ -212,41 +213,39 @@ object Jukebox : KoinComponent {
         val identifier = identifiers.first()
         val item = guild.link.loadItem(identifier)
 
-        val trackLoaded: suspend (Track) -> Unit = { track ->
+        val trackLoaded: suspend (Track) -> String = { track ->
             track.meta = AudioTrackMeta(mention, userId)
 
             val started = guild.player.addFirst(track, update = true)
 
             if (started) {
-                respond(
-                    tp.translate(
-                        key = "jukebox.response.play-now",
-                        bundleName = TRANSLATION_BUNDLE,
-                        locale,
-                        replacements = arrayOf(track.title.escapedBackticks)
-                    )
+                tp.translate(
+                    key = "jukebox.response.play-now",
+                    bundleName = TRANSLATION_BUNDLE,
+                    locale,
+                    replacements = arrayOf(track.title.escapedBackticks)
                 )
             } else {
-                respond(
-                    tp.translate(
-                        key = "jukebox.response.play-next",
-                        bundleName = TRANSLATION_BUNDLE,
-                        locale,
-                        replacements = arrayOf(track.title.escapedBackticks)
-                    )
+                tp.translate(
+                    key = "jukebox.response.play-next",
+                    bundleName = TRANSLATION_BUNDLE,
+                    locale,
+                    replacements = arrayOf(track.title.escapedBackticks)
                 )
             }
         }
 
         when (item.loadType) {
             TrackResponse.LoadType.TRACK_LOADED -> {
-                trackLoaded(item.track.toTrack())
+                respond(trackLoaded(item.track.toTrack()))
             }
             TrackResponse.LoadType.PLAYLIST_LOADED -> {
                 respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
             }
             TrackResponse.LoadType.SEARCH_RESULT -> {
-                trackLoaded(item.tracks.first().toTrack())
+                respondMultiple(item.tracks) {
+                    trackLoaded(it.toTrack())
+                }
             }
             TrackResponse.LoadType.NO_MATCHES -> {
                 respond(
@@ -320,7 +319,7 @@ object Jukebox : KoinComponent {
      * @return response, empty string if successful.
      */
     suspend fun playLater(request: PlayRequest): String = mutex.withLock {
-        val (respond, identifiers, guild, mention, userId, locale) = request
+        val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
         val link = Lava.linkFor(guild)
 
         if (identifiers.isEmpty()) {
@@ -350,35 +349,31 @@ object Jukebox : KoinComponent {
 
         val identifier = identifiers.first()
         val item = link.loadItem(identifier)
-        val trackLoaded: suspend (Track) -> Unit = { track ->
+        val trackLoaded: suspend (Track) -> String = { track ->
             track.meta = AudioTrackMeta(mention, userId)
 
             val started = guild.player.add(track, update = true)
 
             if (started) {
-                respond(
-                    tp.translate(
-                        key = "jukebox.response.play-now",
-                        bundleName = TRANSLATION_BUNDLE,
-                        locale,
-                        replacements = arrayOf(track.title.escapedBackticks)
-                    )
+                tp.translate(
+                    key = "jukebox.response.play-now",
+                    bundleName = TRANSLATION_BUNDLE,
+                    locale,
+                    replacements = arrayOf(track.title.escapedBackticks)
                 )
             } else {
-                respond(
-                    tp.translate(
-                        key = "jukebox.response.play-later",
-                        bundleName = TRANSLATION_BUNDLE,
-                        locale,
-                        replacements = arrayOf(track.title.escapedBackticks)
-                    )
+                tp.translate(
+                    key = "jukebox.response.play-later",
+                    bundleName = TRANSLATION_BUNDLE,
+                    locale,
+                    replacements = arrayOf(track.title.escapedBackticks)
                 )
             }
         }
 
         when (item.loadType) {
             TrackResponse.LoadType.TRACK_LOADED -> {
-                trackLoaded(item.track.toTrack())
+                respond(trackLoaded(item.track.toTrack()))
             }
             TrackResponse.LoadType.PLAYLIST_LOADED -> {
                 val tracks = item.tracks.mapToTrack()
@@ -417,7 +412,9 @@ object Jukebox : KoinComponent {
                 }
             }
             TrackResponse.LoadType.SEARCH_RESULT -> {
-                trackLoaded(item.tracks.first().toTrack())
+                respondMultiple(item.tracks) {
+                    trackLoaded(it.toTrack())
+                }
             }
             TrackResponse.LoadType.NO_MATCHES -> {
                 respond(
