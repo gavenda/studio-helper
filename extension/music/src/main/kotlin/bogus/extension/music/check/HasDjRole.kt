@@ -2,6 +2,7 @@ package bogus.extension.music.check
 
 import com.kotlindiscord.kord.extensions.checks.*
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
+import com.kotlindiscord.kord.extensions.utils.hasRole
 import dev.kord.core.event.Event
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -13,8 +14,8 @@ suspend fun <T : Event> CheckContext<T>.hasDJRole() {
     }
 
     val log = KotlinLogging.logger { }
+    val user = userFor(event)
     val guild = guildFor(event)
-    val member = memberFor(event)
     val role = guild?.roles?.firstOrNull { it.name == "DJ" }
 
     if (role == null) {
@@ -22,14 +23,22 @@ suspend fun <T : Event> CheckContext<T>.hasDJRole() {
         pass()
         return
     }
+
+    if (user == null) {
+        fail()
+        return
+    }
+
+    val member = guild.getMemberOrNull(user.id)
+
     if (member == null) {
         log.nullMember(event)
         fail()
         return
     }
-    if (member.asMember().roles.toList().contains(role)) {
-        log.passed()
 
+    if (member.hasRole(role)) {
+        log.passed()
         pass()
         return
     }
