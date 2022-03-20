@@ -70,6 +70,11 @@ internal val EmojiStop = ReactionEmoji.Custom(
     name = "stop",
     isAnimated = false
 )
+internal val EmojiPreferred = DiscordPartialEmoji(
+    id = Snowflake(955018371584385075),
+    name = "autoawesome",
+    animated = OptionalBoolean.Value(false)
+)
 internal val EmojiMusicNote = DiscordPartialEmoji(
     id = Snowflake(954684659411849256),
     name = "musicnote",

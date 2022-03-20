@@ -129,9 +129,9 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
         components {
             ephemeralSelectMenu {
                 content = translate("jukebox.response.choices")
-                choices.map { it.info }.forEach {
-                    option(it.title, it.uri) {
-                        emoji = EmojiMusicNote
+                choices.map { it.info }.forEachIndexed { idx, track ->
+                    option(track.title, track.uri) {
+                        emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote
                     }
                 }
                 action {
