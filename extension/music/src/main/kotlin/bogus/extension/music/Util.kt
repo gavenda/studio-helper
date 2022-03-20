@@ -1,5 +1,6 @@
 package bogus.extension.music
 
+import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.application.message.EphemeralMessageCommandContext
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommandContext
@@ -103,7 +104,7 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
             ephemeralSelectMenu {
                 content = translate("jukebox.response.choices")
                 choices.map { it.info }.forEachIndexed { idx, track ->
-                    option(track.title, track.uri) {
+                    option(track.title.abbreviate(80), track.uri) {
                         emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote
                     }
                 }
@@ -130,7 +131,7 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
             ephemeralSelectMenu {
                 content = translate("jukebox.response.choices")
                 choices.map { it.info }.forEachIndexed { idx, track ->
-                    option(track.title, track.uri) {
+                    option(track.title.abbreviate(80), track.uri) {
                         emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote
                     }
                 }
