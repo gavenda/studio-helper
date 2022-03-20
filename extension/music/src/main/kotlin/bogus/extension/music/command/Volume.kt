@@ -34,7 +34,7 @@ suspend fun MusicExtension.volume() {
 internal class VolumeArgs : KoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     private val volumeMap = buildMap {
-        for (v in 0 .. 100 step 10) {
+        for (v in 0..100 step 10) {
             put(v.toString(), v)
         }
     }

@@ -5,7 +5,6 @@ import com.kotlindiscord.kord.extensions.checks.types.CheckContext
 import com.kotlindiscord.kord.extensions.utils.hasRole
 import dev.kord.core.event.Event
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 
 suspend fun <T : Event> CheckContext<T>.hasDJRole() {

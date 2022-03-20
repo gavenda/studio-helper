@@ -108,7 +108,7 @@ object Jukebox : KoinComponent {
     data class PlayRequest(
         val respond: suspend (String) -> Unit,
         val respondMultiple: suspend (List<TrackResponse.PartialTrack>, suspend (TrackResponse.PartialTrack) -> String) -> Unit,
-        val identifiers: List<String>,
+        val parseResult: IdentifierParser.IdentifierParseResult,
         val guild: GuildBehavior,
         val mention: String,
         val userId: Snowflake,
@@ -120,10 +120,11 @@ object Jukebox : KoinComponent {
      * @return response, empty string if successful.
      */
     suspend fun playNow(request: PlayRequest): String = mutex.withLock {
-        val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
+        val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
+        val identifiers = parseResult.identifiers
 
         if (identifiers.isEmpty()) {
-            log.info { """msg="No identifiers found", identifiers="${request.identifiers}" user=$userId guild=${guild.id}""" }
+            log.info { """msg="No identifiers found", identifiers="$identifiers" user=$userId guild=${guild.id}""" }
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -163,8 +164,12 @@ object Jukebox : KoinComponent {
                 respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
             }
             TrackResponse.LoadType.SEARCH_RESULT -> {
-                respondMultiple(item.tracks) {
-                    trackLoaded(it.toTrack())
+                if (parseResult.spotify) {
+                    respond(trackLoaded(item.tracks.first().toTrack()))
+                } else {
+                    respondMultiple(item.tracks) {
+                        trackLoaded(it.toTrack())
+                    }
                 }
             }
             TrackResponse.LoadType.NO_MATCHES -> {
@@ -199,10 +204,11 @@ object Jukebox : KoinComponent {
      * @return response, empty string if successful.
      */
     suspend fun playNext(request: PlayRequest): String = mutex.withLock {
-        val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
-
+        val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
+        val identifiers = parseResult.identifiers
+        
         if (identifiers.isEmpty()) {
-            log.info { """msg="No identifiers found" identifiers="${request.identifiers}" user=$userId guild=${guild.id}""" }
+            log.info { """msg="No identifiers found" identifiers="$identifiers" user=$userId guild=${guild.id}""" }
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -242,8 +248,12 @@ object Jukebox : KoinComponent {
                 respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
             }
             TrackResponse.LoadType.SEARCH_RESULT -> {
-                respondMultiple(item.tracks) {
-                    trackLoaded(it.toTrack())
+                if (parseResult.spotify) {
+                    respond(trackLoaded(item.tracks.first().toTrack()))
+                } else {
+                    respondMultiple(item.tracks) {
+                        trackLoaded(it.toTrack())
+                    }
                 }
             }
             TrackResponse.LoadType.NO_MATCHES -> {
@@ -319,11 +329,12 @@ object Jukebox : KoinComponent {
      */
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun playLater(request: PlayRequest): String = mutex.withLock {
-        val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
+        val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
+        val identifiers = parseResult.identifiers
         val link = Lava.linkFor(guild)
 
         if (identifiers.isEmpty()) {
-            log.info { """msg="No identifiers found" identifiers="${request.identifiers}" user=$userId guild=${guild.id}""" }
+            log.info { """msg="No identifiers found" identifiers="$identifiers" user=$userId guild=${guild.id}""" }
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -417,8 +428,12 @@ object Jukebox : KoinComponent {
                 }
             }
             TrackResponse.LoadType.SEARCH_RESULT -> {
-                respondMultiple(item.tracks) {
-                    trackLoaded(it.toTrack())
+                if (parseResult.spotify) {
+                    respond(trackLoaded(item.tracks.first().toTrack()))
+                } else {
+                    respondMultiple(item.tracks) {
+                        trackLoaded(it.toTrack())
+                    }
                 }
             }
             TrackResponse.LoadType.NO_MATCHES -> {

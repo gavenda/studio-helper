@@ -1,10 +1,6 @@
 package bogus.extension.music.paginator
 
 import bogus.extension.music.*
-import bogus.extension.music.EmojiPause
-import bogus.extension.music.EmojiPlay
-import bogus.extension.music.EmojiShuffle
-import bogus.extension.music.EmojiSkip
 import bogus.extension.music.check.hasDJRole
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -19,7 +15,6 @@ import com.kotlindiscord.kord.extensions.pagination.pages.Pages
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.kotlindiscord.kord.extensions.utils.scheduling.Task
 import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.UserBehavior
 import dev.kord.core.entity.ReactionEmoji
 import kotlinx.coroutines.Dispatchers

@@ -14,6 +14,18 @@ import kotlin.streams.asSequence
 
 object IdentifierParser : KoinComponent {
 
+    data class IdentifierParseResult(
+        val identifiers: List<String>,
+        val local: Boolean = false,
+        val spotify: Boolean = false
+    )
+
+    fun fromList(list: List<String>): IdentifierParseResult {
+        return IdentifierParseResult(
+            identifiers = list
+        )
+    }
+
     private suspend fun findFile(fileName: String): List<String> {
         val musicDirectory = Paths.get("", MUSIC_DIRECTORY).toAbsolutePath()
         val musicFile = withContext(Dispatchers.IO) {
@@ -27,43 +39,56 @@ object IdentifierParser : KoinComponent {
         return listOf(file.toAbsolutePath().toString())
     }
 
-    suspend fun toIdentifiers(song: String): List<String> {
+    suspend fun toIdentifiers(song: String): IdentifierParseResult {
         if (song.startsWith("local:")) {
-            return findFile(song.split(":")[1])
+            return IdentifierParseResult(
+                identifiers = findFile(song.split(":")[1]),
+                local = true
+            )
         }
         if (song.isUrl.not()) {
-            return listOf("ytsearch:$song")
+            return fromList( listOf("ytsearch:$song"))
         }
 
-        val spotifyUri = parseSpotifyUri(song) ?: return listOf(song)
+        val spotifyUri = parseSpotifyUri(song) ?: return IdentifierParseResult(
+            identifiers = listOf(song)
+        )
         val spotifyWebApi by inject<SpotifyWebApi>()
 
         when (spotifyUri) {
             is Track -> {
                 val result = spotifyWebApi.findTrack(spotifyUri.id)
                 val artist = result.artists.first().name
-                return listOf("ytsearch:${result.name} - $artist")
+                return IdentifierParseResult(
+                    identifiers = listOf("ytsearch:${result.name} - $artist"),
+                    spotify = true
+                )
             }
             is Album -> {
                 val tracks = spotifyWebApi.findAllTracksInAlbum(spotifyUri.id)
-                return tracks.map {
-                    val artist = it.artists.first().name
-
-                    return@map "ytsearch:${it.name} - $artist"
-                }
+                return IdentifierParseResult(
+                    identifiers = tracks.map {
+                        val artist = it.artists.first().name
+                        return@map "ytsearch:${it.name} - $artist"
+                    },
+                    spotify = true
+                )
             }
             is Playlist -> {
                 val tracks = spotifyWebApi.findAllTracksInPlaylist(spotifyUri.id)
-                return tracks.map {
-                    val track = it.track as de.sonallux.spotify.api.models.Track
-                    val artist = track.artists.first().name
+                return IdentifierParseResult(
+                    identifiers = tracks.map {
+                        val track = it.track as de.sonallux.spotify.api.models.Track
+                        val artist = track.artists.first().name
 
-                    return@map "ytsearch:${track.name} - $artist"
-                }
+                        return@map "ytsearch:${track.name} - $artist"
+                    },
+                    spotify = true
+                )
             }
         }
 
-        return listOf()
+        return fromList(emptyList())
     }
 
 }

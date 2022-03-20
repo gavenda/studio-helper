@@ -94,7 +94,10 @@ val Long.humanReadableTime: String
         }
     }
 
-suspend fun EphemeralSlashCommandContext<*>.respondChoices(choices: List<TrackResponse.PartialTrack>, select: suspend (TrackResponse.PartialTrack) -> String) {
+suspend fun EphemeralSlashCommandContext<*>.respondChoices(
+    choices: List<TrackResponse.PartialTrack>,
+    select: suspend (TrackResponse.PartialTrack) -> String
+) {
     respond {
         components {
             ephemeralSelectMenu {
@@ -118,7 +121,10 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(choices: List<TrackRe
     }
 }
 
-suspend fun EphemeralMessageCommandContext.respondChoices(choices: List<TrackResponse.PartialTrack>, select: suspend (TrackResponse.PartialTrack) -> String) {
+suspend fun EphemeralMessageCommandContext.respondChoices(
+    choices: List<TrackResponse.PartialTrack>,
+    select: suspend (TrackResponse.PartialTrack) -> String
+) {
     respond {
         components {
             ephemeralSelectMenu {

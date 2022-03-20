@@ -229,10 +229,10 @@ private suspend fun EphemeralSlashCommand<*>.add() {
             }
 
             if (dbPlaylist != null) {
-                val parsedIdentifiers = IdentifierParser.toIdentifiers(arguments.music)
-
+                val parseResult = IdentifierParser.toIdentifiers(arguments.music)
+                val identifiers = parseResult.identifiers
                 CoroutineScope(Dispatchers.IO).launch {
-                    for (parsedIdentifier in parsedIdentifiers) {
+                    identifiers.forEach { parsedIdentifier ->
                         val addTrack: suspend (TrackResponse.PartialTrack) -> Unit = { track ->
                             val dbPlaylistSong = DbPlaylistSong {
                                 playlistId = dbPlaylist.playlistId
@@ -264,7 +264,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                 respond {
                     content = translate(
                         key = "playlist.add.response",
-                        replacements = arrayOf(parsedIdentifiers.size, dbPlaylist.name)
+                        replacements = arrayOf(identifiers.size, dbPlaylist.name)
                     )
                 }
             } else {
@@ -352,7 +352,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> select(choices.first()) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.fromList(identifiers),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,

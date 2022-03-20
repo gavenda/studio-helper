@@ -1,14 +1,20 @@
+def sshProps = new Properties()
+
+file("ssh.properties").withInputStream {
+    sshProps.load(it)
+}
+
 remotes {
-    raspi {
-        host = 'pi.monarch.home'
-        user = 'vivy'
-        password = new File("${project.projectDir}/ssh/vivy.password").text
+    app {
+        host = sshProps.getProperty("system.host")
+        user = sshProps.getProperty("app.user")
+        password = sshProps.getProperty("app.pass")
     }
 
-    raspiAdmin {
-        host = 'pi.monarch.home'
-        user = 'pi'
-        password = new File("${project.projectDir}/ssh/pi.password").text
+    system {
+        host = sshProps.getProperty("system.host")
+        user = sshProps.getProperty("system.user")
+        password = sshProps.getProperty("system.pass")
     }
 }
 
@@ -16,9 +22,10 @@ tasks.register('deploy') {
     group = 'distribution'
     doLast {
         ssh.run {
-            session(remotes.raspi) {
-                remove '/bot/vivy/bin', '/bot/vivy/lib'
-                put from: "$buildDir/install/vivy", into: '/bot', fileTransfer: 'scp'
+            session(remotes.app) {
+                def appName = sshProps.getProperty("app.name")
+                def appDir = sshProps.getProperty("app.dir")
+                put from: "$buildDir/install/$appName", into: appDir, fileTransfer: 'scp'
             }
         }
     }
@@ -29,8 +36,9 @@ tasks.register('restartRemote') {
     dependsOn tasks.deploy
     doLast {
         ssh.run {
-            session(remotes.raspiAdmin) {
-                execute 'sudo systemctl restart vivy'
+            session(remotes.system) {
+                def appName = sshProps.getProperty("app.name")
+                execute "sudo systemctl restart $appName"
             }
         }
     }

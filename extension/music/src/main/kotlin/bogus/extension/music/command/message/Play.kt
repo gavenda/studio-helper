@@ -22,14 +22,13 @@ suspend fun MusicExtension.playLater() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
-            val identifiers = IdentifierParser.toIdentifiers(targetMessages.first().content)
             val response = Jukebox.playLater(
                 Jukebox.PlayRequest(
                     respond = {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> respondChoices(choices, select) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.toIdentifiers(targetMessages.first().content),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,
@@ -54,14 +53,13 @@ suspend fun MusicExtension.playNext() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
-            val identifiers = IdentifierParser.toIdentifiers(targetMessages.first().content)
             val response = Jukebox.playNext(
                 Jukebox.PlayRequest(
                     respond = {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> respondChoices(choices, select) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.toIdentifiers(targetMessages.first().content),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,
@@ -86,14 +84,13 @@ suspend fun MusicExtension.playNow() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
-            val identifiers = IdentifierParser.toIdentifiers(targetMessages.first().content)
             val response = Jukebox.playNow(
                 Jukebox.PlayRequest(
                     respond = {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> respondChoices(choices, select) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.toIdentifiers(targetMessages.first().content),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,

@@ -1,6 +1,7 @@
 rootProject.name = "studio-helper"
 
 include(
+    "common",
     "bot:vivy",
     "bot:chupa",
     "bot:basura",
@@ -9,4 +10,3 @@ include(
     "extension:counter",
     "extension:music",
 )
-include("common")

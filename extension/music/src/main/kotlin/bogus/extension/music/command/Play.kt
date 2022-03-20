@@ -6,7 +6,6 @@ import bogus.extension.music.check.inVoiceChannel
 import bogus.util.LRUCache
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
-import com.kotlindiscord.kord.extensions.checks.hasRole
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
@@ -41,14 +40,13 @@ private suspend fun EphemeralSlashCommand<*>.later() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
-            val identifiers = IdentifierParser.toIdentifiers(arguments.query)
             val response = Jukebox.playLater(
                 Jukebox.PlayRequest(
                     respond = {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> respondChoices(choices, select) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.toIdentifiers(arguments.query),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,
@@ -74,14 +72,13 @@ private suspend fun EphemeralSlashCommand<*>.next() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
-            val identifiers = IdentifierParser.toIdentifiers(arguments.query)
             val response = Jukebox.playNext(
                 Jukebox.PlayRequest(
                     respond = {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> respondChoices(choices, select) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.toIdentifiers(arguments.query),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,
@@ -107,14 +104,13 @@ private suspend fun EphemeralSlashCommand<*>.now() {
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
-            val identifiers = IdentifierParser.toIdentifiers(arguments.query)
             val response = Jukebox.playNow(
                 Jukebox.PlayRequest(
                     respond = {
                         respond { content = it }
                     },
                     respondMultiple = { choices, select -> respondChoices(choices, select) },
-                    identifiers = identifiers,
+                    parseResult = IdentifierParser.toIdentifiers(arguments.query),
                     guild = guild,
                     mention = user.mention,
                     userId = user.id,
