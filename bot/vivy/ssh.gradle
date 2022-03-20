@@ -25,6 +25,7 @@ tasks.register('deploy') {
             session(remotes.app) {
                 def appName = sshProps.getProperty("app.name")
                 def appDir = sshProps.getProperty("app.dir")
+                remove "$appDir/$appName/bin", "$appDir/$appName/bin"
                 put from: "$buildDir/install/$appName", into: appDir, fileTransfer: 'scp'
             }
         }
