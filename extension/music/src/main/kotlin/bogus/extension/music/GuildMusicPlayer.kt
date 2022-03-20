@@ -21,7 +21,6 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.ktorm.database.Database
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingDeque
@@ -33,8 +32,8 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val tp by inject<TranslationsProvider>()
     private val queue = LinkedBlockingDeque<Track>()
     private val log = KotlinLogging.logger {}
-    private val mutex = Mutex()
     private val link = Lava.linkFor(guildId)
+    private val mutex = Mutex()
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
             log.error { """msg=Track error" error="${exception.message}"""" }
@@ -195,14 +194,17 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
      * Adds an audio track request to the queue.
      * @return whether we started playing
      */
-    suspend fun add(vararg requests: Track, update: Boolean = false): Boolean {
+    suspend fun add(vararg requests: Track, update: Boolean = false, play: Boolean = true): Boolean {
         for (request in requests) {
             queue.offer(request)
         }
         if (update) {
             updateBoundQueue()
         }
-        return play()
+        if (play) {
+            return attemptToPlay()
+        }
+        return attemptToPlay()
     }
 
     /**
@@ -215,14 +217,14 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         if (update) {
             updateBoundQueue()
         }
-        return play()
+        return attemptToPlay()
     }
 
     /**
      * Plays a song from the queue. Not to be confused with [resume] and [pause].
      * @return whether we started playing
      */
-    private suspend fun play(): Boolean = mutex.withLock {
+    suspend fun attemptToPlay(): Boolean = mutex.withLock {
         if (playing.not()) {
             val track = queue.poll() ?: return false
             if (track.isSeekable) {

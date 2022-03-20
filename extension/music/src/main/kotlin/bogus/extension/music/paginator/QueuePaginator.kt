@@ -208,6 +208,7 @@ abstract class QueuePaginator(
             }
 
             action(Dispatchers.IO) {
+                player.clear()
                 player.stop()
                 task?.restart()
             }

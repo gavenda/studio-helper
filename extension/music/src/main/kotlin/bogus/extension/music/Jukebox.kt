@@ -13,9 +13,7 @@ import dev.schlaubi.lavakord.audio.player.Track
 import dev.schlaubi.lavakord.rest.TrackResponse
 import dev.schlaubi.lavakord.rest.loadItem
 import dev.schlaubi.lavakord.rest.mapToTrack
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -286,7 +284,7 @@ object Jukebox : KoinComponent {
     ) {
         val trackLoaded: suspend (Track) -> Unit = { track ->
             track.meta = AudioTrackMeta(mention, userId)
-            guild.player.add(track, update = true)
+            guild.player.add(track, update = true, play = false)
         }
         val item = guild.link.loadItem(identifier)
 
@@ -319,6 +317,7 @@ object Jukebox : KoinComponent {
      * Plays a play request later in the queue.
      * @return response, empty string if successful.
      */
+    @OptIn(DelicateCoroutinesApi::class)
     suspend fun playLater(request: PlayRequest): String = mutex.withLock {
         val (respond, respondMultiple, identifiers, guild, mention, userId, locale) = request
         val link = Lava.linkFor(guild)
@@ -328,17 +327,22 @@ object Jukebox : KoinComponent {
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
-            identifiers.forEach { identifier ->
-                // Fire and forget swoosh!
-                CoroutineScope(Dispatchers.IO).launch {
-                    playLaterSilently(
-                        identifier = identifier,
-                        guild = guild,
-                        mention = mention,
-                        userId = userId
-                    )
+            CoroutineScope(Dispatchers.IO).launch {
+                identifiers.forEach { identifier ->
+                    // Maintain order
+                    mutex.withLock {
+                        playLaterSilently(
+                            identifier = identifier,
+                            guild = guild,
+                            mention = mention,
+                            userId = userId
+                        )
+                    }
                 }
             }
+
+            delay(2000)
+            guild.player.attemptToPlay()
 
             return tp.translate(
                 key = "jukebox.response.playlist-unknown-later",

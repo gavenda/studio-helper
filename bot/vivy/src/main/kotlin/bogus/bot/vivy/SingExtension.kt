@@ -3,12 +3,14 @@ package bogus.bot.vivy
 import bogus.extension.music.Jukebox
 import bogus.extension.music.check.hasDJRole
 import bogus.extension.music.check.inVoiceChannel
+import bogus.extension.music.player
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -51,6 +53,9 @@ class SingExtension : Extension() {
                         }
                     }
                 }
+
+                delay(2000)
+                guild.player.attemptToPlay()
 
                 log.info { """msg="Requested songs" user=${user.id}""" }
 
