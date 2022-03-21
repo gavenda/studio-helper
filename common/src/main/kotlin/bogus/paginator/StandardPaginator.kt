@@ -1,8 +1,11 @@
 package bogus.paginator
 
-import bogus.util.action
+import bogus.emoji.EmojiNext
+import bogus.emoji.EmojiPrev
 import com.kotlindiscord.kord.extensions.components.ComponentContainer
+import com.kotlindiscord.kord.extensions.components.buttons.LinkInteractionButton
 import com.kotlindiscord.kord.extensions.components.buttons.PublicInteractionButton
+import com.kotlindiscord.kord.extensions.components.linkButton
 import com.kotlindiscord.kord.extensions.components.publicButton
 import com.kotlindiscord.kord.extensions.components.types.emoji
 import com.kotlindiscord.kord.extensions.pagination.BasePaginator
@@ -12,10 +15,9 @@ import com.kotlindiscord.kord.extensions.pagination.pages.Pages
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.kotlindiscord.kord.extensions.utils.scheduling.Task
 import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.UserBehavior
 import dev.kord.core.entity.ReactionEmoji
-import kotlinx.coroutines.Dispatchers
+import dev.kord.rest.builder.message.EmbedBuilder
 import java.util.*
 
 /**
@@ -34,23 +36,23 @@ abstract class StandardPaginator(
     var components: ComponentContainer = ComponentContainer()
 
     /** Scheduler used to schedule the paginator's timeout. **/
-    var scheduler: Scheduler = Scheduler()
+    private var scheduler: Scheduler = Scheduler()
 
     /** Scheduler used to schedule the paginator's timeout. **/
-    var task: Task? = if (timeoutSeconds != null) {
+    private var task: Task? = if (timeoutSeconds != null) {
         scheduler.schedule(timeoutSeconds) { destroy() }
     } else {
         null
     }
-
-    private val emojiNext = ReactionEmoji.Custom(Snowflake(905638284468830229), "next", false)
-    private val emojiPrev = ReactionEmoji.Custom(Snowflake(905638284074557461), "previous", false)
 
     /** Button builder representing the button that switches to the previous page. **/
     open var backButton: PublicInteractionButton? = null
 
     /** Button builder representing the button that switches to the next page. **/
     open var nextButton: PublicInteractionButton? = null
+
+    /** Button builder representing the button that switches to the next page. **/
+    open var viewOnAniList: LinkInteractionButton? = null
 
     override suspend fun destroy() {
         runTimeoutCallbacks()
@@ -112,9 +114,9 @@ abstract class StandardPaginator(
         backButton = components.publicButton {
             deferredAck = true
             style = ButtonStyle.Primary
-            emoji(emojiPrev)
+            emoji(EmojiPrev)
 
-            action(Dispatchers.IO) {
+            action {
                 if (currentPageNum == 0) {
                     goToPage(pages.groups[currentGroup]!!.size - 1)
                 } else {
@@ -129,9 +131,9 @@ abstract class StandardPaginator(
         nextButton = components.publicButton {
             deferredAck = true
             style = ButtonStyle.Primary
-            emoji(emojiNext)
+            emoji(EmojiNext)
 
-            action(Dispatchers.IO) {
+            action {
                 if (currentPageNum >= pages.groups[currentGroup]!!.size - 1) {
                     goToPage(0)
                 } else {
@@ -144,20 +146,46 @@ abstract class StandardPaginator(
         }
     }
 
+    suspend fun addLinkButton(linkLabel: String?, embedUrl: String) {
+        viewOnAniList = components.linkButton {
+            label = linkLabel
+            url = embedUrl
+        }
+        components.sort()
+    }
+
+    private suspend fun removeNavigationButtons() {
+        backButton?.let { components.remove(it) }
+        nextButton?.let { components.remove(it) }
+        backButton = null
+        nextButton = null
+    }
+
     /**
      * Convenience function that enables and disables buttons as necessary, depending on the current page number.
      */
     suspend fun updateButtons() {
+        val embedBuilder = EmbedBuilder()
+        currentPage.builder(embedBuilder)
+
+        val embedUrl = embedBuilder.url
+
+        if (embedUrl != null) {
+            viewOnAniList?.let { components.remove(it) }
+            viewOnAniList = components.linkButton {
+                label = "View on AniList"
+                url = embedUrl
+            }
+            components.sort()
+        }
+
         if (pages.groups.values.any { it.size > 1 }) {
             if (backButton == null && nextButton == null) {
                 addNavigationButtons()
                 components.sort()
             }
         } else {
-            backButton?.let { components.remove(it) }
-            nextButton?.let { components.remove(it) }
-            backButton = null
-            nextButton = null
+            removeNavigationButtons()
         }
     }
 }

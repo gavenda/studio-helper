@@ -1,5 +1,6 @@
 package bogus.bot.chupa
 
+import bogus.extension.about.AboutExtension
 import bogus.extension.counter.CounterExtension
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
@@ -11,6 +12,7 @@ suspend fun main() {
     val token = env("TOKEN")
     val bot = ExtensibleBot(token) {
         extensions {
+            add(::AboutExtension)
             add(::CounterExtension)
 
             help {

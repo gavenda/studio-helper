@@ -5,7 +5,7 @@ import bogus.extension.anilist.AniListExtension.log
 import bogus.extension.anilist.PAGINATOR_TIMEOUT
 import bogus.extension.anilist.embed.createStaffEmbed
 import bogus.extension.anilist.graphql.AniList
-import bogus.extension.anilist.paginator.respondingStandardPaginator
+import bogus.paginator.respondingStandardPaginator
 import bogus.util.LRUCache
 import bogus.util.abbreviate
 import bogus.util.action
@@ -52,7 +52,7 @@ private suspend fun ApplicationCommandContext.findStaff(query: String) {
         }
         return
     }
-    val paginator = respondingStandardPaginator {
+    val paginator = respondingStandardPaginator(linkLabel = translate("link.label")) {
         timeoutSeconds = PAGINATOR_TIMEOUT
         staffs.forEach { staff ->
             page {

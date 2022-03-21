@@ -5,7 +5,8 @@ import bogus.extension.anilist.embed.createMediaEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.Media
 import bogus.extension.anilist.model.MediaList
-import bogus.extension.anilist.paginator.respondingStandardPaginator
+import bogus.paginator.respondingStandardPaginator
+import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.types.PublicInteractionContext
 import dev.kord.common.Color
 import dev.kord.core.behavior.GuildBehavior
@@ -130,21 +131,16 @@ internal suspend fun lookupMediaList(
     )
 }
 
-inline fun failSilently(body: () -> Unit) {
-    try {
-        body()
-    } catch (_: Exception) {
-    }
-}
-
-internal suspend fun PublicInteractionContext.sendMediaResult(
+internal suspend fun ApplicationCommandContext.sendMediaResult(
     guild: GuildBehavior?,
     media: List<Media>
 ) {
+    if (this !is PublicInteractionContext) return
+
     val mediaList = lookupMediaList(media, guild?.id?.value?.toLong())
     val userIds = mediaList?.mapNotNull { it.user?.id }
     val aniToDiscordName = aniListToDiscordNameMap(userIds)
-    val paginator = respondingStandardPaginator {
+    val paginator = respondingStandardPaginator(linkLabel = translate("link.label")) {
         timeoutSeconds = PAGINATOR_TIMEOUT
         media.forEach {
             page {

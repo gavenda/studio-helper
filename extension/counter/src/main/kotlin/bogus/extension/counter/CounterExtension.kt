@@ -2,6 +2,7 @@ package bogus.extension.counter
 
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.constants.ITEMS_PER_CHUNK
+import bogus.paginator.respondingStandardPaginator
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.publicSubCommand
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -9,7 +10,6 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import com.kotlindiscord.kord.extensions.types.respondingPaginator
 import dev.kord.core.behavior.interaction.suggestString
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.rest.builder.message.create.embed
@@ -99,7 +99,8 @@ class CounterExtension : Extension() {
                         return@action
                     }
 
-                    val paginator = respondingPaginator {
+                    val paginator = respondingStandardPaginator {
+                        timeoutSeconds = PAGINATOR_TIMEOUT
                         val chunked = counters.asSequence().chunked(ITEMS_PER_CHUNK)
 
                         chunked.forEach { sequenceChunked ->

@@ -7,5 +7,6 @@ application {
 }
 
 dependencies {
+    implementation(project(":extension:about"))
     implementation(project(":extension:counter"))
 }

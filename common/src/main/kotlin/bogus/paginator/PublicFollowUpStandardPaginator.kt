@@ -1,6 +1,6 @@
-package bogus.extension.anilist.paginator
+package bogus.paginator
 
-import bogus.extension.anilist.failSilently
+import bogus.util.failSilently
 import com.kotlindiscord.kord.extensions.pagination.EXPAND_EMOJI
 import com.kotlindiscord.kord.extensions.pagination.SWITCH_EMOJI
 import com.kotlindiscord.kord.extensions.pagination.builders.PaginatorBuilder
@@ -30,7 +30,7 @@ class PublicFollowUpStandardPaginator(
     switchEmoji: ReactionEmoji = if (pages.groups.size == 2) EXPAND_EMOJI else SWITCH_EMOJI,
     bundle: String? = null,
     locale: Locale? = null,
-
+    val linkLabel: String? = null,
     val interaction: FollowupPermittingInteractionResponseBehavior,
 ) : StandardPaginator(pages, owner, timeoutSeconds, keepEmbed, switchEmoji, bundle, locale) {
     /** Follow-up interaction to use for this paginator's embeds. Will be created by [send]. **/
@@ -43,7 +43,7 @@ class PublicFollowUpStandardPaginator(
             embedInteraction = interaction.createPublicFollowup {
                 embed {
                     applyPage()
-                    url?.let { addLinkButton(it) }
+                    url?.let { addLinkButton(linkLabel, it) }
                 }
 
                 with(this@PublicFollowUpStandardPaginator.components) {
@@ -88,6 +88,7 @@ class PublicFollowUpStandardPaginator(
 @Suppress("FunctionNaming")  // Factory function
 fun PublicFollowUpStandardPaginator(
     builder: PaginatorBuilder,
+    linkLabel: String?,
     interaction: FollowupPermittingInteractionResponseBehavior
 ): PublicFollowUpStandardPaginator = PublicFollowUpStandardPaginator(
     pages = builder.pages,
@@ -96,14 +97,15 @@ fun PublicFollowUpStandardPaginator(
     keepEmbed = builder.keepEmbed,
     bundle = builder.bundle,
     locale = builder.locale,
+    linkLabel = linkLabel,
     interaction = interaction,
-
     switchEmoji = builder.switchEmoji ?: if (builder.pages.groups.size == 2) EXPAND_EMOJI else SWITCH_EMOJI,
 )
 
 /** Create a paginator that creates a follow-up message, and edits that. **/
 suspend inline fun PublicInteractionContext.respondingStandardPaginator(
     defaultGroup: String = "",
+    linkLabel: String? = null,
     locale: Locale? = null,
     builder: (PaginatorBuilder).() -> Unit
 ): PublicFollowUpStandardPaginator {
@@ -114,5 +116,5 @@ suspend inline fun PublicInteractionContext.respondingStandardPaginator(
 
     builder(pages)
 
-    return PublicFollowUpStandardPaginator(pages, interactionResponse)
+    return PublicFollowUpStandardPaginator(pages, linkLabel, interactionResponse)
 }

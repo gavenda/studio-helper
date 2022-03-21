@@ -33,7 +33,7 @@ suspend fun AniListExtension.find() {
         name = "anime"
         description = "Looks up the name of the anime."
         action(Dispatchers.IO) {
-            findMedia(arguments.query, bogus.extension.anilist.model.MediaType.ANIME)
+            findMedia(arguments.query, MediaType.ANIME)
         }
     }
 
@@ -41,7 +41,7 @@ suspend fun AniListExtension.find() {
         name = "manga"
         description = "Looks up the name of the manga."
         action(Dispatchers.IO) {
-            findMedia(arguments.query, bogus.extension.anilist.model.MediaType.MANGA)
+            findMedia(arguments.query, MediaType.MANGA)
         }
     }
 
@@ -55,7 +55,7 @@ suspend fun AniListExtension.find() {
 
 private suspend fun ApplicationCommandContext.findMedia(
     query: String,
-    type: bogus.extension.anilist.model.MediaType? = null
+    type: MediaType? = null
 ) {
     if (this !is PublicInteractionContext) return
 
