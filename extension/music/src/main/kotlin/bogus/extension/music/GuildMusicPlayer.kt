@@ -135,7 +135,12 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
             var duration = 0L
             if (playingTrack != null) {
                 if (playing && playingTrack.isSeekable) {
-                    duration = playingTrack.length.inWholeMilliseconds - playingTrack.position.inWholeMilliseconds
+                    val delta = playingTrack.length.inWholeMilliseconds - playingTrack.position.inWholeMilliseconds
+                    if (delta < 0) {
+                        duration = playingTrack.length.inWholeMilliseconds
+                    } else {
+                        duration = delta
+                    }
                 }
             }
 

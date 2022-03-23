@@ -153,7 +153,7 @@ internal class PlayArgs : KoinComponent, Arguments() {
             } else {
                 suggestString {
                     val fileResult = fileList
-                        .filter { it.lowercase().startsWith(input.lowercase()) }
+                        .filter { it.startsWith(input, ignoreCase = true) }
                         .toList()
 
                     fileResult.take(AUTOCOMPLETE_ITEMS_LIMIT).forEach {

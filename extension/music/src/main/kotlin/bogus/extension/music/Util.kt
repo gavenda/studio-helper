@@ -63,10 +63,16 @@ var Track.meta
  * The total duration of the track queue in milliseconds.
  */
 val BlockingDeque<Track>.duration: Long
-    get() =
+    get() {
         // Streams don't have a valid time.
-        filter { it.isSeekable }
-            .sumOf { it.length.inWholeMilliseconds }
+        val result = filter { it.isSeekable }
+
+        if (result.isNotEmpty()) {
+            return result.sumOf { it.length.inWholeMilliseconds }
+        } else {
+            return 0L
+        }
+    }
 
 /**
  * Returns this duration in human-readable time string.

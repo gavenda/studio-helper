@@ -40,7 +40,7 @@ object IdentifierParser : KoinComponent {
         val musicFile = withContext(Dispatchers.IO) {
             Files.walk(musicDirectory)
                 .asSequence()
-                .filter { it.name.lowercase().startsWith(fileName.lowercase()) }
+                .filter { it.name.startsWith(fileName, ignoreCase = true) }
                 .firstOrNull()
         }
         val musicFilePath = musicDirectory.resolve(fileName)
