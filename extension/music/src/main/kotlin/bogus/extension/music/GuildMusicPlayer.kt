@@ -452,7 +452,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
                 inline = true
             }
 
-            if (identifier != null) {
+            if (identifier != null && player.playingTrack?.uri?.isUrl == true) {
                 image = youtubeThumbnail(identifier)
             }
         }
