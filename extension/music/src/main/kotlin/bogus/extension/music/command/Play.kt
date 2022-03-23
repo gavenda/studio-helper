@@ -1,5 +1,6 @@
 package bogus.extension.music.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.music.*
 import bogus.extension.music.check.hasDJRole
 import bogus.extension.music.check.inVoiceChannel
@@ -141,19 +142,42 @@ internal class PlayArgs : KoinComponent, Arguments() {
 
         autoComplete {
             val input = focusedOption.value
-            val cacheLookup = cache[input]
+            val fileList = IdentifierParser.listFiles()
 
-            if (cacheLookup != null) {
+            if (input.isBlank()) {
                 suggestString {
-                    cacheLookup.forEach { choice(it, it) }
+                    fileList.take(AUTOCOMPLETE_ITEMS_LIMIT).forEach {
+                        choice(it, "local:$it")
+                    }
                 }
             } else {
-                val youtubeResult = youtubeQuery(input)
-
                 suggestString {
-                    youtubeResult.take(25)
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
+                    val fileResult = fileList
+                        .filter { it.lowercase().startsWith(input.lowercase()) }
+                        .toList()
+
+                    fileResult.take(AUTOCOMPLETE_ITEMS_LIMIT).forEach {
+                        choice(it, "local:$it")
+                    }
+
+                    if (fileResult.size < AUTOCOMPLETE_ITEMS_LIMIT) {
+                        // Check cache
+                        val cacheLookup = cache[input]
+                        val delta = (AUTOCOMPLETE_ITEMS_LIMIT - fileResult.size).coerceAtLeast(0)
+
+                        if (cacheLookup != null) {
+                            cacheLookup.take(delta).forEach {
+                                choice(it, it)
+                            }
+                        } else {
+                            val youtubeResult = youtubeQuery(input)
+                            youtubeResult.take(delta)
+                                .apply { cache[input] = this }
+                                .forEach {
+                                    choice(it, it)
+                                }
+                        }
+                    }
                 }
             }
         }

@@ -8,17 +8,27 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.name
 import kotlin.streams.asSequence
 
 object IdentifierParser : KoinComponent {
 
+    private val musicDirectory: Path = Paths.get("", MUSIC_DIRECTORY).toAbsolutePath()
+
     data class IdentifierParseResult(
         val identifiers: List<String>,
         val local: Boolean = false,
         val spotify: Boolean = false
     )
+
+    fun listFiles(): Sequence<String> {
+        return Files.walk(musicDirectory)
+            .asSequence()
+            .filter { Files.isRegularFile(it) }
+            .map { it.name }
+    }
 
     fun fromList(list: List<String>): IdentifierParseResult {
         return IdentifierParseResult(
@@ -27,7 +37,6 @@ object IdentifierParser : KoinComponent {
     }
 
     private suspend fun findFile(fileName: String): List<String> {
-        val musicDirectory = Paths.get("", MUSIC_DIRECTORY).toAbsolutePath()
         val musicFile = withContext(Dispatchers.IO) {
             Files.walk(musicDirectory)
                 .asSequence()
