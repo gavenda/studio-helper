@@ -75,7 +75,7 @@ object MusicExtension : Extension() {
         loadModule {
             single<DataSource>(createdAtStart = true) {
                 HikariDataSource(HikariConfig().apply {
-                    maximumPoolSize = Runtime.getRuntime().availableProcessors() / 2
+                    maximumPoolSize = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
                     jdbcUrl = env("MUSIC_DB_URL")
                     username = env("MUSIC_DB_USER")
                     password = env("MUSIC_DB_PASS")

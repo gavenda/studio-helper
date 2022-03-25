@@ -62,7 +62,7 @@ object AniListExtension : Extension() {
         loadModule {
             single<DataSource>(createdAtStart = true) {
                 HikariDataSource(HikariConfig().apply {
-                    maximumPoolSize = Runtime.getRuntime().availableProcessors() / 2
+                    maximumPoolSize = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
                     jdbcUrl = env("ANILIST_DB_URL")
                     username = env("ANILIST_DB_USER")
                     password = env("ANILIST_DB_PASS")

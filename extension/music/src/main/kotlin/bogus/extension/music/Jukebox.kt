@@ -188,7 +188,7 @@ object Jukebox : KoinComponent {
                         key = "jukebox.response.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
-                        replacements = arrayOf(item.exception)
+                        replacements = arrayOf(item.exception?.message ?: "Loading failed")
                     )
                 )
             }
@@ -272,7 +272,7 @@ object Jukebox : KoinComponent {
                         key = "jukebox.response.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
-                        replacements = arrayOf(item.exception)
+                        replacements = arrayOf(item.exception?.message ?: "Loading failed")
                     )
                 )
             }
@@ -452,7 +452,7 @@ object Jukebox : KoinComponent {
                         key = "jukebox.response.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
-                        replacements = arrayOf(item.exception)
+                        replacements = arrayOf(item.exception?.message ?: "Loading failed")
                     )
                 )
             }
