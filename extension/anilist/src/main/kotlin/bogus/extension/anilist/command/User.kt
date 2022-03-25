@@ -175,8 +175,8 @@ internal class UserArgs : KoinComponent, Arguments() {
                     cacheLookup.forEach { choice(it, it) }
                 } else {
                     aniList.findUserNames(input)
-                        .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
+                        .apply { cache[input] = this }
                         .forEach { choice(it, it) }
                 }
             }

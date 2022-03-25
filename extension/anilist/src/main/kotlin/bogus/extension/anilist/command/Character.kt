@@ -85,8 +85,8 @@ internal class CharacterArgs : KoinComponent, Arguments() {
                     cacheLookup.forEach { choice(it, it) }
                 } else {
                     aniList.findCharacterNames(input)
-                        .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
+                        .apply { cache[input] = this }
                         .forEach { choice(it, it) }
                 }
             }

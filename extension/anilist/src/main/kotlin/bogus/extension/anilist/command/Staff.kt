@@ -83,8 +83,8 @@ internal class StaffArgs : KoinComponent, Arguments() {
                     cacheLookup.forEach { choice(it, it) }
                 } else {
                     aniList.findStaffNames(input)
-                        .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
+                        .apply { cache[input] = this }
                         .forEach { choice(it, it) }
                 }
             }
