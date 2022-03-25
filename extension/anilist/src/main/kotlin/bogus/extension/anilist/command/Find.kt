@@ -80,20 +80,20 @@ internal class FindArgs : KoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
+
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime/manga."
         autoComplete {
-            val input = focusedOption.value
-            val cacheLookup = cache[input]
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+                val cacheLookup = cache[input]
 
-            if (cacheLookup != null) {
-                suggestString {
+                if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
-                }
-            } else {
-                suggestString {
+                } else {
                     aniList.findMediaTitles(input)
                         .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
@@ -108,21 +108,22 @@ internal class FindAnimeArgs : KoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
+
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime."
 
         autoComplete {
-            val input = focusedOption.value
-            val cacheLookup = cache[input]
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+                val cacheLookup = cache[input]
 
-            if (cacheLookup != null) {
-                suggestString {
+                if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
-                }
-            } else {
-                suggestString {
+
+                } else {
                     aniList.findMediaTitles(input, MediaType.ANIME)
                         .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
@@ -137,25 +138,27 @@ internal class FindMangaArgs : KoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
+
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the manga."
 
         autoComplete {
-            val input = focusedOption.value
-            val cacheLookup = cache[input]
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
 
-            if (cacheLookup != null) {
-                suggestString {
+                val cacheLookup = cache[input]
+
+                if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
-                }
-            } else {
-                suggestString {
+                } else {
                     aniList.findMediaTitles(input, MediaType.MANGA)
                         .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
                         .forEach { choice(it, it) }
+
                 }
             }
         }

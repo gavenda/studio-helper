@@ -68,20 +68,20 @@ internal class StaffArgs : KoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
+
     val aniList by inject<AniList>()
     val query by string {
         name = "query"
         description = "Name of the anime/manga staff."
         autoComplete {
-            val input = focusedOption.value
-            val cacheLookup = cache[input]
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+                val cacheLookup = cache[input]
 
-            if (cacheLookup != null) {
-                suggestString {
+                if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
-                }
-            } else {
-                suggestString {
+                } else {
                     aniList.findStaffNames(input)
                         .apply { cache[input] = this }
                         .map { it.abbreviate(80) }

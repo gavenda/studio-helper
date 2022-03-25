@@ -4,7 +4,6 @@ import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.db.users
 import bogus.extension.anilist.embed.createUserEmbed
 import bogus.extension.anilist.graphql.AniList
-import bogus.extension.anilist.model.MediaType
 import bogus.util.LRUCache
 import bogus.util.abbreviate
 import bogus.util.action
@@ -160,21 +159,21 @@ internal class UserArgs : KoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
+
     val aniList by inject<AniList>()
     val username by optionalString {
         name = "username"
         description = "AniList username, defaults to your own if linked."
 
         autoComplete {
-            val input = focusedOption.value
-            val cacheLookup = cache[input]
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+                val cacheLookup = cache[input]
 
-            if (cacheLookup != null) {
-                suggestString {
+                if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
-                }
-            } else {
-                suggestString {
+                } else {
                     aniList.findUserNames(input)
                         .apply { cache[input] = this }
                         .map { it.abbreviate(80) }

@@ -76,15 +76,14 @@ internal class CharacterArgs : KoinComponent, Arguments() {
         description = "Name of the anime/manga character."
 
         autoComplete {
-            val input = focusedOption.value
-            val cacheLookup = cache[input]
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+                val cacheLookup = cache[input]
 
-            if (cacheLookup != null) {
-                suggestString {
+                if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
-                }
-            } else {
-                suggestString {
+                } else {
                     aniList.findCharacterNames(input)
                         .apply { cache[input] = this }
                         .map { it.abbreviate(80) }
