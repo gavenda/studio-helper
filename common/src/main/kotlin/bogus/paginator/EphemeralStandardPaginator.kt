@@ -58,8 +58,10 @@ class EphemeralResponseStandardPaginator(
 
         interaction.edit {
             embed { applyPage() }
-
-            this.components = mutableListOf()
+            removeNavigationButtons()
+            with(this@EphemeralResponseStandardPaginator.components) {
+                this@edit.applyToMessage()
+            }
         }
 
         super.destroy()

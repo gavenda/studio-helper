@@ -75,7 +75,10 @@ class PublicFollowUpStandardPaginator(
             } else {
                 embedInteraction?.edit {
                     embed { applyPage() }
-                    components = mutableListOf()
+                    removeNavigationButtons()
+                    with(this@PublicFollowUpStandardPaginator.components) {
+                        this@edit.applyToMessage()
+                    }
                 }
             }
         }

@@ -52,7 +52,7 @@ abstract class StandardPaginator(
     open var nextButton: PublicInteractionButton? = null
 
     /** Button builder representing the button that switches to the next page. **/
-    open var viewOnAniList: LinkInteractionButton? = null
+    open var linkButton: LinkInteractionButton? = null
 
     override suspend fun destroy() {
         runTimeoutCallbacks()
@@ -147,14 +147,14 @@ abstract class StandardPaginator(
     }
 
     suspend fun addLinkButton(linkLabel: String?, embedUrl: String) {
-        viewOnAniList = components.linkButton {
+        linkButton = components.linkButton {
             label = linkLabel
             url = embedUrl
         }
         components.sort()
     }
 
-    private suspend fun removeNavigationButtons() {
+    suspend fun removeNavigationButtons() {
         backButton?.let { components.remove(it) }
         nextButton?.let { components.remove(it) }
         backButton = null
@@ -171,8 +171,8 @@ abstract class StandardPaginator(
         val embedUrl = embedBuilder.url
 
         if (embedUrl != null) {
-            viewOnAniList?.let { components.remove(it) }
-            viewOnAniList = components.linkButton {
+            linkButton?.let { components.remove(it) }
+            linkButton = components.linkButton {
                 label = "View on AniList"
                 url = embedUrl
             }
