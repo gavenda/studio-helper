@@ -2,6 +2,8 @@ plugins {
     id("bogus.kordex")
 }
 
+version = "1.0"
+
 repositories {
     maven {
         name = "DRSchlaubi Releases"
@@ -22,4 +24,10 @@ dependencies {
     implementation("org.ktorm:ktorm-core:3.4.1")
     implementation("org.ktorm:ktorm-support-postgresql:3.4.1")
     runtimeOnly("org.postgresql:postgresql:42.3.1")
+}
+
+tasks {
+    withType<org.gradle.jvm.tasks.Jar> {
+        archiveBaseName.set("bogus-extension-music")
+    }
 }

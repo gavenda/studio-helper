@@ -20,4 +20,8 @@ tasks {
     getByName("deploy") {
         dependsOn(getByName("installDist"))
     }
+
+    withType<org.gradle.jvm.tasks.Jar> {
+        archiveBaseName.set("bogus-bot-basura")
+    }
 }
