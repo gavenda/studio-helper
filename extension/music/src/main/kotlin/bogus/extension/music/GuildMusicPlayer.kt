@@ -16,8 +16,10 @@ import dev.schlaubi.lavakord.audio.player.Track
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -28,12 +30,16 @@ import java.util.concurrent.LinkedBlockingDeque
 /**
  * The guild's music player.
  */
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val tp by inject<TranslationsProvider>()
     private val queue = LinkedBlockingDeque<Track>()
     private val log = KotlinLogging.logger {}
     private val link = Lava.linkFor(guildId)
-    private val mutex = Mutex()
+    private val queueUpdatePublisher = MutableSharedFlow<Long>(
+        extraBufferCapacity = Channel.UNLIMITED
+    )
+    private val queueUpdates = queueUpdatePublisher.asSharedFlow()
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
             log.error { """msg=Track error" error="${exception.message}"""" }
@@ -75,6 +81,27 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
 
             updateBoundQueue()
         }
+    }
+
+    init {
+        queueUpdates
+            .debounce(250)
+            .onEach {
+                if (boundPaginator == null) return@onEach
+
+                val embedBuilders = buildQueueMessage()
+                val mutablePages = (boundPaginator?.pages as MutablePages)
+
+                mutablePages.clear()
+
+                embedBuilders.forEach { embedBuilder ->
+                    mutablePages.addPage(Page { embedBuilder() })
+                }
+
+                boundPaginator?.send()
+                log.debug { "Queue updated" }
+            }
+            .launchIn(CoroutineScope(Dispatchers.IO))
     }
 
     private val trackAttempts = ConcurrentHashMap<String, Int>()
@@ -229,7 +256,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
      * Plays a song from the queue. Not to be confused with [resume] and [pause].
      * @return whether we started playing
      */
-    suspend fun attemptToPlay(): Boolean = mutex.withLock {
+    suspend fun attemptToPlay(): Boolean {
         if (playing.not()) {
             val track = queue.poll() ?: return false
             if (track.isSeekable) {
@@ -262,20 +289,8 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         }
     }
 
-    private val updateBoundQueue = debounce(250) {
-        if (boundPaginator == null) return@debounce
-
-        val embedBuilders = buildQueueMessage()
-        val mutablePages = (boundPaginator?.pages as MutablePages)
-
-        mutablePages.clear()
-
-        embedBuilders.forEach { embedBuilder ->
-            mutablePages.addPage(Page { embedBuilder() })
-        }
-
-        boundPaginator?.send()
-        log.debug { "Queue updated" }
+    private fun updateBoundQueue() {
+        queueUpdatePublisher.tryEmit(System.currentTimeMillis())
     }
 
     suspend fun bind(textChannel: MessageChannelBehavior): Snowflake? {
@@ -418,7 +433,10 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
         val identifier = player.playingTrack?.identifier
 
         return {
-            title = "Vivy's Song List"
+            title = tp.translate(
+                key = "jukebox.queue-list",
+                bundleName = TRANSLATION_BUNDLE
+            )
             color = Color(0x00FFFF)
             description = embedDescription()
             field {
