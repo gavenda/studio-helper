@@ -94,7 +94,7 @@ internal class FindArgs : KoinComponent, Arguments() {
                 if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
                 } else {
-                    aniList.findMediaTitles(input)
+                    aniList.findMediaTitlesAsString(input)
                         .map { it.abbreviate(80) }
                         .apply { cache[input] = this }
                         .forEach { choice(it, it) }
@@ -124,7 +124,7 @@ internal class FindAnimeArgs : KoinComponent, Arguments() {
                     cacheLookup.forEach { choice(it, it) }
 
                 } else {
-                    aniList.findMediaTitles(input, MediaType.ANIME)
+                    aniList.findMediaTitlesAsString(input, MediaType.ANIME)
                         .map { it.abbreviate(80) }
                         .apply { cache[input] = this }
                         .forEach { choice(it, it) }
@@ -154,7 +154,7 @@ internal class FindMangaArgs : KoinComponent, Arguments() {
                 if (cacheLookup != null) {
                     cacheLookup.forEach { choice(it, it) }
                 } else {
-                    aniList.findMediaTitles(input, MediaType.MANGA)
+                    aniList.findMediaTitlesAsString(input, MediaType.MANGA)
                         .map { it.abbreviate(80) }
                         .apply { cache[input] = this }
                         .forEach { choice(it, it) }

@@ -15,6 +15,7 @@ interface DbGuild : Entity<DbGuild> {
     var discordGuildId: Long
     var hentai: Boolean
     var locale: String
+    var notificationChannelId: Long
 }
 
 object DbGuilds : Table<DbGuild>("guild") {
@@ -22,6 +23,7 @@ object DbGuilds : Table<DbGuild>("guild") {
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }
     val hentai = boolean("hentai").bindTo { it.hentai }
     val locale = varchar("locale").bindTo { it.locale }
+    val notificationChannelId = long("notification_channel_id").bindTo { it.notificationChannelId }
 }
 
 val Database.guilds get() = this.sequenceOf(DbGuilds)

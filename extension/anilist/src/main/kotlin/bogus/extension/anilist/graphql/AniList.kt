@@ -1,18 +1,20 @@
 package bogus.extension.anilist.graphql
 
+import bogus.extension.anilist.model.*
+
 interface AniList {
 
     /**
      * Finds an AniList user by their name, returning only their id and name.
      * @param name name to look up
      */
-    suspend fun findUserByName(name: String): bogus.extension.anilist.model.User?
+    suspend fun findUserByName(name: String): User?
 
     /**
      * Find user statistics by their name.
      * @param name name to look up
      */
-    suspend fun findUserStatisticsByName(name: String): bogus.extension.anilist.model.User?
+    suspend fun findUserStatisticsByName(name: String): User?
 
     /**
      * Finds a media based on query.
@@ -22,9 +24,9 @@ interface AniList {
      */
     suspend fun findMedia(
         query: String,
-        type: bogus.extension.anilist.model.MediaType? = null,
+        type: MediaType? = null,
         hentai: Boolean = false
-    ): List<bogus.extension.anilist.model.Media>?
+    ): List<Media>?
 
     /**
      * Finds a media based on its ranking.
@@ -36,16 +38,21 @@ interface AniList {
      */
     suspend fun findMediaByRanking(
         amount: Int,
-        formatIn: List<bogus.extension.anilist.model.MediaFormat>?,
-        season: bogus.extension.anilist.model.MediaSeason?,
+        formatIn: List<MediaFormat>?,
+        season: MediaSeason?,
         seasonYear: Int?,
         hentai: Boolean = false
-    ): List<bogus.extension.anilist.model.Media>?
+    ): List<Media>?
+
+    suspend fun findMediaTitlesAsString(
+        query: String,
+        type: MediaType? = null,
+    ): List<String>
 
     suspend fun findMediaTitles(
         query: String,
-        type: bogus.extension.anilist.model.MediaType? = null,
-    ): List<String>
+        type: MediaType? = null,
+    ): List<Media>?
 
     suspend fun findCharacterNames(
         query: String
@@ -65,17 +72,23 @@ interface AniList {
     suspend fun findScoreByUsersAndMedias(
         userIds: List<Long>?,
         mediaIds: List<Long>?
-    ): List<bogus.extension.anilist.model.MediaList>?
+    ): List<MediaList>?
 
     /**
      * Finds a character based on query.
      * @param query the character query
      */
-    suspend fun findCharacter(query: String?): List<bogus.extension.anilist.model.Character>?
+    suspend fun findCharacter(query: String?): List<Character>?
 
     /**
      * Finds an anime/media staff based on query.
      * @param query the character query
      */
-    suspend fun findStaff(query: String?): List<bogus.extension.anilist.model.Staff>?
+    suspend fun findStaff(query: String?): List<Staff>?
+
+    /**
+     * Find airing media.
+     * @param mediaIds media ids to search.
+     */
+    suspend fun findAiringMedia(mediaIds: List<Long>): List<AiringSchedule>?
 }

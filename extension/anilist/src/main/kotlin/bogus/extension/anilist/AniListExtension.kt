@@ -1,24 +1,41 @@
 package bogus.extension.anilist
 
 import bogus.extension.anilist.command.*
+import bogus.extension.anilist.coroutines.AiringSchedulePoller
+import bogus.extension.anilist.db.airingAnimes
+import bogus.extension.anilist.db.guilds
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.graphql.AniListGraphQL
+import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import dev.kord.core.event.gateway.ReadyEvent
+import dev.kord.common.Color
+import dev.kord.common.entity.Snowflake
+import dev.kord.core.behavior.GuildBehavior
+import dev.kord.core.behavior.channel.createEmbed
+import dev.kord.core.behavior.getChannelOf
+import dev.kord.core.entity.channel.GuildMessageChannel
+import dev.kord.core.event.guild.GuildCreateEvent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.flywaydb.core.Flyway
 import org.koin.core.component.inject
 import org.ktorm.database.Database
+import org.ktorm.dsl.eq
+import org.ktorm.entity.filter
+import org.ktorm.entity.first
+import org.ktorm.entity.map
 import org.ktorm.support.postgresql.PostgreSqlDialect
+import java.util.concurrent.Executors
 import javax.sql.DataSource
+import kotlin.time.Duration.Companion.hours
 
 object AniListExtension : Extension() {
     override val name = "anilist"
@@ -26,17 +43,65 @@ object AniListExtension : Extension() {
 
     val log = KotlinLogging.logger { }
 
+    private val pollingQueueDispatcher = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        .asCoroutineDispatcher()
+    private val pollers = mutableMapOf<Snowflake, AiringSchedulePoller>()
+
+    init {
+        setupDatabase()
+        setupGraphQL()
+    }
+
     override suspend fun setup() {
         setupEvents()
         setupCommands()
     }
 
     private suspend fun setupEvents() {
-        event<ReadyEvent> {
+        event<GuildCreateEvent> {
             action {
-                setupDatabase()
-                setupGraphQL()
+                setupPolling(event.guild)
             }
+        }
+    }
+
+    fun removeAnimeFromPolling(guildId: Snowflake, mediaId: Long) {
+        val poller = pollers[guildId] ?: return
+        log.info { """msg="Remove airing anime from polling", guild=$guildId, media=$mediaId""" }
+        poller.removeMediaId(mediaId)
+
+        if (poller.mediaIds.isEmpty()) {
+            poller.close()
+            pollers.remove(guildId)
+        }
+    }
+
+    suspend fun setupPolling(guild: GuildBehavior) {
+        val db by inject<Database>()
+        val mediaIds = db.airingAnimes
+            .filter { it.discordGuildId eq guild.idLong }
+            .map { it.mediaId }
+
+        if (mediaIds.isNotEmpty()) {
+            log.info { """msg="Begin airing anime polling", guild=${guild.id}""" }
+
+            val poller = AiringSchedulePoller(pollingQueueDispatcher, mediaIds)
+            poller.poll(1.hours).collect { airingSchedules ->
+                val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
+                airingSchedules.forEach { airingSchedule ->
+                    val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
+                    val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
+                    channel.createEmbed {
+                        title = "New Episode Aired!"
+                        description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
+                        color = Color(0xFF0000)
+                        thumbnail {
+                            url = airingSchedule.media.coverImage?.extraLarge ?: ""
+                        }
+                    }
+                }
+            }
+            pollers.computeIfAbsent(guild.id) { poller }
         }
     }
 
@@ -88,6 +153,7 @@ object AniListExtension : Extension() {
         character()
         find()
         link()
+        notification()
         ranking()
         staff()
         user()
