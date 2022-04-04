@@ -49,6 +49,14 @@ class AiringSchedulePoller(
         }.flowOn(coroutineDispatcher)
     }
 
+    fun setupMediaIds(mediaIds: List<Long>) {
+        mediaIds.forEach {
+            mediaIdEpisode.putIfAbsent(it, 0)
+        }
+
+        log.info { """msg="Poller updated", mediaIds="$mediaIds"""" }
+    }
+
     fun removeMediaId(mediaId: Long) {
         mediaIdEpisode.remove(mediaId)
     }

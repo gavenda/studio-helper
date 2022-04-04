@@ -18,8 +18,13 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalChanne
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.types.respond
+import com.kotlindiscord.kord.extensions.utils.botHasPermissions
 import dev.kord.common.entity.ChannelType
+import dev.kord.common.entity.Permission
 import dev.kord.core.behavior.interaction.suggestInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
@@ -63,7 +68,10 @@ suspend fun AniListExtension.notification() {
                     }
 
                     db.airingAnimes.add(newDbAiringAnime)
-                    setupPolling(guild)
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        setupPolling(guild)
+                    }
 
                     respond {
                         content = translate("notification.airingAnime.add.success")
@@ -109,14 +117,29 @@ suspend fun AniListExtension.notification() {
             action {
                 val guild = guild ?: return@action
                 val notificationChannel = arguments.channel ?: channel
-                val dbGuild = db.guilds.firstOrNull { it.discordGuildId eq guild.idLong } ?: DbGuild {
-                    discordGuildId = guild.idLong
-                    hentai = false
-                    locale = Locale.getDefault().toLanguageTag()
+                val notificationChannelIdLong = notificationChannel.id.value.toLong()
+                val dbGuild = db.guilds.firstOrNull { it.discordGuildId eq guild.idLong }
+                val guildChannel = guild.getChannel(notificationChannel.id)
+
+                if (!guildChannel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
+                    respond {
+                        content = translate("notification.bind.response.noPermission")
+                    }
+                    return@action
                 }
 
-                dbGuild.notificationChannelId = notificationChannel.id.value.toLong()
-                dbGuild.flushChanges()
+                if (dbGuild != null) {
+                    dbGuild.notificationChannelId = notificationChannelIdLong
+                    dbGuild.flushChanges()
+                } else {
+                    val newDbGuild = DbGuild {
+                        discordGuildId = guild.idLong
+                        hentai = false
+                        locale = Locale.getDefault().toLanguageTag()
+                        notificationChannelId = notificationChannelIdLong
+                    }
+                    db.guilds.add(newDbGuild)
+                }
 
                 respond {
                     content = translate("notification.bind.response", notificationChannel.mention)

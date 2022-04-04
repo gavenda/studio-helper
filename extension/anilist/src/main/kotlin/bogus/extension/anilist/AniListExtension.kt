@@ -9,11 +9,13 @@ import bogus.extension.anilist.graphql.AniListGraphQL
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
+import com.kotlindiscord.kord.extensions.utils.botHasPermissions
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.kord.common.Color
+import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.GuildBehavior
 import dev.kord.core.behavior.channel.createEmbed
@@ -22,7 +24,10 @@ import dev.kord.core.entity.channel.GuildMessageChannel
 import dev.kord.core.event.guild.GuildCreateEvent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.flywaydb.core.Flyway
@@ -45,6 +50,7 @@ object AniListExtension : Extension() {
 
     private val pollingQueueDispatcher = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
         .asCoroutineDispatcher()
+    private val notificationPollDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val pollers = mutableMapOf<Snowflake, AiringSchedulePoller>()
 
     init {
@@ -60,7 +66,9 @@ object AniListExtension : Extension() {
     private suspend fun setupEvents() {
         event<GuildCreateEvent> {
             action {
-                setupPolling(event.guild)
+                CoroutineScope(Dispatchers.IO).launch {
+                    setupPolling(event.guild)
+                }
             }
         }
     }
@@ -83,25 +91,46 @@ object AniListExtension : Extension() {
             .map { it.mediaId }
 
         if (mediaIds.isNotEmpty()) {
-            log.info { """msg="Begin airing anime polling", guild=${guild.id}""" }
+            log.info { """msg="Begin airing anime polling", guild=${guild.id}, mediaIds="$mediaIds"""" }
+
+            val runningPoller = pollers[guild.id]
+
+            if (runningPoller != null) {
+                runningPoller.setupMediaIds(mediaIds)
+                return
+            }
 
             val poller = AiringSchedulePoller(pollingQueueDispatcher, mediaIds)
-            poller.poll(1.hours).collect { airingSchedules ->
-                val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
-                airingSchedules.forEach { airingSchedule ->
-                    val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
-                    val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
-                    channel.createEmbed {
-                        title = "New Episode Aired!"
-                        description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
-                        color = Color(0xFF0000)
-                        thumbnail {
-                            url = airingSchedule.media.coverImage?.extraLarge ?: ""
+            pollers.computeIfAbsent(guild.id) { poller }
+
+            CoroutineScope(notificationPollDispatcher).launch {
+                poller.poll(1.hours).collect { airingSchedules ->
+                    val titles = airingSchedules.mapNotNull { it.media.title?.english ?: it.media.title?.romaji }
+
+                    log.info { """msg="Collecting airing schedules", guild=${guild.id}, schedules="$titles"""" }
+
+                    val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
+                    airingSchedules.forEach { airingSchedule ->
+                        val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
+                        val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
+
+                        if (!channel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
+                            return@forEach
+                        }
+
+                        channel.createEmbed {
+                            title = "New Episode Aired!"
+                            description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
+                            color = Color(0xFF0000)
+                            thumbnail {
+                                url = airingSchedule.media.coverImage?.extraLarge ?: ""
+                            }
                         }
                     }
                 }
             }
-            pollers.computeIfAbsent(guild.id) { poller }
+        } else {
+            log.warn { """msg="No media id given, will not poll", guild=${guild.id}""" }
         }
     }
 
