@@ -8,13 +8,12 @@ import dev.schlaubi.lavakord.audio.player.Track
 import dev.schlaubi.lavakord.kord.getLink
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Keeps track of guild links and track metadata.
  */
 object Lava : KoinComponent {
-    private val trackMetas = ConcurrentHashMap<Track, AudioTrackMeta>()
+    private val trackMetas = mutableMapOf<Track, AudioTrackMeta>()
     private val lavaKord by inject<LavaKord>()
 
     /**
@@ -37,8 +36,8 @@ object Lava : KoinComponent {
      * Retrieves a metadata for this track.
      * @param track the track to retrieve a metadata from
      */
-    fun metaFor(track: Track): AudioTrackMeta? {
-        return trackMetas[track]
+    fun metaFor(track: Track): AudioTrackMeta {
+        return trackMetas[track] ?: AudioTrackMeta("", Snowflake.min)
     }
 
     /**
@@ -47,6 +46,6 @@ object Lava : KoinComponent {
      * @param meta the audio track metadata
      */
     fun attachMeta(track: Track, meta: AudioTrackMeta) {
-        trackMetas.computeIfAbsent(track) { meta }
+        trackMetas.putIfAbsent(track, meta)
     }
 }

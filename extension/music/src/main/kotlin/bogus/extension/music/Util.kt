@@ -54,7 +54,7 @@ val GuildBehavior.player: GuildMusicPlayer
  * Audio track metadata.
  */
 var Track.meta
-    get(): AudioTrackMeta = Lava.metaFor(this) ?: error("Meta not found")
+    get(): AudioTrackMeta = Lava.metaFor(this)
     set(value) {
         Lava.attachMeta(this, value)
     }
