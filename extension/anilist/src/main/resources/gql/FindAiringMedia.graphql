@@ -1,4 +1,4 @@
-query ($page: Int, $perPage: Int, $mediaIn: [Int], $episodeGreaterThan: Int) {
+query ($page: Int, $perPage: Int, $mediaIn: [Int]) {
   Page(page: $page, perPage: $perPage) {
     pageInfo {
       total
@@ -7,7 +7,7 @@ query ($page: Int, $perPage: Int, $mediaIn: [Int], $episodeGreaterThan: Int) {
       hasNextPage
       perPage
     }
-    airingSchedules(mediaId_in: $mediaIn, episode_greater: $episodeGreaterThan) {
+    airingSchedules(mediaId_in: $mediaIn, sort: EPISODE_DESC, notYetAired: false) {
       id,
       episode,
       mediaId,

@@ -105,7 +105,10 @@ object AniListExtension : Extension() {
 
             CoroutineScope(notificationPollDispatcher).launch {
                 poller.poll(1.hours).collect { airingSchedules ->
-                    val titles = airingSchedules.mapNotNull { it.media.title?.english ?: it.media.title?.romaji }
+                    val titles = airingSchedules
+                        .sortedByDescending { it.episode }
+                        .distinctBy { it.mediaId }
+                        .mapNotNull { it.media.title?.english ?: it.media.title?.romaji }
 
                     log.info { """msg="Collecting airing schedules", guild=${guild.id}, schedules="$titles"""" }
 

@@ -27,21 +27,18 @@ class AiringSchedulePoller(
     override fun poll(delay: Duration): Flow<List<AiringSchedule>> {
         return channelFlow {
             while (!isClosedForSend) {
+                // Initial
                 if (mediaIdList.isEmpty()) {
-                    log.warn { """msg="Media ids is empty, polling for nothing"""" }
+                    aniList.findAiringMedia(mediaIdList)?.forEach {
+                        mediaIdEpisode[it.mediaId] = it.episode
+                    }
                     send(emptyList())
                     return@channelFlow
                 }
                 delay(delay)
                 val airingSchedules = aniList.findAiringMedia(mediaIdList)
                 if (airingSchedules != null) {
-                    val updatedAiringSchedules = updateMediaEpisodes(airingSchedules)
-                    // Don't send an update for first run
-                    if (mediaIdEpisode.isEmpty()) {
-                        send(emptyList())
-                    } else {
-                        send(updatedAiringSchedules)
-                    }
+                    send(updateMediaEpisodes(airingSchedules))
                 } else {
                     send(emptyList())
                 }
@@ -69,7 +66,7 @@ class AiringSchedulePoller(
         airingSchedule.forEach {
             val episodeCount = mediaIdEpisode.getOrDefault(it.mediaId, 0)
             if (episodeCount < it.episode) {
-                mediaIdEpisode[it.mediaId] = episodeCount
+                mediaIdEpisode[it.mediaId] = it.episode
                 airingScheduleUpdate.add(it)
             }
         }
