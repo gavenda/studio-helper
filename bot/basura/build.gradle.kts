@@ -1,6 +1,5 @@
 plugins {
     id("bogus.kordex-bot")
-    id("org.hidetake.ssh") version "2.10.1"
 }
 
 version = "2.2"
@@ -10,17 +9,12 @@ application {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation(project(":extension:about"))
     implementation(project(":extension:anilist"))
 }
 
-apply(from = "ssh.gradle")
-
 tasks {
-    getByName("deploy") {
-        dependsOn(getByName("installDist"))
-    }
-
     withType<org.gradle.jvm.tasks.Jar> {
         archiveBaseName.set("bogus-bot-basura")
     }
