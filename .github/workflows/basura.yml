@@ -46,14 +46,15 @@ jobs:
       - name: Build Distribution
         run: ./gradlew bot:basura:installDist
       - name: Deploy to Host
-        uses: marcodallasanta/ssh-scp-deploy@v1.2.0
+        uses: yeshan333/rsync-deploy-action@v1.0.0
         with:
-          local: ./bot/basura/build/install/basura
-          remote: /bot
-          host: ${{secrets.HOST}}
-          port: ${{secrets.PORT}}
-          user: ${{secrets.USER}}
-          key: ${{secrets.KEY}}
+          source_path: ./bot/basura/build/install/basura
+          destination_path: /bot
+          remote_server_ip: ${{secrets.HOST}}
+          ssh_port: ${{secrets.PORT}}
+          ssh_login_username: ${{secrets.USER}}
+          ssh_private_key: ${{secrets.KEY}}
+          rsync_args: -o -g
       # Restart Remote
       - name: Restart Discord Bot
         uses: garygrossgarten/github-action-ssh@v0.6.3
