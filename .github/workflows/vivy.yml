@@ -48,7 +48,7 @@ jobs:
       - name: Deploy to Host
         uses: marcodallasanta/ssh-scp-deploy@v1.2.0
         with:
-          local: ./bot/basura/build/install/vivy
+          local: ./bot/vivy/build/install/vivy
           remote: /bot
           host: ${{secrets.HOST}}
           port: ${{secrets.PORT}}
