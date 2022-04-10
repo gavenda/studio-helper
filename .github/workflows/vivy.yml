@@ -1,0 +1,65 @@
+# This is a basic workflow to help you get started with Actions
+name: Vivy-CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+    paths: 
+      - 'bot/vivy/**'
+      - 'extension/about/**'
+      - 'extension/music/**'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+      # Cache Gradle dependencies
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts') }}
+      # Cache Gradle Wrapper
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      # Build
+      - name: Build Distribution
+        run: ./gradlew bot:vivy:installDist
+      - name: Deploy to Host
+        uses: marcodallasanta/ssh-scp-deploy@v1.2.0
+        with:
+          local: ./bot/basura/build/install/vivy
+          remote: /bot
+          host: ${{secrets.HOST}}
+          port: ${{secrets.PORT}}
+          user: ${{secrets.USER}}
+          key: ${{secrets.KEY}}
+      # Restart Remote
+      - name: Restart Discord Bot
+        uses: garygrossgarten/github-action-ssh@v0.6.3
+        with:
+          command: systemctl restart vivy
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USER}}
+          port: ${{secrets.PORT}}
+          privateKey: ${{secrets.KEY}}
