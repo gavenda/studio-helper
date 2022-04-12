@@ -5,7 +5,7 @@ plugins {
 version = "1.0"
 
 application {
-    mainClass.set("bogus.bot.basura.AppKt")
+    mainClass.set("bogus.bot.parrot.AppKt")
 }
 
 dependencies {
