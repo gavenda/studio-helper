@@ -1,3 +1,5 @@
 package bogus.bot.parrot
 
-val AUDIO_FILES = listOf<String>()
+val AUDIO_FILES = listOf(
+    "umbao_scammed.mp3"
+)
