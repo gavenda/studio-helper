@@ -8,8 +8,6 @@ User=basura
 Group=basura
 ExecStart=/bin/bash /bot/basura/bin/basura
 WorkingDirectory=/bot/basura
-EnvironmentFile=/bot/basura/.env
-Restart=always
 
 # Note: Sending a SIGINT (as in CTRL-C) results in an exit code of 130 (which is normal)
 KillMode=process

@@ -4,13 +4,6 @@ plugins {
 
 version = "1.0"
 
-repositories {
-    maven {
-        name = "DRSchlaubi Releases"
-        url = uri("https://schlaubi.jfrog.io/artifactory/lavakord")
-    }
-}
-
 dependencies {
     implementation(project(":common"))
     implementation("dev.schlaubi.lavakord:kord:3.5.1")

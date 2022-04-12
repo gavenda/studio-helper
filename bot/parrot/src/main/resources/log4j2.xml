@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <properties>
+        <property name="name">parrot</property>
+        <property name="pattern">%highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green bold, DEBUG=green, TRACE=cyan} %logger{-2} - %m%n</property>
+        <property name="log4j.skipJansi" value="false"/>
+    </properties>
+    <appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+                <disableAnsi>false</disableAnsi>
+            </PatternLayout>
+        </Console>
+        <RollingFile name="rolling" fileName="log/${name}.log"
+                     filePattern="log/$${date:yyyy-MM}/${name}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy /><!-- Rotated everyday -->
+                <SizeBasedTriggeringPolicy size="100 MB"/> <!-- Or every 100 MB -->
+            </Policies>
+        </RollingFile>
+    </appenders>
+    <loggers>
+        <logger name="bogus" additivity="false">
+            <appender-ref ref="console"/>
+        </logger>
+        <root level="debug">
+            <appender-ref ref="console"/>
+            <appender-ref ref="rolling"/>
+        </root>
+    </loggers>
+</configuration>

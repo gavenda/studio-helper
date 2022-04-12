@@ -1,13 +1,13 @@
 [Unit]
-Description=Vivy
+Description=Parrot
 After=network-online.target
 
 [Service]
 Type=simple
-User=vivy
-Group=vivy
-ExecStart=/bin/bash /bot/vivy/bin/vivy
-WorkingDirectory=/bot/vivy
+User=parrot
+Group=parrot
+ExecStart=/bin/bash /bot/parrot/bin/parrot
+WorkingDirectory=/bot/parrot
 
 # Note: Sending a SIGINT (as in CTRL-C) results in an exit code of 130 (which is normal)
 KillMode=process

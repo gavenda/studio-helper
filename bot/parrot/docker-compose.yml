@@ -1,0 +1,6 @@
+version: '3'
+services:
+  parrot:
+    build: .
+    env_file:
+      - .env

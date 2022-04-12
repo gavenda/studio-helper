@@ -5,10 +5,6 @@ plugins {
     kotlin("jvm")
 }
 
-repositories {
-    mavenCentral()
-}
-
 kotlin {
     jvmToolchain {
         (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
@@ -16,7 +12,27 @@ kotlin {
 }
 
 allprojects {
-    tasks.withType<KotlinCompile>().configureEach {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "Sonatype Snapshots"
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
+        maven {
+            name = "Dv8tion"
+            url = uri("https://m2.dv8tion.net/releases")
+        }
+        maven {
+            name = "Kotlin Discord"
+            url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
+        }
+        maven {
+            name = "DRSchlaubi Releases"
+            url = uri("https://schlaubi.jfrog.io/artifactory/lavakord")
+        }
+    }
+
+    tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
             freeCompilerArgs = listOf(
