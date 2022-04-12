@@ -109,7 +109,7 @@ class AnnouncerExtension(
                         val (audioFileName, audioFileExt) = audioFile.split(".")
                         val audioFileStream = object {}.javaClass.getResourceAsStream("/${audioFile}") ?: error("Cannot extract file")
 
-                        filePaths[audioFileName] = Files.createTempFile(audioFileName, audioFileExt).apply {
+                        filePaths[audioFileName] = Files.createTempFile(audioFileName, ".$audioFileExt").apply {
                             Files.write(this, audioFileStream.readAllBytes())
                             log.info { """msg="Audio file extracted", dir="$this"""" }
                         }
