@@ -8,6 +8,7 @@ include(
     "bot:basura",
     "extension:about",
     "extension:anilist",
+    "extension:aniradio",
     "extension:announcer",
     "extension:counter",
     "extension:music",

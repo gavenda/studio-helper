@@ -11,6 +11,7 @@ application {
 dependencies {
     implementation(project(":common"))
     implementation(project(":extension:about"))
+    implementation(project(":extension:aniradio"))
     implementation(project(":extension:anilist"))
 }
 

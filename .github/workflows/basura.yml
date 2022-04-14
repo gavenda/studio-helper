@@ -5,6 +5,7 @@ on:
     paths: 
       - 'bot/basura/**'
       - 'extension/about/**'
+      - 'extension/aniradio/**'
       - 'extension/anilist/**'
   workflow_dispatch:
 jobs:

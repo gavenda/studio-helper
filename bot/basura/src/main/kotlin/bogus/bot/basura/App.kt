@@ -2,6 +2,7 @@ package bogus.bot.basura
 
 import bogus.extension.about.AboutExtension
 import bogus.extension.anilist.AniListExtension
+import bogus.extension.aniradio.AniRadioExtension
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -16,6 +17,7 @@ suspend fun main() {
         extensions {
             add(::AboutExtension)
             add { AniListExtension }
+            add(::AniRadioExtension)
 
             help {
                 enableBundledExtension = false
