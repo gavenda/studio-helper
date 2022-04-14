@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to Host
         uses: yeshan333/rsync-deploy-action@v1.0.0
         with:
-          source_path: .
+          source_path: ./parrot
           destination_path: /bot
           remote_server_ip: ${{secrets.HOST}}
           ssh_port: ${{secrets.PORT}}
