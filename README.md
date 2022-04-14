@@ -1,3 +1,7 @@
+[![Basura](https://github.com/gavenda/studio-helper/actions/workflows/basura.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/basura.yml)
+[![Vivy](https://github.com/gavenda/studio-helper/actions/workflows/vivy.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/vivy.yml)
+[![Parrot](https://github.com/gavenda/studio-helper/actions/workflows/parrot.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/parrot.yml)
+
 # Studio Helper Bots
 An all-in-one repository for the Discord server I am making bots in.
 
