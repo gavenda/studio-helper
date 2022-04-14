@@ -1,61 +1,59 @@
-# This is a basic workflow to help you get started with Actions
-name: Vivy-CI
-
-# Controls when the workflow will run
+name: Vivy
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
     paths: 
       - 'bot/vivy/**'
       - 'extension/about/**'
       - 'extension/music/**'
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  deploy:
-    # The type of runner that the job will run on
+  build:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
+          distribution: adopt
           java-version: 11
-      # Cache Gradle dependencies
       - name: Setup Gradle Dependencies Cache
         uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts') }}
-      # Cache Gradle Wrapper
       - name: Setup Gradle Wrapper Cache
         uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      # Build
       - name: Build Distribution
         run: ./gradlew bot:vivy:installDist
+      - name: Upload Distribution
+        uses: actions/upload-artifact@v3
+        with:
+          name: vivy
+          path: ./bot/vivy/build/install/vivy
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Distribution
+        uses: actions/download-artifact@v3
+        with:
+          name: vivy
+          path: ./vivy
       - name: Deploy to Host
         uses: yeshan333/rsync-deploy-action@v1.0.0
         with:
-          source_path: ./bot/vivy/build/install/vivy
+          source_path: .
           destination_path: /bot
           remote_server_ip: ${{secrets.HOST}}
           ssh_port: ${{secrets.PORT}}
           ssh_login_username: ${{secrets.USER}}
           ssh_private_key: ${{secrets.KEY}}
           rsync_args: -o -g
-      # Restart Remote
       - name: Restart Discord Bot
         uses: garygrossgarten/github-action-ssh@v0.6.3
         with:
