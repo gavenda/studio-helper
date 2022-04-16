@@ -46,6 +46,8 @@ abstract class QueuePaginator(
         null
     }
 
+    val numberOfPages get() = pages.groups[currentGroup]?.size?.minus(1) ?: 0
+
     open var playPauseButton: PublicInteractionButton? = null
     open var skipButton: PublicInteractionButton? = null
     open var shuffleButton: PublicInteractionButton? = null
@@ -246,7 +248,7 @@ abstract class QueuePaginator(
             return
         }
 
-        if (page < 0 || page > pages.groups[currentGroup]!!.size - 1) {
+        if (page < 0 || page > numberOfPages) {
             return
         }
 
@@ -265,7 +267,7 @@ abstract class QueuePaginator(
 
             action(Dispatchers.IO) {
                 if (currentPageNum == 0) {
-                    goToPage(pages.groups[currentGroup]!!.size - 1)
+                    goToPage(numberOfPages)
                 } else {
                     previousPage()
                 }
@@ -281,7 +283,7 @@ abstract class QueuePaginator(
             emoji(EmojiNext)
 
             action(Dispatchers.IO) {
-                if (currentPageNum >= pages.groups[currentGroup]!!.size - 1) {
+                if (currentPageNum >= numberOfPages) {
                     goToPage(0)
                 } else {
                     nextPage()
@@ -313,6 +315,14 @@ abstract class QueuePaginator(
             repeatSingleButton?.emoji(EmojiRepeatSingleOn)
         } else {
             repeatSingleButton?.emoji(EmojiRepeatSingle)
+        }
+
+        if (numberOfPages > 0) {
+            nextButton?.enable()
+            backButton?.enable()
+        } else {
+            nextButton?.disable()
+            backButton?.disable()
         }
     }
 }
