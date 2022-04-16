@@ -25,20 +25,16 @@ class AiringSchedulePoller(
     val mediaIds get() = mediaIdEpisode.keys.toList()
 
     override fun poll(delay: Duration): Flow<List<AiringSchedule>> {
+        runBlocking {
+            aniList.findAiringMedia(mediaIdList)?.forEach {
+                updateMediaEpisode(it.mediaId, it.episode)
+            }
+
+            log.info { """msg="Initialized media list"""" }
+        }
+
         return channelFlow {
             while (!isClosedForSend) {
-                // Initial
-                if (mediaIdList.isEmpty()) {
-                    log.info { """msg="Initialized media list"""" }
-
-                    aniList.findAiringMedia(mediaIdList)?.forEach {
-                        updateMediaEpisode(it.mediaId, it.episode)
-                    }
-                    send(emptyList())
-                    return@channelFlow
-                }
-                delay(delay)
-
                 log.info { """msg="Fetching latest airing media"""" }
 
                 val airingSchedules = aniList.findAiringMedia(mediaIdList)
@@ -47,6 +43,8 @@ class AiringSchedulePoller(
                 } else {
                     send(emptyList())
                 }
+
+                delay(delay)
             }
         }.flowOn(coroutineDispatcher)
     }
