@@ -29,16 +29,21 @@ class AiringSchedulePoller(
             while (!isClosedForSend) {
                 // Initial
                 if (mediaIdList.isEmpty()) {
+                    log.info { """msg="Initialized media list"""" }
+
                     aniList.findAiringMedia(mediaIdList)?.forEach {
-                        mediaIdEpisode[it.mediaId] = it.episode
+                        updateMediaEpisode(it.mediaId, it.episode)
                     }
                     send(emptyList())
                     return@channelFlow
                 }
                 delay(delay)
+
+                log.info { """msg="Fetching latest airing media"""" }
+
                 val airingSchedules = aniList.findAiringMedia(mediaIdList)
                 if (airingSchedules != null) {
-                    send(updateMediaEpisodes(airingSchedules))
+                    send(airingSchedules.filter { updateMediaEpisode(it.mediaId, it.episode) })
                 } else {
                     send(emptyList())
                 }
@@ -46,6 +51,10 @@ class AiringSchedulePoller(
         }.flowOn(coroutineDispatcher)
     }
 
+    /**
+     * Setup media ids
+     * @param mediaIds the media ids
+     */
     fun setupMediaIds(mediaIds: List<Long>) {
         mediaIds.forEach {
             mediaIdEpisode.putIfAbsent(it, 0)
@@ -54,23 +63,25 @@ class AiringSchedulePoller(
         log.info { """msg="Poller updated", mediaIds="$mediaIds"""" }
     }
 
+    /**
+     * Remove media id
+     * @param mediaId the media id to remove
+     */
     fun removeMediaId(mediaId: Long) {
         mediaIdEpisode.remove(mediaId)
     }
 
     /**
-     * Updates the media episodes internally and returns only updated ones.
+     * Updates media episode if it is lesser than previously recorded.
+     * @return true if updated, false otherwise
      */
-    private fun updateMediaEpisodes(airingSchedule: List<AiringSchedule>): List<AiringSchedule> {
-        val airingScheduleUpdate = mutableListOf<AiringSchedule>()
-        airingSchedule.forEach {
-            val episodeCount = mediaIdEpisode.getOrDefault(it.mediaId, 0)
-            if (episodeCount < it.episode) {
-                mediaIdEpisode[it.mediaId] = it.episode
-                airingScheduleUpdate.add(it)
-            }
+    private fun updateMediaEpisode(mediaId: Long, episode: Int): Boolean {
+        val episodeCount = mediaIdEpisode.getOrDefault(mediaId, 0)
+        if (episodeCount < episode) {
+            mediaIdEpisode[mediaId] = episode
+            return true
         }
-        return airingScheduleUpdate.toList()
+        return false
     }
 
     override fun close() {
