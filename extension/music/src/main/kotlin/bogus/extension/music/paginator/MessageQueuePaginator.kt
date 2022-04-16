@@ -52,6 +52,7 @@ class MessageQueuePaginator(
     override suspend fun send() {
         if (message == null) {
             setup()
+            updateButtons()
 
             message = channel.createMessage {
                 this.messageReference = targetMessage?.id
