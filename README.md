@@ -1,6 +1,5 @@
 [![Basura](https://github.com/gavenda/studio-helper/actions/workflows/basura.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/basura.yml)
 [![Vivy](https://github.com/gavenda/studio-helper/actions/workflows/vivy.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/vivy.yml)
-[![Parrot](https://github.com/gavenda/studio-helper/actions/workflows/parrot.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/parrot.yml)
 
 # Studio Helper Bots
 An all-in-one repository for the Discord server I am making bots in.
@@ -9,6 +8,15 @@ An all-in-one repository for the Discord server I am making bots in.
 - [Vivy](bot/vivy) - A modern music bot
 - [Basura](bot/basura) - An AniList bot
 - [Chupa](bot/chupa) - A simple counter bot
+
+## Extension List
+All the bots above are just extensions woven together, here are the extensions that are used in the bots above:
+- [about](extension/about) - Simple about application command that displays running OS and version
+- [anilist](extension/anilist) - AniList integration, lookup anime/manga media easily
+- [aniradio](extension/aniradio) - Simply plays a stream from [listen.moe](https://listen.moe)
+- [announcer](extension/announcer) - Announces a bundled music file whenever someone joins the bot's voice channel
+- [counter](extension/counter) - Counter for literally anything, no database, everything is stored in a json file
+- [music](extension/music) - Fully featured music extension, uses lava link to play music
 
 ### Framework
 All the bots are made using [Kord](https://github.com/kordlib/kord) using the [Kord Extensions](https://github.com/Kord-Extensions/kord-extensions) framework.
