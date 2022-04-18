@@ -1,7 +1,6 @@
 package bogus.extension.anilist.graphql
 
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -17,14 +16,11 @@ suspend inline fun <reified V, reified R> gqlQuery(graphUrl: String, query: Stri
     val gqlRequest = GQLRequest(query, variables)
     val requestBody = json.encodeToString(gqlRequest)
 
-    val response = client.request<HttpResponse>(graphUrl) {
-        method = HttpMethod.Post
-        headers {
-            append(HttpHeaders.ContentType, "application/json")
-        }
-        body = requestBody
+    val response = client.post(graphUrl) {
+        contentType(ContentType.Application.Json)
+        setBody(requestBody)
     }
-    val responseBody = response.receive<String>()
+    val responseBody = response.bodyAsText()
     val gqlResponse = json.decodeFromString<GQLResponse<R>>(responseBody)
 
     return gqlResponse.data

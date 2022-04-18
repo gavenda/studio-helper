@@ -2,6 +2,7 @@ package bogus.extension.music
 
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import mu.KotlinLogging
 
@@ -14,14 +15,14 @@ private val client = HttpClient()
 private val logger = KotlinLogging.logger { }
 
 internal suspend fun youtubeQuery(query: String): List<String> {
-    val response = client.get<String>(youtubeEndpoint) {
+    val response = client.get(youtubeEndpoint) {
         url {
             parameter("q", query)
             parameter("cp", 10) // search in music category
         }
     }
 
-    val responseList = responsePattern.findAll(response).map { it.groupValues[1] }.toList()
+    val responseList = responsePattern.findAll(response.bodyAsText()).map { it.groupValues[1] }.toList()
 
     logger.debug { "response=$responseList" }
 
