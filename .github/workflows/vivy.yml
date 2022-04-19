@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: vivy
-          path: ./bot/vivy/build/install/vivy
+          path: ./dist/vivy
   deploy:
     needs: build
     runs-on: ubuntu-latest

@@ -5,6 +5,9 @@
 # Ignore Gradle build output directory
 build
 
+# Ignore distribution output directory
+dist
+
 # Ignore log directory
 log
 

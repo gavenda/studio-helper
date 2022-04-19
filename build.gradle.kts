@@ -11,7 +11,7 @@ kotlin {
     }
 }
 
-allprojects {
+subprojects {
     repositories {
         mavenCentral()
         maven {
@@ -32,12 +32,14 @@ allprojects {
         }
     }
 
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            freeCompilerArgs = listOf(
-                "-opt-in=kotlin.RequiresOptIn"
-            )
+    tasks {
+        withType<KotlinCompile> {
+            kotlinOptions {
+                jvmTarget = "11"
+                freeCompilerArgs = listOf(
+                    "-opt-in=kotlin.RequiresOptIn"
+                )
+            }
         }
     }
 }
