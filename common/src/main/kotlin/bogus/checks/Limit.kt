@@ -44,9 +44,10 @@ suspend fun <T : Event> CheckContext<T>.limit(name: String, duration: Duration) 
         System.currentTimeMillis() - duration.inWholeMilliseconds - 1
     }
     val deltaMillis = System.currentTimeMillis() - userLimitMillis
+    val remaining = (duration.inWholeMilliseconds - deltaMillis).milliseconds
 
     if (duration.inWholeMilliseconds > deltaMillis) {
-        fail("You can only use `${name}` every **${duration.inWholeMinutes}** minutes. You have **${deltaMillis.milliseconds.inWholeMinutes}** minute(s) left.")
+        fail("You can only use `${name}` every **${duration.inWholeMinutes}** minutes. You have **${remaining.inWholeMinutes}** minute(s) left.")
         return
     }
 
