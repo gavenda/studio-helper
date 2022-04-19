@@ -1,8 +1,8 @@
 package bogus.bot.vivy
 
 import bogus.extension.music.Jukebox
-import bogus.extension.music.check.hasDJRole
-import bogus.extension.music.check.inVoiceChannel
+import bogus.extension.music.checks.hasDJRole
+import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.player
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.extensions.Extension

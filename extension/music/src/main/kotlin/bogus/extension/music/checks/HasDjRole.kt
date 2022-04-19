@@ -1,4 +1,4 @@
-package bogus.extension.music.check
+package bogus.extension.music.checks
 
 import com.kotlindiscord.kord.extensions.checks.*
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext

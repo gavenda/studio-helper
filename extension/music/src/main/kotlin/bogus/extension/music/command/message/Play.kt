@@ -1,16 +1,18 @@
 package bogus.extension.music.command.message
 
+import bogus.checks.limit
 import bogus.extension.music.IdentifierParser
 import bogus.extension.music.Jukebox
 import bogus.extension.music.MusicExtension
-import bogus.extension.music.check.hasDJRole
-import bogus.extension.music.check.inVoiceChannel
+import bogus.extension.music.checks.hasDJRole
+import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.respondChoices
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralMessageCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import kotlinx.coroutines.Dispatchers
+import kotlin.time.Duration.Companion.minutes
 
 suspend fun MusicExtension.playLater() {
     ephemeralMessageCommand {
@@ -50,6 +52,7 @@ suspend fun MusicExtension.playNext() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
+            limit(5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
@@ -81,6 +84,7 @@ suspend fun MusicExtension.playNow() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
+            limit(5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action

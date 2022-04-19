@@ -3,8 +3,8 @@ package bogus.extension.music.command
 import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
-import bogus.extension.music.check.hasDJRole
-import bogus.extension.music.check.inVoiceChannel
+import bogus.extension.music.checks.hasDJRole
+import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.db.*
 import bogus.paginator.editingStandardPaginator
 import bogus.util.abbreviate

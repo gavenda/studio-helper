@@ -1,4 +1,4 @@
-package bogus.extension.music.check
+package bogus.extension.music.checks
 
 import bogus.extension.music.TRANSLATION_BUNDLE
 import bogus.extension.music.link

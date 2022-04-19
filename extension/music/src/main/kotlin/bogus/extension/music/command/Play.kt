@@ -1,9 +1,10 @@
 package bogus.extension.music.command
 
+import bogus.checks.limit
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.music.*
-import bogus.extension.music.check.hasDJRole
-import bogus.extension.music.check.inVoiceChannel
+import bogus.extension.music.checks.hasDJRole
+import bogus.extension.music.checks.inVoiceChannel
 import bogus.util.LRUCache
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -18,6 +19,7 @@ import dev.kord.core.behavior.interaction.suggestString
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.time.Duration.Companion.minutes
 
 suspend fun MusicExtension.play() {
     ephemeralSlashCommand {
@@ -70,6 +72,7 @@ private suspend fun EphemeralSlashCommand<*>.next() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
+            limit(5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
@@ -102,6 +105,7 @@ private suspend fun EphemeralSlashCommand<*>.now() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
+            limit(5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action

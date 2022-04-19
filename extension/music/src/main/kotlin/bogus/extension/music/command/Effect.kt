@@ -2,7 +2,7 @@ package bogus.extension.music.command
 
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
-import bogus.extension.music.check.hasDJRole
+import bogus.extension.music.checks.hasDJRole
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments

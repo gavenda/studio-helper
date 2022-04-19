@@ -1,7 +1,7 @@
 package bogus.extension.music.paginator
 
 import bogus.extension.music.*
-import bogus.extension.music.check.hasDJRole
+import bogus.extension.music.checks.hasDJRole
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.components.ComponentContainer
