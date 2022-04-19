@@ -49,5 +49,6 @@ suspend fun CheckContext<ApplicationCommandInteractionCreateEvent>.limit(duratio
         return
     }
 
+    userLimit[event.interaction.invokedCommandName] = System.currentTimeMillis()
     pass()
 }
