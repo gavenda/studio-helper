@@ -8,3 +8,5 @@ const val VOLUME_MAX = 100
 const val VOLUME_MIN = 0
 const val NIGHTCORE_MAX = 300
 const val NIGHTCORE_MIN = 10
+const val PLAY_NEXT_LIMIT = "play:next"
+const val PLAY_NOW_LIMIT = "play:now"

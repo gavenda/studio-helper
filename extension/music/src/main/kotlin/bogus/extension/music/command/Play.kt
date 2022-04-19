@@ -72,7 +72,7 @@ private suspend fun EphemeralSlashCommand<*>.next() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
-            limit(5.minutes)
+            limit(PLAY_NEXT_LIMIT, 5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
@@ -105,7 +105,7 @@ private suspend fun EphemeralSlashCommand<*>.now() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
-            limit(5.minutes)
+            limit(PLAY_NOW_LIMIT, 5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action

@@ -1,12 +1,9 @@
 package bogus.extension.music.command.message
 
 import bogus.checks.limit
-import bogus.extension.music.IdentifierParser
-import bogus.extension.music.Jukebox
-import bogus.extension.music.MusicExtension
+import bogus.extension.music.*
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
-import bogus.extension.music.respondChoices
 import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralMessageCommand
@@ -52,7 +49,7 @@ suspend fun MusicExtension.playNext() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
-            limit(5.minutes)
+            limit(PLAY_NEXT_LIMIT, 5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action
@@ -84,7 +81,7 @@ suspend fun MusicExtension.playNow() {
             anyGuild()
             hasDJRole()
             inVoiceChannel()
-            limit(5.minutes)
+            limit(PLAY_NOW_LIMIT, 5.minutes)
         }
         action(Dispatchers.IO) {
             val guild = guild ?: return@action

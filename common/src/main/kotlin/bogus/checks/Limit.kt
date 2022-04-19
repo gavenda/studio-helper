@@ -5,14 +5,14 @@ import com.kotlindiscord.kord.extensions.checks.guildFor
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
 import com.kotlindiscord.kord.extensions.checks.userFor
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.event.interaction.ApplicationCommandInteractionCreateEvent
+import dev.kord.core.event.Event
 import mu.KotlinLogging
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 private val guildLimits = mutableMapOf<Snowflake, MutableMap<Snowflake, MutableMap<String, Long>>>()
 
-suspend fun CheckContext<ApplicationCommandInteractionCreateEvent>.limit(duration: Duration) {
+suspend fun <T : Event> CheckContext<T>.limit(name: String, duration: Duration) {
     if (!passed) {
         return
     }
@@ -39,16 +39,16 @@ suspend fun CheckContext<ApplicationCommandInteractionCreateEvent>.limit(duratio
     val userLimit = userLimits.getOrPut(user.id) {
         mutableMapOf()
     }
-    val userLimitMillis = userLimit.getOrPut(event.interaction.invokedCommandName) {
-        System.currentTimeMillis()
+    val userLimitMillis = userLimit.getOrPut(name) {
+        System.currentTimeMillis() + duration.inWholeMilliseconds + 1
     }
     val deltaMillis = System.currentTimeMillis() - userLimitMillis
 
     if (deltaMillis < duration.inWholeMilliseconds) {
-        fail("You can only use `${event.interaction.invokedCommandName}` every ${duration.inWholeMinutes} minutes. You have ${deltaMillis.minutes.inWholeMinutes} minute(s) left.")
+        fail("You can only use `${name}` every **${duration.inWholeMinutes}** minutes. You have **${deltaMillis.minutes.inWholeMinutes}** minute(s) left.")
         return
     }
 
-    userLimit[event.interaction.invokedCommandName] = System.currentTimeMillis()
+    userLimit[name] = System.currentTimeMillis()
     pass()
 }
