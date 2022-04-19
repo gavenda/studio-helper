@@ -8,6 +8,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.event.Event
 import mu.KotlinLogging
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
 private val guildLimits = mutableMapOf<Snowflake, MutableMap<Snowflake, MutableMap<String, Long>>>()
@@ -45,7 +46,7 @@ suspend fun <T : Event> CheckContext<T>.limit(name: String, duration: Duration) 
     val deltaMillis = System.currentTimeMillis() - userLimitMillis
 
     if (duration.inWholeMilliseconds > deltaMillis) {
-        fail("You can only use `${name}` every **${duration.inWholeMinutes}** minutes. You have **${deltaMillis.minutes.inWholeMinutes}** minute(s) left.")
+        fail("You can only use `${name}` every **${duration.inWholeMinutes}** minutes. You have **${deltaMillis.milliseconds.inWholeMinutes}** minute(s) left.")
         return
     }
 
