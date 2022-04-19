@@ -40,11 +40,11 @@ suspend fun <T : Event> CheckContext<T>.limit(name: String, duration: Duration) 
         mutableMapOf()
     }
     val userLimitMillis = userLimit.getOrPut(name) {
-        System.currentTimeMillis() + duration.inWholeMilliseconds + 1
+        System.currentTimeMillis() - duration.inWholeMilliseconds - 1
     }
     val deltaMillis = System.currentTimeMillis() - userLimitMillis
 
-    if (deltaMillis < duration.inWholeMilliseconds) {
+    if (duration.inWholeMilliseconds > deltaMillis) {
         fail("You can only use `${name}` every **${duration.inWholeMinutes}** minutes. You have **${deltaMillis.minutes.inWholeMinutes}** minute(s) left.")
         return
     }
