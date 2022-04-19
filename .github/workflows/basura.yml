@@ -2,7 +2,8 @@ name: Basura
 on:
   push:
     branches: [ main ]
-    paths: 
+    paths:
+      - 'common/**'
       - 'bot/basura/**'
       - 'extension/about/**'
       - 'extension/aniradio/**'

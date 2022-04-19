@@ -2,7 +2,8 @@ name: Vivy
 on:
   push:
     branches: [ main ]
-    paths: 
+    paths:
+      - 'common/**'
       - 'bot/vivy/**'
       - 'extension/about/**'
       - 'extension/music/**'
