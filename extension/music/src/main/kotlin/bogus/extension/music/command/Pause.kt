@@ -3,11 +3,9 @@ package bogus.extension.music.command
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 
 suspend fun MusicExtension.pause() {
     ephemeralSlashCommand {
@@ -17,7 +15,7 @@ suspend fun MusicExtension.pause() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             if (player.paused) {
                 respond {
                     content = translate("pause.response.failure")

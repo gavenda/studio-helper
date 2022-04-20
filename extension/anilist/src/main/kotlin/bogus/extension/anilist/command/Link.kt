@@ -5,13 +5,11 @@ import bogus.extension.anilist.check.anyGuild
 import bogus.extension.anilist.db.DbUser
 import bogus.extension.anilist.db.users
 import bogus.extension.anilist.graphql.AniList
-import bogus.util.action
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.and
@@ -30,7 +28,7 @@ suspend fun AniListExtension.link() {
         check {
             anyGuild(translate("link.error.serverOnly"))
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
 
             val existingUser = db.users.firstOrNull {
@@ -74,7 +72,7 @@ suspend fun AniListExtension.link() {
         check {
             anyGuild(translate("unlink.error.serverOnly"))
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
 
             val existingUser = db.users.firstOrNull {

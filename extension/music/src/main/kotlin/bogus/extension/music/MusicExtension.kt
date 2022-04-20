@@ -4,10 +4,10 @@ import bogus.extension.music.command.*
 import bogus.extension.music.command.message.playLater
 import bogus.extension.music.command.message.playNext
 import bogus.extension.music.command.message.playNow
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.env
+import com.kotlindiscord.kord.extensions.utils.envOrNull
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -19,7 +19,6 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
 import dev.kord.gateway.Intent
 import dev.schlaubi.lavakord.kord.lavakord
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.flywaydb.core.Flyway
@@ -28,7 +27,6 @@ import org.ktorm.database.Database
 import org.ktorm.support.postgresql.PostgreSqlDialect
 import javax.sql.DataSource
 import kotlin.concurrent.thread
-import kotlin.time.Duration.Companion.seconds
 
 object MusicExtension : Extension() {
     override val name: String = EXTENSION_NAME
@@ -51,20 +49,20 @@ object MusicExtension : Extension() {
 
     private suspend fun setupEvents() {
         event<ReadyEvent> {
-            action(Dispatchers.IO) {
+            action {
                 setupLavaKord()
                 setupSpotify()
                 setupDatabase()
             }
         }
         event<GuildCreateEvent> {
-            action(Dispatchers.IO) {
+            action {
                 Jukebox.register(event.guild.id)
                 Jukebox.bind(event.guild)
             }
         }
         event<Event> {
-            action(Dispatchers.IO) {
+            action {
                 log.debug { """msg="Attempt disconnect"""" }
                 Jukebox.tryToDisconnect()
             }
@@ -98,6 +96,8 @@ object MusicExtension : Extension() {
     }
 
     private fun setupSpotify() {
+        if (!SPOTIFY_ENABLED) return
+
         loadModule {
             factory<SpotifyWebApi> {
                 val credentials = ClientCredentialsFlow(

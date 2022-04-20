@@ -5,7 +5,6 @@ import bogus.extension.music.db.DbGuild
 import bogus.extension.music.db.DbGuilds
 import bogus.extension.music.db.guilds
 import bogus.extension.music.player
-import bogus.util.action
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.hasPermission
@@ -13,7 +12,6 @@ import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
@@ -30,7 +28,7 @@ suspend fun MusicExtension.unbind() {
             anyGuild()
             hasPermission(Permission.Administrator)
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
 
             if (player.bound) {
@@ -74,7 +72,7 @@ suspend fun MusicExtension.bind() {
             anyGuild()
             hasPermission(Permission.Administrator)
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val dbGuild = db.guilds.firstOrNull { DbGuilds.discordGuildId eq guild.idLong } ?: DbGuild {
                 discordGuildId = guild.idLong

@@ -4,13 +4,11 @@ import bogus.extension.music.MusicExtension
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 
 suspend fun MusicExtension.loop() {
     ephemeralSlashCommand {
@@ -30,7 +28,7 @@ private suspend fun EphemeralSlashCommand<*>.single() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.toggleLoop()
             log.info { """msg="Toggled loop single" looped=${player.looped} user=${user.id}""" }
             if (player.looped) {
@@ -54,7 +52,7 @@ private suspend fun EphemeralSlashCommand<*>.all() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.toggleLoopAll()
             log.info { """msg="Toggled loop all" looped=${player.loopedAll} user=${user.id}""" }
             if (player.loopedAll) {

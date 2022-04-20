@@ -11,7 +11,7 @@ kotlin {
     }
 }
 
-subprojects {
+allprojects {
     repositories {
         mavenCentral()
         maven {

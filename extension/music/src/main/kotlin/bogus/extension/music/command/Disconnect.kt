@@ -4,11 +4,9 @@ import bogus.extension.music.MusicExtension
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.link
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 
 suspend fun MusicExtension.disconnect() {
     ephemeralSlashCommand {
@@ -18,7 +16,7 @@ suspend fun MusicExtension.disconnect() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.stop()
             link.disconnectAudio()
             log.info { """msg="Disconnected singer" user=${user.id}""" }

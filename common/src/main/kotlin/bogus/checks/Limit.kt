@@ -9,7 +9,6 @@ import dev.kord.core.event.Event
 import mu.KotlinLogging
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
 
 private val guildLimits = mutableMapOf<Snowflake, MutableMap<Snowflake, MutableMap<String, Long>>>()
 

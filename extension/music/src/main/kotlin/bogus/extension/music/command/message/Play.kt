@@ -4,11 +4,9 @@ import bogus.checks.limit
 import bogus.extension.music.*
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralMessageCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 import kotlin.time.Duration.Companion.minutes
 
 suspend fun MusicExtension.playLater() {
@@ -19,7 +17,7 @@ suspend fun MusicExtension.playLater() {
             hasDJRole()
             inVoiceChannel()
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val response = Jukebox.playLater(
                 Jukebox.PlayRequest(
@@ -51,7 +49,7 @@ suspend fun MusicExtension.playNext() {
             inVoiceChannel()
             limit(PLAY_NEXT_LIMIT, 5.minutes)
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val response = Jukebox.playNext(
                 Jukebox.PlayRequest(
@@ -83,7 +81,7 @@ suspend fun MusicExtension.playNow() {
             inVoiceChannel()
             limit(PLAY_NOW_LIMIT, 5.minutes)
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val response = Jukebox.playNow(
                 Jukebox.PlayRequest(

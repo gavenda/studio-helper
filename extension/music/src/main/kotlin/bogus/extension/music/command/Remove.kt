@@ -4,7 +4,6 @@ import bogus.extension.music.MusicExtension
 import bogus.extension.music.TRANSLATION_BUNDLE
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommandContext
@@ -14,7 +13,6 @@ import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.schlaubi.lavakord.audio.player.Track
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -26,7 +24,7 @@ suspend fun MusicExtension.remove() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             if (arguments.to == null) {
                 val i1 = (arguments.from - 1).coerceAtLeast(0)
                 val i2 = i1 + 1

@@ -5,14 +5,12 @@ import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaFormat
 import bogus.extension.anilist.model.MediaSeason
 import bogus.extension.anilist.sendMediaResult
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.defaultingStringChoice
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalInt
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.inject
 
 suspend fun AniListExtension.ranking() {
@@ -21,7 +19,7 @@ suspend fun AniListExtension.ranking() {
     publicSlashCommand(::RankingArgs) {
         name = "ranking"
         description = "Shows the current ranking based on given parameters."
-        action(Dispatchers.IO) {
+        action {
             log.info { "Looking up ranking $arguments with [ userId = ${user.id} ]" }
 
             val hentai = true

@@ -56,12 +56,17 @@ object IdentifierParser : KoinComponent {
             )
         }
         if (song.isUrl.not()) {
-            return fromList( listOf("ytsearch:$song"))
+            return fromList(listOf("ytsearch:$song"))
         }
 
         val spotifyUri = parseSpotifyUri(song) ?: return IdentifierParseResult(
             identifiers = listOf(song)
         )
+
+        if (!SPOTIFY_ENABLED) {
+            throw IllegalStateException("Spotify is not enabled, yet continued to parse")
+        }
+
         val spotifyWebApi by inject<SpotifyWebApi>()
 
         when (spotifyUri) {

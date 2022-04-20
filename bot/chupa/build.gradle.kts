@@ -1,5 +1,7 @@
 plugins {
-    id("bogus.kordex-bot")
+    id("bogus.kordex")
+    id("bogus.bot")
+    id("bogus.logging")
 }
 
 version = "1.0"

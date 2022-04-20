@@ -6,7 +6,6 @@ import bogus.extension.music.*
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.util.LRUCache
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
@@ -16,7 +15,6 @@ import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.minutes
@@ -41,7 +39,7 @@ private suspend fun EphemeralSlashCommand<*>.later() {
             hasDJRole()
             inVoiceChannel()
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val response = Jukebox.playLater(
                 Jukebox.PlayRequest(
@@ -74,7 +72,7 @@ private suspend fun EphemeralSlashCommand<*>.next() {
             inVoiceChannel()
             limit(PLAY_NEXT_LIMIT, 5.minutes)
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val response = Jukebox.playNext(
                 Jukebox.PlayRequest(
@@ -107,7 +105,7 @@ private suspend fun EphemeralSlashCommand<*>.now() {
             inVoiceChannel()
             limit(PLAY_NOW_LIMIT, 5.minutes)
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val response = Jukebox.playNow(
                 Jukebox.PlayRequest(

@@ -4,7 +4,6 @@ import bogus.extension.music.Jukebox
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
@@ -38,7 +37,7 @@ class SingExtension : Extension() {
                 inVoiceChannel()
                 hasDJRole()
             }
-            action(Dispatchers.IO) {
+            action {
                 val guild = guild ?: return@action
                 // Fire and forget, but maintain order
                 CoroutineScope(Dispatchers.IO).launch {

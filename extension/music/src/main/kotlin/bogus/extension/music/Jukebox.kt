@@ -206,7 +206,7 @@ object Jukebox : KoinComponent {
     suspend fun playNext(request: PlayRequest): String = mutex.withLock {
         val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
         val identifiers = parseResult.identifiers
-        
+
         if (identifiers.isEmpty()) {
             log.info { """msg="No identifiers found" identifiers="$identifiers" user=$userId guild=${guild.id}""" }
 

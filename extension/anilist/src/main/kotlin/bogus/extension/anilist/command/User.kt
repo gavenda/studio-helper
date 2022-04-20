@@ -6,7 +6,6 @@ import bogus.extension.anilist.embed.createUserEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.util.LRUCache
 import bogus.util.abbreviate
-import bogus.util.action
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -18,7 +17,6 @@ import com.kotlindiscord.kord.extensions.extensions.publicUserCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
 import dev.kord.rest.builder.message.create.embed
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
@@ -33,7 +31,7 @@ suspend fun AniListExtension.user() {
     publicSlashCommand(::UserArgs) {
         name = "user"
         description = "Looks up the statistics of a user's AniList."
-        action(Dispatchers.IO) {
+        action {
             val username = arguments.username
 
             if (username != null) {
@@ -112,7 +110,7 @@ suspend fun AniListExtension.user() {
         check {
             anyGuild()
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val targetUser = targetUsers.first()
 

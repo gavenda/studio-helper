@@ -3,7 +3,6 @@ package bogus.extension.music.command
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.SlashGroup
@@ -13,7 +12,6 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -48,7 +46,7 @@ private suspend fun SlashGroup.nightcore() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.applyNightcore(arguments.speed.coerceIn(10, 300))
             log.info { """msg="Applied filter" filter="Nightcore" user=${user.id}""" }
             respond {
@@ -66,7 +64,7 @@ private suspend fun SlashGroup.karaoke() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.applyKaraoke()
             log.info { """msg="Applied filter" filter="Karaoke" user=${user.id}""" }
             respond {
@@ -84,7 +82,7 @@ private suspend fun SlashGroup.vaporwave() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.applyVaporwave()
             log.info { """msg="Applied filter" filter="Vaporwave" user=${user.id}""" }
             respond {
@@ -102,7 +100,7 @@ private suspend fun SlashGroup.rock() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.applyEqualizer(MusicEffects.Equalizer.ROCK)
             log.info { """msg="Applied equalizer" equalizer="ROCK" user=${user.id}""" }
             respond {
@@ -120,7 +118,7 @@ private suspend fun SlashGroup.pop() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.applyEqualizer(MusicEffects.Equalizer.POP)
             log.info { """msg="Applied equalizer" equalizer="POP" user=${user.id}""" }
             respond {
@@ -138,7 +136,7 @@ private suspend fun SlashGroup.trebleBass() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.applyEqualizer(MusicEffects.Equalizer.BASS_BOOST)
             log.info { """msg="Applied equalizer" equalizer="BASS_BOOST" user=${user.id}""" }
             respond {

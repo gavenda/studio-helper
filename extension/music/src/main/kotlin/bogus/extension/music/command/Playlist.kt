@@ -8,7 +8,6 @@ import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.db.*
 import bogus.paginator.editingStandardPaginator
 import bogus.util.abbreviate
-import bogus.util.action
 import bogus.util.escapedBrackets
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -61,7 +60,7 @@ private suspend fun EphemeralSlashCommand<*>.list() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             var songList = buildString {
                 db.from(DbPlaylists)
                     .leftJoin(DbPlaylistSongs, on = DbPlaylists.playlistId eq DbPlaylistSongs.playlistId)
@@ -100,7 +99,7 @@ private suspend fun EphemeralSlashCommand<*>.show() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             val dbPlaylist = db.playlists.find {
                 (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
             }
@@ -155,7 +154,7 @@ private suspend fun EphemeralSlashCommand<*>.create() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             val dbPlaylist = DbPlaylist {
                 discordUserId = user.idLong
                 name = arguments.name
@@ -185,7 +184,7 @@ private suspend fun EphemeralSlashCommand<*>.delete() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             val dbPlaylist = db.playlists.find {
                 (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
             }
@@ -223,7 +222,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             val dbPlaylist = db.playlists.find {
                 (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
             }
@@ -289,7 +288,7 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             val dbPlaylist = db.playlists.find {
                 (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
             }
@@ -339,7 +338,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
             hasDJRole()
             inVoiceChannel()
         }
-        action(Dispatchers.IO) {
+        action {
             val identifiers = db.from(DbPlaylists)
                 .leftJoin(DbPlaylistSongs, on = DbPlaylists.playlistId eq DbPlaylistSongs.playlistId)
                 .select(DbPlaylistSongs.uri)

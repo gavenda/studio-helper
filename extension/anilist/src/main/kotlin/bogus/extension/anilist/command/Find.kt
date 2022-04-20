@@ -7,7 +7,6 @@ import bogus.extension.anilist.model.MediaType
 import bogus.extension.anilist.sendMediaResult
 import bogus.util.LRUCache
 import bogus.util.abbreviate
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -16,7 +15,6 @@ import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.PublicInteractionContext
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -24,7 +22,7 @@ suspend fun AniListExtension.find() {
     publicSlashCommand(::FindArgs) {
         name = "find"
         description = "Looks up the name of the anime/manga."
-        action(Dispatchers.IO) {
+        action {
             findMedia(arguments.query)
         }
     }
@@ -32,7 +30,7 @@ suspend fun AniListExtension.find() {
     publicSlashCommand(::FindAnimeArgs) {
         name = "anime"
         description = "Looks up the name of the anime."
-        action(Dispatchers.IO) {
+        action {
             findMedia(arguments.query, MediaType.ANIME)
         }
     }
@@ -40,14 +38,14 @@ suspend fun AniListExtension.find() {
     publicSlashCommand(::FindMangaArgs) {
         name = "manga"
         description = "Looks up the name of the manga."
-        action(Dispatchers.IO) {
+        action {
             findMedia(arguments.query, MediaType.MANGA)
         }
     }
 
     publicMessageCommand {
         name = "Search Trash"
-        action(Dispatchers.IO) {
+        action {
             findMedia(targetMessages.first().content)
         }
     }

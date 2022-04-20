@@ -4,7 +4,6 @@ import bogus.extension.music.MusicExtension
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.SlashGroup
@@ -12,7 +11,6 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSub
 import com.kotlindiscord.kord.extensions.commands.application.slash.group
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 
 suspend fun MusicExtension.clear() {
     ephemeralSlashCommand {
@@ -38,7 +36,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             if (player.tracks.isEmpty()) {
                 respond {
                     content = translate("clear.queue.response.empty")
@@ -62,7 +60,7 @@ private suspend fun SlashGroup.filter() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.clearFilter()
             log.info { """msg="Cleared filters" user=${user.id}""" }
             respond {
@@ -80,7 +78,7 @@ private suspend fun SlashGroup.equalizer() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             player.effects.clearEqualizer()
             log.info { """msg="Cleared equalizer" user=${user.id}""" }
             respond {

@@ -1,5 +1,6 @@
 package bogus.extension.music.spotify
 
+import bogus.extension.music.SPOTIFY_ENABLED
 import bogus.util.urlDecode
 import de.sonallux.spotify.api.SpotifyWebApi
 import de.sonallux.spotify.api.models.PlaylistTrack
@@ -26,11 +27,13 @@ fun parseQueryString(input: String): MutableMap<String, String> {
 }
 
 /**
- * Parse a spotify uri. Returns null if it cannot determine the type.
+ * Parse a spotify uri. Returns null if spotify is not enabled or if it cannot determine the type.
  * @param uri the uri string to parse
  * @return the [SpotifyURI] object, use type instance to determine.
  */
 fun parseSpotifyUri(uri: String): SpotifyURI? {
+    if (!SPOTIFY_ENABLED) return null
+
     val url = URL(uri)
     val protocol = url.protocol
     val hostname = url.host

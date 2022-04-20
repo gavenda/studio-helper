@@ -3,11 +3,9 @@ package bogus.extension.music.command
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import kotlinx.coroutines.Dispatchers
 
 suspend fun MusicExtension.skip() {
     ephemeralSlashCommand {
@@ -17,7 +15,7 @@ suspend fun MusicExtension.skip() {
             anyGuild()
             hasDJRole()
         }
-        action(Dispatchers.IO) {
+        action {
             val guild = guild ?: return@action
             val audioTrack = guild.player.skip()
             log.info { """msg="Skipped music" user=${user.id}""" }

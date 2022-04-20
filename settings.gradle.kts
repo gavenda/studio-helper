@@ -10,6 +10,7 @@ include(
     "extension:anilist",
     "extension:aniradio",
     "extension:announcer",
+    "extension:automove",
     "extension:counter",
     "extension:music",
 )

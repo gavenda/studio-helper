@@ -2,7 +2,6 @@ package bogus.extension.music.paginator
 
 import bogus.extension.music.*
 import bogus.extension.music.checks.hasDJRole
-import bogus.util.action
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.components.ComponentContainer
 import com.kotlindiscord.kord.extensions.components.buttons.PublicInteractionButton
@@ -17,7 +16,6 @@ import com.kotlindiscord.kord.extensions.utils.scheduling.Task
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.core.behavior.UserBehavior
 import dev.kord.core.entity.ReactionEmoji
-import kotlinx.coroutines.Dispatchers
 import java.util.*
 
 /**
@@ -85,7 +83,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 if (player.paused) {
                     player.resume()
                 } else {
@@ -106,7 +104,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 player.skip()
                 task?.restart()
             }
@@ -122,7 +120,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 player.shuffle()
                 task?.restart()
             }
@@ -138,7 +136,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 val volume = (player.effects.volume - 10).coerceIn(0, 100)
                 player.volumeTo(volume)
                 task?.restart()
@@ -155,7 +153,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 val volume = (player.effects.volume + 10).coerceIn(0, 100)
                 player.volumeTo(volume)
                 task?.restart()
@@ -172,7 +170,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 player.toggleLoopAll()
                 task?.restart()
             }
@@ -188,7 +186,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 player.toggleLoop()
                 task?.restart()
             }
@@ -204,7 +202,7 @@ abstract class QueuePaginator(
                 hasDJRole()
             }
 
-            action(Dispatchers.IO) {
+            action {
                 player.clear()
                 player.stop()
                 task?.restart()
@@ -265,7 +263,7 @@ abstract class QueuePaginator(
             style = ButtonStyle.Primary
             emoji(EmojiPrev)
 
-            action(Dispatchers.IO) {
+            action {
                 if (currentPageNum == 0) {
                     goToPage(numberOfPages)
                 } else {
@@ -282,7 +280,7 @@ abstract class QueuePaginator(
             style = ButtonStyle.Primary
             emoji(EmojiNext)
 
-            action(Dispatchers.IO) {
+            action {
                 if (currentPageNum >= numberOfPages) {
                     goToPage(0)
                 } else {

@@ -107,7 +107,8 @@ class AnnouncerExtension(
                 withContext(Dispatchers.IO) {
                     audioFiles.forEach { audioFile ->
                         val (audioFileName, audioFileExt) = audioFile.split(".")
-                        val audioFileStream = object {}.javaClass.getResourceAsStream("/${audioFile}") ?: error("Cannot extract file")
+                        val audioFileStream =
+                            object {}.javaClass.getResourceAsStream("/${audioFile}") ?: error("Cannot extract file")
 
                         filePaths[audioFileName] = Files.createTempFile(audioFileName, ".$audioFileExt").apply {
                             Files.write(this, audioFileStream.readAllBytes())
