@@ -15,6 +15,7 @@ All the bots above are just extensions woven together, here are the extensions t
 - [anilist](extension/anilist) - AniList integration, lookup anime/manga media easily
 - [aniradio](extension/aniradio) - Simply plays a stream from [listen.moe](https://listen.moe)
 - [announcer](extension/announcer) - Announces a bundled music file whenever someone joins the bot's voice channel
+- [automove](extension/automove) - Auto moves a user whenever they self mute or deafened and vice-versa
 - [counter](extension/counter) - Counter for literally anything, no database, everything is stored in a json file
 - [music](extension/music) - Fully featured music extension, uses lava link to play music
 

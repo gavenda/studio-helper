@@ -3,31 +3,35 @@ package bogus.extension.automove
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.behavior.getChannelOfOrNull
-import dev.kord.core.entity.channel.VoiceChannel
+import dev.kord.core.behavior.edit
 import dev.kord.core.event.user.VoiceStateUpdateEvent
 import dev.kord.gateway.Intent
+import mu.KotlinLogging
 
 class AutoMoveExtension(
-    val DEFAULT_CHANNEL: Snowflake,
-    val DEAF_CHANNEL: Snowflake
+    val defaultChannel: Snowflake,
+    val deafChannel: Snowflake
 ) : Extension() {
+    private val log = KotlinLogging.logger {  }
     override val name = "automove"
     override suspend fun setup() {
         intents += Intent.GuildVoiceStates
 
         event<VoiceStateUpdateEvent> {
             action {
+                // Ignore move updates
+                if (event.old?.channelId != event.state.channelId) return@action
                 val member = event.state.getMemberOrNull() ?: return@action
-                val guild = event.state.getGuildOrNull() ?: return@action
-                if (event.state.isSelfDeafened || event.state.isSelfMuted) {
-                    val defaultChannel = guild.getChannelOfOrNull<VoiceChannel>(DEFAULT_CHANNEL) ?: return@action
-
+                if (event.state.channelId != deafChannel && (event.state.isSelfDeafened || event.state.isSelfMuted)) {
+                    member.edit {
+                        voiceChannelId = deafChannel
+                    }
                     return@action
                 }
-                if (event.state.channelId == null) return@action
-                if (event.state.channelId != DEFAULT_CHANNEL) {
-
+                if (event.state.channelId != defaultChannel) {
+                    member.edit {
+                        voiceChannelId = defaultChannel
+                    }
                 }
             }
         }

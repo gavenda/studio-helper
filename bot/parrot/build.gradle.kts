@@ -13,6 +13,7 @@ application {
 dependencies {
     implementation(project(":common"))
     implementation(project(":extension:announcer"))
+    implementation(project(":extension:automove"))
 }
 
 tasks {
