@@ -44,7 +44,7 @@ import kotlin.random.Random
 class AnnouncerExtension(
     val defaultGuildId: Snowflake,
     val defaultVoiceChannelId: Snowflake,
-    val audioFiles: List<String>
+    val audioFiles: Map<String, String>
 ) : Extension() {
     override val name = EXTENSION_NAME
     override val bundle = TRANSLATIONS_BUNDLE
@@ -93,6 +93,7 @@ class AnnouncerExtension(
 
         event<VoiceStateUpdateEvent> {
             action {
+                if (event.state.userId == kord.selfId) return@action
                 if (event.state.channelId != defaultVoiceChannelId) return@action
                 if (event.state.channelId == event.old?.channelId) return@action
                 if (event.state.channelId != null) {
@@ -106,14 +107,14 @@ class AnnouncerExtension(
         event<ReadyEvent> {
             action {
                 withContext(Dispatchers.IO) {
-                    audioFiles.forEach { audioFile ->
+                    audioFiles.forEach { (audioName, audioFile) ->
                         val (audioFileName, audioFileExt) = audioFile.split(".")
                         val audioFileStream =
                             object {}.javaClass.getResourceAsStream("/${audioFile}") ?: error("Cannot extract file")
 
-                        filePaths[audioFileName] = Files.createTempFile(audioFileName, ".$audioFileExt").apply {
+                        filePaths[audioName] = Files.createTempFile(audioFileName, ".$audioFileExt").apply {
                             Files.write(this, audioFileStream.readAllBytes())
-                            log.info { """msg="Audio file extracted", dir="$this"""" }
+                            log.info { """msg="Audio file extracted" tmpDir="$this"""" }
                         }
                     }
                 }

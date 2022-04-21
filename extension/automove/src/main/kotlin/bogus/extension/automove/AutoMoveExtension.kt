@@ -12,7 +12,6 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.user.VoiceStateUpdateEvent
 import dev.kord.gateway.Intent
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.onEach
 import mu.KotlinLogging
 
@@ -20,7 +19,7 @@ class AutoMoveExtension(
     val defaultChannel: Snowflake,
     val deafChannel: Snowflake
 ) : Extension() {
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
     override val name = "automove"
     override suspend fun setup() {
         intents += Intent.GuildVoiceStates
@@ -30,14 +29,6 @@ class AutoMoveExtension(
                 // Ignore self
                 if (event.state.userId == kord.selfId) return@action
                 val member = event.state.getMemberOrNull() ?: return@action
-                // Check newly join
-                if (event.old?.channelId == null) {
-                    log.info { """msg="Joined voice channel" id=${member.id}""" }
-                    autoMove(member)
-                    return@action
-                }
-                // Ignore move updates
-                if (event.old?.channelId != event.state.channelId) return@action
                 autoMove(member)
             }
         }
@@ -60,7 +51,7 @@ class AutoMoveExtension(
     }
 
     suspend fun autoMove(voiceState: VoiceState, member: MemberBehavior) {
-        if (voiceState.channelId != deafChannel && (voiceState.isSelfDeafened)) {
+        if (voiceState.channelId != deafChannel && voiceState.isSelfDeafened) {
             member.edit {
                 voiceChannelId = deafChannel
             }
