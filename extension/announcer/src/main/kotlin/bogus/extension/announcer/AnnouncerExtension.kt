@@ -93,6 +93,7 @@ class AnnouncerExtension(
 
         event<VoiceStateUpdateEvent> {
             action {
+                if (event.state.channelId != defaultVoiceChannelId) return@action
                 if (event.state.channelId == event.old?.channelId) return@action
                 if (event.state.channelId != null) {
                     val rndIdx = Random.nextInt(0, filePaths.size)
