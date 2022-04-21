@@ -60,12 +60,12 @@ class AutoMoveExtension(
     }
 
     suspend fun autoMove(voiceState: VoiceState, member: MemberBehavior) {
-        if (voiceState.channelId != deafChannel && (voiceState.isSelfDeafened || voiceState.isSelfMuted)) {
+        if (voiceState.channelId != deafChannel && (voiceState.isSelfDeafened)) {
             member.edit {
                 voiceChannelId = deafChannel
             }
             log.info { """msg="Moving deafened member" id=${member.id}""" }
-        } else if (voiceState.channelId != defaultChannel && !voiceState.isSelfDeafened && !voiceState.isSelfMuted) {
+        } else if (voiceState.channelId != defaultChannel && !voiceState.isSelfDeafened) {
             member.edit {
                 voiceChannelId = defaultChannel
             }
