@@ -93,7 +93,8 @@ class AnnouncerExtension(
 
         event<VoiceStateUpdateEvent> {
             action {
-                if (event.state.userId == kord.selfId) return@action
+                val user = kord.getUser(event.state.userId) ?: return@action
+                if (user.isBot) return@action
                 if (event.state.channelId != defaultVoiceChannelId) return@action
                 if (event.state.channelId == event.old?.channelId) return@action
                 if (event.state.channelId != null) {
