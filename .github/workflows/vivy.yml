@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,7 +37,28 @@ jobs:
         with:
           name: vivy
           path: ./dist/vivy
+  docker:
+    name: Push to Docker
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Distribution
+        uses: actions/download-artifact@v3
+        with:
+          name: vivy
+          path: ./dist/vivy
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: gavenda/vivy:latest
   deploy:
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
     steps:

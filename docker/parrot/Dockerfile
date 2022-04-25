@@ -1,5 +1,5 @@
 FROM openjdk:11-jdk
-RUN mkdir /app
-COPY ./dist/parrot/ /app/
-WORKDIR /app/bin
-CMD ["./parrot"]
+RUN mkdir /bot
+COPY ./dist/parrot /bot/parrot
+WORKDIR /bot/parrot
+ENTRYPOINT ["./bin/parrot"]
