@@ -15,8 +15,8 @@ const val PLAY_NEXT_LIMIT = "play:next"
 const val PLAY_NOW_LIMIT = "play:now"
 
 val SPOTIFY_ENABLED: Boolean get() {
-    return envOrNull("SPOTIFY_CLIENT_ID") == null
-            || envOrNull("SPOTIFY_CLIENT_SECRET") == null
-            || env("SPOTIFY_CLIENT_ID").isBlank()
-            || env("SPOTIFY_CLIENT_SECRET").isBlank()
+    return envOrNull("SPOTIFY_CLIENT_ID") != null
+            && envOrNull("SPOTIFY_CLIENT_SECRET") != null
+            && env("SPOTIFY_CLIENT_ID").isNotBlank()
+            && env("SPOTIFY_CLIENT_SECRET").isNotBlank()
 }
