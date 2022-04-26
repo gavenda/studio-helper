@@ -107,6 +107,7 @@ fun createMediaEmbed(
         url = media.coverImage?.extraLarge ?: ""
     }
 
+    image = media.bannerImage
     url = media.siteUrl
     color = Color(0xFF0000)
 

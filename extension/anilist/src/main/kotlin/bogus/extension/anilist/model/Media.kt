@@ -18,11 +18,11 @@ data class Media(
     /**
      * The official titles of the media in various languages
      */
-    val title: bogus.extension.anilist.model.MediaTitle? = null,
+    val title: MediaTitle? = null,
     /**
      * The type of the media; anime or manga
      */
-    val type: bogus.extension.anilist.model.MediaType = bogus.extension.anilist.model.MediaType.UNKNOWN,
+    val type: MediaType = MediaType.UNKNOWN,
     /**
      * The url for the media page on the AniList website
      */
@@ -54,7 +54,7 @@ data class Media(
     /**
      * The ranking of the media in a particular time span and format compared to other media
      */
-    val rankings: List<bogus.extension.anilist.model.MediaRank> = listOf(),
+    val rankings: List<MediaRank> = listOf(),
     /**
      * The banner image of the media
      */
@@ -62,7 +62,7 @@ data class Media(
     /**
      * The cover images of the media
      */
-    val coverImage: bogus.extension.anilist.model.MediaCoverImage? = null,
+    val coverImage: MediaCoverImage? = null,
     /**
      * When the media's data was last updated
      */
@@ -94,7 +94,7 @@ data class Media(
     /**
      * The season the media was initially released in
      */
-    val season: bogus.extension.anilist.model.MediaSeason = bogus.extension.anilist.model.MediaSeason.UNKNOWN,
+    val season: MediaSeason = MediaSeason.UNKNOWN,
     /**
      * Short description of the media's story and characters
      */
@@ -102,9 +102,9 @@ data class Media(
     /**
      * The format the media was released in
      */
-    val format: bogus.extension.anilist.model.MediaFormat = bogus.extension.anilist.model.MediaFormat.UNKNOWN,
+    val format: MediaFormat = MediaFormat.UNKNOWN,
     /**
      * The current releasing status of the media
      */
-    val status: bogus.extension.anilist.model.MediaStatus = bogus.extension.anilist.model.MediaStatus.UNKNOWN
+    val status: MediaStatus = MediaStatus.UNKNOWN
 )
