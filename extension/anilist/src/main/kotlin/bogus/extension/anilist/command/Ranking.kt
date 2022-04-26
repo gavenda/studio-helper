@@ -20,7 +20,13 @@ suspend fun AniListExtension.ranking() {
         name = "ranking"
         description = "Shows the current ranking based on given parameters."
         action {
-            log.info { "Looking up ranking $arguments with [ userId = ${user.id} ]" }
+            log.info(
+                msg = "Looking up ranking",
+                context = mapOf(
+                    "arguments" to arguments,
+                    "userId" to user.id
+                )
+            )
 
             val hentai = true
             val mediaSeason = arguments.season?.let { MediaSeason.valueOf(it) }

@@ -1,5 +1,6 @@
 package bogus.extension.automove
 
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.events.EventContext
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
@@ -19,7 +20,7 @@ class AutoMoveExtension(
     val defaultChannel: Snowflake,
     val deafChannel: Snowflake
 ) : Extension() {
-    private val log = KotlinLogging.logger { }
+    private val log = KotlinLogging.logger { }.asLogFMT()
     override val name = "automove"
     override suspend fun setup() {
         intents += Intent.GuildVoiceStates
@@ -55,12 +56,22 @@ class AutoMoveExtension(
             member.edit {
                 voiceChannelId = deafChannel
             }
-            log.info { """msg="Moving deafened member" id=${member.id}""" }
+            log.info(
+                msg = "Moving deafened member",
+                context = mapOf(
+                    "memberId" to member.id
+                )
+            )
         } else if (voiceState.channelId != defaultChannel && !voiceState.isSelfDeafened) {
             member.edit {
                 voiceChannelId = defaultChannel
             }
-            log.info { """msg="Moving speaking member" id=${member.id}""" }
+            log.info(
+                msg = "Moving speaking member",
+                context = mapOf(
+                    "memberId" to member.id
+                )
+            )
         }
     }
 

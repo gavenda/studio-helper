@@ -3,6 +3,7 @@ package bogus.extension.anilist.coroutines
 import bogus.coroutines.Poller
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.AiringSchedule
+import bogus.util.asLogFMT
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -17,7 +18,7 @@ class AiringSchedulePoller(
     private val coroutineDispatcher: CoroutineDispatcher,
     private val mediaIdList: List<Long>
 ) : KoinComponent, Poller<List<AiringSchedule>> {
-    val log = KotlinLogging.logger { }
+    val log = KotlinLogging.logger { }.asLogFMT()
 
     // Empty, gets populated at first run
     private val mediaIdEpisode = mutableMapOf<Long, Int>()
@@ -30,12 +31,12 @@ class AiringSchedulePoller(
                 updateMediaEpisode(it.mediaId, it.episode)
             }
 
-            log.info { """msg="Initialized media list"""" }
+            log.debug("Initialized media list")
         }
 
         return channelFlow {
             while (!isClosedForSend) {
-                log.info { """msg="Fetching latest airing media"""" }
+                log.debug("Fetching latest media")
 
                 val airingSchedules = aniList.findAiringMedia(mediaIdList)
                 if (airingSchedules != null) {
@@ -58,7 +59,7 @@ class AiringSchedulePoller(
             mediaIdEpisode.putIfAbsent(it, 0)
         }
 
-        log.info { """msg="Poller updated", mediaIds="$mediaIds"""" }
+        log.debug("Poller updated")
     }
 
     /**

@@ -1,5 +1,6 @@
 package bogus.extension.aniradio
 
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.failed
 import com.kotlindiscord.kord.extensions.checks.memberFor
@@ -36,7 +37,7 @@ class AniRadioExtension : Extension() {
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
-    private val log = KotlinLogging.logger { }
+    private val log = KotlinLogging.logger { }.asLogFMT()
     private var voiceConnection: VoiceConnection? = null
 
     override suspend fun setup() {
@@ -71,7 +72,7 @@ class AniRadioExtension : Extension() {
                 val theirVoiceChannel = member.getVoiceStateOrNull()?.getChannelOrNull()
 
                 if (theirVoiceChannel == null) {
-                    log.failed("No voice channel")
+                    log.debug("No voice channel")
                     respond {
                         content = translate("checks.voiceChannel.notInVoice")
                     }
@@ -84,7 +85,7 @@ class AniRadioExtension : Extension() {
                         Permission.Connect
                     )
                     if (!canTalk) {
-                        log.failed("No permission")
+                        log.debug("No permission")
                         respond {
                             content = translate("checks.voiceChannel.noPermission")
                         }
@@ -131,7 +132,12 @@ class AniRadioExtension : Extension() {
             override fun playlistLoaded(playlist: AudioPlaylist) {}
             override fun noMatches() {}
             override fun loadFailed(exception: FriendlyException) {
-                log.error { """msg="Audio file failed to load", reason="${exception.message}""""" }
+                log.error(
+                    msg = "Audio file failed to load",
+                    context = mapOf(
+                        "reason" to exception.message
+                    )
+                )
             }
         })
     }

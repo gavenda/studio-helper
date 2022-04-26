@@ -6,6 +6,7 @@ import bogus.extension.anilist.db.airingAnimes
 import bogus.extension.anilist.db.guilds
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.graphql.AniListGraphQL
+import bogus.util.asLogFMT
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
@@ -46,7 +47,7 @@ object AniListExtension : Extension() {
     override val name = "anilist"
     override val bundle = "anilist"
 
-    val log = KotlinLogging.logger { }
+    val log = KotlinLogging.logger { }.asLogFMT()
 
     private val pollingQueueDispatcher = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
         .asCoroutineDispatcher()
@@ -75,13 +76,21 @@ object AniListExtension : Extension() {
 
     fun removeAnimeFromPolling(guildId: Snowflake, mediaId: Long) {
         val poller = pollers[guildId] ?: return
-        log.info { """msg="Remove airing anime from polling", guild=$guildId, media=$mediaId""" }
-        poller.removeMediaId(mediaId)
+
+        log.info(
+            msg = "Remove airing anime from polling",
+            context = mapOf(
+                "guild" to guildId,
+                "mediaId" to mediaId
+            )
+        )
 
         if (poller.mediaIds.isEmpty()) {
             poller.close()
             pollers.remove(guildId)
         }
+
+        poller.removeMediaId(mediaId)
     }
 
     suspend fun setupPolling(guild: GuildBehavior) {
@@ -91,7 +100,13 @@ object AniListExtension : Extension() {
             .map { it.mediaId }
 
         if (mediaIds.isNotEmpty()) {
-            log.info { """msg="Begin airing anime polling", guild=${guild.id}, mediaIds="$mediaIds"""" }
+            log.info(
+                msg = "Begin airing anime polling",
+                context = mapOf(
+                    "guildId" to guild.id,
+                    "mediaIds" to mediaIds
+                )
+            )
 
             val runningPoller = pollers[guild.id]
 
@@ -110,7 +125,13 @@ object AniListExtension : Extension() {
                         .distinctBy { it.mediaId }
                         .mapNotNull { it.media.title?.english ?: it.media.title?.romaji }
 
-                    log.info { """msg="Collecting airing schedules", guild=${guild.id}, schedules="$titles"""" }
+                    log.info(
+                        msg = "Collecting airing schedules",
+                        context = mapOf(
+                            "guildId" to guild.id,
+                            "titles" to titles
+                        )
+                    )
 
                     val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
                     airingSchedules.forEach { airingSchedule ->
@@ -133,7 +154,12 @@ object AniListExtension : Extension() {
                 }
             }
         } else {
-            log.warn { """msg="No media id given, will not poll", guild=${guild.id}""" }
+            log.warn(
+                msg = "No media id given, will not poll",
+                context = mapOf(
+                    "guildId" to guild.id
+                )
+            )
         }
     }
 

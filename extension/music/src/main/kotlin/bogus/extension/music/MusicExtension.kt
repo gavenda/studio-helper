@@ -4,6 +4,7 @@ import bogus.extension.music.command.*
 import bogus.extension.music.command.message.playLater
 import bogus.extension.music.command.message.playNext
 import bogus.extension.music.command.message.playNow
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.env
@@ -31,7 +32,7 @@ import kotlin.concurrent.thread
 object MusicExtension : Extension() {
     override val name: String = EXTENSION_NAME
     override val bundle: String = TRANSLATION_BUNDLE
-    internal val log = KotlinLogging.logger { }
+    internal val log = KotlinLogging.logger { }.asLogFMT()
 
     override suspend fun setup() {
         intents += Intent.GuildVoiceStates
@@ -63,7 +64,7 @@ object MusicExtension : Extension() {
         }
         event<Event> {
             action {
-                log.debug { """msg="Attempt disconnect"""" }
+                log.debug("Attempt disconnect")
                 Jukebox.tryToDisconnect()
             }
         }

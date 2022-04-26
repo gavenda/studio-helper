@@ -3,6 +3,7 @@ package bogus.extension.counter
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.constants.ITEMS_PER_CHUNK
 import bogus.paginator.respondingStandardPaginator
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.publicSubCommand
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -29,7 +30,7 @@ class CounterExtension : Extension() {
     private val path = Paths.get("", "db").toAbsolutePath()
     private val pathFile = path.resolve("counter.json")
     private val counters = mutableMapOf<String, Long>()
-    private val log = KotlinLogging.logger { }
+    private val log = KotlinLogging.logger { }.asLogFMT()
 
     override suspend fun setup() {
         event<ReadyEvent> {
@@ -50,7 +51,7 @@ class CounterExtension : Extension() {
                             counters.putAll(decodedMap)
                         }
                     } catch (ex: Exception) {
-                        log.error(ex) { ex.message }
+                        log.error(ex, ex.message)
                     }
                 }
             }

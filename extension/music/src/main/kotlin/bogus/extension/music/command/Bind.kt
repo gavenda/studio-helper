@@ -42,7 +42,7 @@ suspend fun MusicExtension.unbind() {
                 dbGuild.flushChanges()
                 player.unbind()
 
-                log.info { """msg="Guild unbound" guild=${guild.idLong}""" }
+                log.info("Guild unbound", mapOf("guildId" to guild.id))
 
                 if (textChannel != null) {
                     respond {
@@ -78,11 +78,17 @@ suspend fun MusicExtension.bind() {
                 discordGuildId = guild.idLong
             }.also { db.guilds.add(it) }
 
-            dbGuild.textChannelId = channel.id.value.toLong()
+            dbGuild.textChannelId = channel.idLong
             dbGuild.lastMessageId = player.bind(channel)?.value?.toLong() ?: 0L
             dbGuild.flushChanges()
 
-            log.info { """msg="Guild bound" guild=${guild.idLong} channel=${channel.id}""" }
+            log.info(
+                msg = "Guild bound",
+                context = mapOf(
+                    "guildId" to guild.id,
+                    "channelId" to channel.id
+                )
+            )
 
             respond {
                 content = translate("bind.response", arrayOf(channel.mention))

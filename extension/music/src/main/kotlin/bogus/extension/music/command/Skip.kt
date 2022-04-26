@@ -18,7 +18,14 @@ suspend fun MusicExtension.skip() {
         action {
             val guild = guild ?: return@action
             val audioTrack = guild.player.skip()
-            log.info { """msg="Skipped music" user=${user.id}""" }
+
+            log.info(
+                msg = "Music skipped",
+                context = mapOf(
+                    "user" to user.id
+                )
+            )
+
             if (audioTrack != null) {
                 respond { content = translate("skip.response.skipped", arrayOf(audioTrack.title)) }
             } else {

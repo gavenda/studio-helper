@@ -4,10 +4,7 @@ import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.paginator.MessageQueuePaginator
 import bogus.extension.music.paginator.MutablePages
 import bogus.extension.music.paginator.messageQueuePaginator
-import bogus.util.abbreviate
-import bogus.util.escapedBrackets
-import bogus.util.isUrl
-import bogus.util.toYesNo
+import bogus.util.*
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.pagination.pages.Page
 import dev.kord.common.Color
@@ -36,7 +33,7 @@ import java.util.concurrent.LinkedBlockingDeque
 class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val tp by inject<TranslationsProvider>()
     private val queue = LinkedBlockingDeque<Track>()
-    private val log = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}.asLogFMT()
     private val link = Lava.linkFor(guildId)
     private val queueUpdatePublisher = MutableSharedFlow<Long>(
         extraBufferCapacity = Channel.UNLIMITED
@@ -44,12 +41,26 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
     private val queueUpdates = queueUpdatePublisher.asSharedFlow()
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error { """msg=Track error" error="${exception.message}"""" }
+
+            log.error(
+                throwable = exception,
+                msg = "Track error",
+                context = mapOf(
+                    "errorMessage" to exception.message
+                )
+            )
+
             updateBoundQueue()
         }
 
         on<TrackStuckEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error { """msg="Track stuck" track="$track" duration="${threshold.inWholeMilliseconds}ms""""" }
+            log.error(
+                msg = "Track stuck",
+                context = mapOf(
+                    "track" to track,
+                    "duration" to "${threshold.inWholeMilliseconds}ms"
+                )
+            )
         }
 
         on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
@@ -69,14 +80,26 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
 
             when (reason) {
                 TrackEndEvent.EndReason.LOAD_FAILED -> {
-                    log.debug { """msg="Track load failed" track="${track.title}"""" }
+
+                    log.debug(
+                        msg = "Track load failed",
+                        context = mapOf(
+                            "track" to track.title
+                        )
+                    )
+
                     val retried = retryTrack(track)
                     if (retried.not()) {
                         playFromQueue()
                     }
                 }
                 else -> {
-                    log.debug { """msg="Track end" track="${track.title}"""" }
+                    log.debug(
+                        msg = "Track end",
+                        context = mapOf(
+                            "track" to track.title
+                        )
+                    )
                     playFromQueue()
                 }
             }
@@ -101,7 +124,7 @@ class GuildMusicPlayer(guildId: Snowflake) : KoinComponent {
                 }
 
                 boundPaginator?.send()
-                log.debug { "Queue updated" }
+                log.debug("Queue updated")
             }
             .launchIn(CoroutineScope(Dispatchers.IO))
     }

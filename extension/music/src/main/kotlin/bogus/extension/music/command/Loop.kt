@@ -1,5 +1,6 @@
 package bogus.extension.music.command
 
+import bogus.extension.music.MusicEffects
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
@@ -30,7 +31,15 @@ private suspend fun EphemeralSlashCommand<*>.single() {
         }
         action {
             player.toggleLoop()
-            log.info { """msg="Toggled loop single" looped=${player.looped} user=${user.id}""" }
+
+            log.info(
+                msg = "Toggled loop single",
+                context = mapOf(
+                    "looped" to player.looped,
+                    "user" to user.id
+                )
+            )
+
             if (player.looped) {
                 respond {
                     content = translate("loop.response.single.start")
@@ -54,7 +63,13 @@ private suspend fun EphemeralSlashCommand<*>.all() {
         }
         action {
             player.toggleLoopAll()
-            log.info { """msg="Toggled loop all" looped=${player.loopedAll} user=${user.id}""" }
+            log.info(
+                msg = "Toggled loop all",
+                context = mapOf(
+                    "looped" to player.loopedAll,
+                    "user" to user.id
+                )
+            )
             if (player.loopedAll) {
                 respond {
                     content = translate("loop.response.all.start")

@@ -59,7 +59,13 @@ private suspend fun ApplicationCommandContext.findMedia(
 
     val aniList by inject<AniList>()
 
-    log.info { "Looking up media [ query = $query, userId = ${user.id} ]" }
+    log.info(
+        msg = "Looking up media",
+        context = mapOf(
+            "query" to query,
+            "userId" to user.id
+        )
+    )
 
     val hentai = true
     val media = aniList.findMedia(query, type, hentai)

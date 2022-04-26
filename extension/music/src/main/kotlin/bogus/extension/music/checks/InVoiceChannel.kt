@@ -3,6 +3,7 @@ package bogus.extension.music.checks
 import bogus.extension.music.TRANSLATION_BUNDLE
 import bogus.extension.music.link
 import bogus.extension.music.player
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.checks.*
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
 import com.kotlindiscord.kord.extensions.utils.hasPermissions
@@ -17,11 +18,10 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         return
     }
 
-    val log = KotlinLogging.logger { }
+    val log = KotlinLogging.logger { }.asLogFMT()
     val guild = guildFor(event)
 
     if (guild == null) {
-        log.failed("No guild")
         fail(translate("checks.anyGuild.failed"))
         return
     }
@@ -34,7 +34,6 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         return
     }
     if (member == null) {
-        log.nullMember(event)
         fail("Something happened in our end. Please contact the developer.")
         return
     }
@@ -43,7 +42,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
     val theirVoiceChannel = member.getVoiceStateOrNull()?.getChannelOrNull()
 
     if (theirVoiceChannel == null) {
-        log.failed("No voice channel")
+        log.debug("No voice channel")
         fail(translate("check.voice-channel.fail", TRANSLATION_BUNDLE))
         return
     }
@@ -54,7 +53,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
             Permission.Connect
         )
         if (!canTalk) {
-            log.failed("No permission")
+            log.debug("No permission")
             fail(translate("check.voice-channel-permission.fail", TRANSLATION_BUNDLE))
             return
         }
@@ -62,17 +61,14 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         guild.player.assureConnection()
         guild.link.connectAudio(theirVoiceChannel.id)
         guild.player.effects.applyFilters()
-
-        log.passed()
         pass()
         return
     }
 
     if (theirVoiceChannel == ourVoiceChannel) {
-        log.passed()
         pass()
     } else {
-        log.failed("Not in same channel")
+        log.debug("Not in same channel")
         fail(translate("check.voice-channel-same.fail", TRANSLATION_BUNDLE))
     }
 

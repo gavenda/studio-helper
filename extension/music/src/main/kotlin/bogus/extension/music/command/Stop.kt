@@ -21,7 +21,12 @@ suspend fun MusicExtension.stop() {
             player.clear()
             player.stop()
 
-            log.info { """msg="Stopped singer" user=${user.id}""" }
+            log.info(
+                msg = "Player stopped",
+                context = mapOf(
+                    "user" to user.id
+                )
+            )
 
             if (skipped > 0) {
                 respond { content = translate("stop.response.multiple", arrayOf(skipped)) }

@@ -165,20 +165,6 @@ abstract class StandardPaginator(
      * Convenience function that enables and disables buttons as necessary, depending on the current page number.
      */
     suspend fun updateButtons() {
-        val embedBuilder = EmbedBuilder()
-        currentPage.builder(embedBuilder)
-
-        val embedUrl = embedBuilder.url
-
-        if (embedUrl != null) {
-            linkButton?.let { components.remove(it) }
-            linkButton = components.linkButton {
-                label = "View on AniList"
-                url = embedUrl
-            }
-            components.sort()
-        }
-
         if (pages.groups.values.any { it.size > 1 }) {
             if (backButton == null && nextButton == null) {
                 addNavigationButtons()

@@ -47,8 +47,19 @@ private suspend fun SlashGroup.nightcore() {
             hasDJRole()
         }
         action {
-            player.effects.applyNightcore(arguments.speed.coerceIn(10, 300))
-            log.info { """msg="Applied filter" filter="Nightcore" user=${user.id}""" }
+            val speed = arguments.speed.coerceIn(10, 300)
+
+            player.effects.applyNightcore(speed)
+
+            log.info(
+                msg = "Applied filter",
+                context = mapOf(
+                    "filter" to "nightcore",
+                    "user" to user.id,
+                    "speed" to speed
+                )
+            )
+
             respond {
                 content = translate("effect.filter.response.nightcore")
             }
@@ -66,7 +77,13 @@ private suspend fun SlashGroup.karaoke() {
         }
         action {
             player.effects.applyKaraoke()
-            log.info { """msg="Applied filter" filter="Karaoke" user=${user.id}""" }
+            log.info(
+                msg = "Applied filter",
+                context = mapOf(
+                    "filter" to "karaoke",
+                    "user" to user.id
+                )
+            )
             respond {
                 content = translate("effect.filter.response.karaoke")
             }
@@ -84,7 +101,13 @@ private suspend fun SlashGroup.vaporwave() {
         }
         action {
             player.effects.applyVaporwave()
-            log.info { """msg="Applied filter" filter="Vaporwave" user=${user.id}""" }
+            log.info(
+                msg = "Applied filter",
+                context = mapOf(
+                    "filter" to "vaporwave",
+                    "user" to user.id
+                )
+            )
             respond {
                 content = translate("effect.filter.response.vaporwave")
             }
@@ -102,7 +125,13 @@ private suspend fun SlashGroup.rock() {
         }
         action {
             player.effects.applyEqualizer(MusicEffects.Equalizer.ROCK)
-            log.info { """msg="Applied equalizer" equalizer="ROCK" user=${user.id}""" }
+            log.info(
+                msg = "Applied equalizer",
+                context = mapOf(
+                    "filter" to MusicEffects.Equalizer.ROCK,
+                    "user" to user.id
+                )
+            )
             respond {
                 content = translate("effect.equalizer.response.rock")
             }
@@ -120,7 +149,13 @@ private suspend fun SlashGroup.pop() {
         }
         action {
             player.effects.applyEqualizer(MusicEffects.Equalizer.POP)
-            log.info { """msg="Applied equalizer" equalizer="POP" user=${user.id}""" }
+            log.info(
+                msg = "Applied equalizer",
+                context = mapOf(
+                    "filter" to MusicEffects.Equalizer.POP,
+                    "user" to user.id
+                )
+            )
             respond {
                 content = translate("effect.equalizer.response.pop")
             }
@@ -138,7 +173,13 @@ private suspend fun SlashGroup.trebleBass() {
         }
         action {
             player.effects.applyEqualizer(MusicEffects.Equalizer.BASS_BOOST)
-            log.info { """msg="Applied equalizer" equalizer="BASS_BOOST" user=${user.id}""" }
+            log.info(
+                msg = "Applied equalizer",
+                context = mapOf(
+                    "filter" to MusicEffects.Equalizer.BASS_BOOST,
+                    "user" to user.id
+                )
+            )
             respond {
                 content = translate("effect.equalizer.response.treble-bass")
             }

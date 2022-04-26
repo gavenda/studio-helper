@@ -42,7 +42,13 @@ private suspend fun ApplicationCommandContext.findStaff(query: String) {
     val aniList by inject<AniList>()
     val staffs = aniList.findStaff(query)
 
-    log.info { "Looking up staff [ query = $query, userId = ${user.id} ]" }
+    log.info(
+        msg = "Looking up staff",
+        context = mapOf(
+            "query" to query,
+            "userId" to user.id
+        )
+    )
 
     if (staffs == null || staffs.isEmpty()) {
         respond {

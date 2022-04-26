@@ -1,6 +1,7 @@
 package bogus.extension.music
 
 import bogus.extension.music.db.guilds
+import bogus.util.asLogFMT
 import bogus.util.escapedBackticks
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Plays music via a play request.
  */
 object Jukebox : KoinComponent {
-    private val log = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}.asLogFMT()
     private val players = ConcurrentHashMap<Snowflake, GuildMusicPlayer>()
     private val mutex = Mutex()
     private val tp by inject<TranslationsProvider>()
@@ -43,7 +44,12 @@ object Jukebox : KoinComponent {
         mutex.withLock {
             players.computeIfAbsent(guildId) {
                 val gmp = GuildMusicPlayer(guildId)
-                log.debug { """msg="Creating guild music player" guildId=$guildId""" }
+                log.debug(
+                    msg = "GMP created",
+                    context = mapOf(
+                        "guildId" to guildId
+                    )
+                )
                 return@computeIfAbsent gmp
             }
         }
@@ -74,7 +80,12 @@ object Jukebox : KoinComponent {
                 dbGuild.lastMessageId = bind(textChannel)?.value?.toLong()
                 dbGuild.flushChanges()
 
-                log.info { """msg="Guild bound" guild=${guild.id}""" }
+                log.info(
+                    msg = "Guild bound",
+                    context = mapOf(
+                        "guildId" to guild.id
+                    )
+                )
             }
 
             // Apply volume
@@ -124,7 +135,14 @@ object Jukebox : KoinComponent {
         val identifiers = parseResult.identifiers
 
         if (identifiers.isEmpty()) {
-            log.info { """msg="No identifiers found", identifiers="$identifiers" user=$userId guild=${guild.id}""" }
+            log.info(
+                msg = "No identifiers found",
+                context = mapOf(
+                    "identifiers" to identifiers,
+                    "userId" to userId,
+                    "guildId" to guild.id
+                )
+            )
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -194,7 +212,14 @@ object Jukebox : KoinComponent {
             }
         }
 
-        log.info { """msg="Playing now" identifier="$identifier" user=$userId guild=${guild.id}""" }
+        log.info(
+            msg = "Playing now",
+            context = mapOf(
+                "identifier" to identifier,
+                "userId" to userId,
+                "guildId" to guild.id
+            )
+        )
 
         return ""
     }
@@ -208,7 +233,14 @@ object Jukebox : KoinComponent {
         val identifiers = parseResult.identifiers
 
         if (identifiers.isEmpty()) {
-            log.info { """msg="No identifiers found" identifiers="$identifiers" user=$userId guild=${guild.id}""" }
+            log.info(
+                msg = "No identifiers found",
+                context = mapOf(
+                    "identifiers" to identifiers,
+                    "userId" to userId,
+                    "guildId" to guild.id
+                )
+            )
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -278,7 +310,14 @@ object Jukebox : KoinComponent {
             }
         }
 
-        log.info { """msg="Playing next" identifier="$identifier" user=$userId guild=${guild.id}""" }
+        log.info(
+            msg = "Playing next",
+            context = mapOf(
+                "identifier" to identifier,
+                "userId" to userId,
+                "guildId" to guild.id
+            )
+        )
 
         return ""
     }
@@ -315,10 +354,10 @@ object Jukebox : KoinComponent {
                 trackLoaded(item.tracks.first().toTrack())
             }
             TrackResponse.LoadType.NO_MATCHES -> {
-                log.debug { """msg=Nothing found""" }
+                log.debug("Nothing found")
             }
             TrackResponse.LoadType.LOAD_FAILED -> {
-                log.error { """msg=Nothing found""" }
+                log.debug("Nothing found")
             }
         }
     }
@@ -334,7 +373,14 @@ object Jukebox : KoinComponent {
         val link = Lava.linkFor(guild)
 
         if (identifiers.isEmpty()) {
-            log.info { """msg="No identifiers found" identifiers="$identifiers" user=$userId guild=${guild.id}""" }
+            log.info(
+                msg = "No identifiers found",
+                context = mapOf(
+                    "identifiers" to identifiers,
+                    "userId" to userId,
+                    "guildId" to guild.id
+                )
+            )
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -458,7 +504,14 @@ object Jukebox : KoinComponent {
             }
         }
 
-        log.info { """msg="Playing later" identifier="$identifier" user=$userId guild=${guild.id}""" }
+        log.info(
+            msg = "Playing later",
+            context = mapOf(
+                "identifier" to identifier,
+                "userId" to userId,
+                "guildId" to guild.id
+            )
+        )
 
         return ""
     }

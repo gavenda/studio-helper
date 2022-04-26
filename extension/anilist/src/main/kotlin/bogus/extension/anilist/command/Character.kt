@@ -42,7 +42,13 @@ private suspend fun ApplicationCommandContext.findCharacter(query: String) {
     val aniList by inject<AniList>()
     val characters = aniList.findCharacter(query)
 
-    log.info { "Looking up character [ query = $query, userId = ${user.id} ]" }
+    log.info(
+        msg = "Looking up character",
+        context = mapOf(
+            "query" to query,
+            "userId" to user.id
+        )
+    )
 
     if (characters == null || characters.isEmpty()) {
         respond {

@@ -19,7 +19,14 @@ suspend fun MusicExtension.disconnect() {
         action {
             player.stop()
             link.disconnectAudio()
-            log.info { """msg="Disconnected singer" user=${user.id}""" }
+
+            log.info(
+                msg = "Disconnected from voice",
+                context = mapOf(
+                    "user" to user.id
+                )
+            )
+
             respond {
                 content = translate("disconnect.response")
             }

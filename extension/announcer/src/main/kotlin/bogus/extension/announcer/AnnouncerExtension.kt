@@ -1,6 +1,7 @@
 package bogus.extension.announcer
 
 
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -55,7 +56,7 @@ class AnnouncerExtension(
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
-    private val log = KotlinLogging.logger { }
+    private val log = KotlinLogging.logger { }.asLogFMT()
     private val filePaths = mutableMapOf<String, Path>()
 
     override suspend fun setup() {
@@ -115,7 +116,12 @@ class AnnouncerExtension(
 
                         filePaths[audioName] = Files.createTempFile(audioFileName, ".$audioFileExt").apply {
                             Files.write(this, audioFileStream.readAllBytes())
-                            log.info { """msg="Audio file extracted" tmpDir="$this"""" }
+                            log.info(
+                                msg = "Audio file extracted",
+                                context = mapOf(
+                                    "tmpDir" to this
+                                )
+                            )
                         }
                     }
                 }
@@ -142,7 +148,12 @@ class AnnouncerExtension(
             override fun playlistLoaded(playlist: AudioPlaylist) {}
             override fun noMatches() {}
             override fun loadFailed(exception: FriendlyException) {
-                log.error { """msg="Audio file failed to load", reason="${exception.message}""""" }
+                log.error(
+                    msg = "Audio file failed to load",
+                    context = mapOf(
+                        "reason" to exception.message
+                    )
+                )
             }
         })
     }

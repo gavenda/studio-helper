@@ -1,5 +1,6 @@
 package bogus.extension.music.checks
 
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.checks.*
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
 import com.kotlindiscord.kord.extensions.utils.hasRole
@@ -12,13 +13,12 @@ suspend fun <T : Event> CheckContext<T>.hasDJRole() {
         return
     }
 
-    val log = KotlinLogging.logger { }
+    val log = KotlinLogging.logger { }.asLogFMT()
     val user = userFor(event)
     val guild = guildFor(event)
     val role = guild?.roles?.firstOrNull { it.name == "DJ" }
 
     if (role == null) {
-        log.passed()
         pass()
         return
     }
@@ -31,18 +31,16 @@ suspend fun <T : Event> CheckContext<T>.hasDJRole() {
     val member = guild.getMemberOrNull(user.id)
 
     if (member == null) {
-        log.nullMember(event)
         fail()
         return
     }
 
     if (member.hasRole(role)) {
-        log.passed()
         pass()
         return
     }
 
-    log.failed("""msg="no dj role" member="$member"""")
+    log.debug("No dj role", mapOf("memberId" to member.id))
 
     fail(
         translate(

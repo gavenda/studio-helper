@@ -2,6 +2,7 @@ package bogus.bot.chupa
 
 import bogus.extension.about.AboutExtension
 import bogus.extension.counter.CounterExtension
+import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -11,7 +12,7 @@ import mu.KotlinLogging
 suspend fun main() {
     val environment = envOrNull("ENVIRONMENT") ?: "production"
     val token = env("TOKEN")
-    val log = KotlinLogging.logger {  }
+    val log = KotlinLogging.logger { }.asLogFMT()
     val bot = ExtensibleBot(token) {
         extensions {
             add(::AboutExtension)
@@ -30,7 +31,7 @@ suspend fun main() {
 
         hooks {
             setup {
-                log.info { """msg="Bot up and running"""" }
+                log.info("Bot up and running")
             }
         }
 

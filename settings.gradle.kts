@@ -4,6 +4,7 @@ include(
     "common",
     "bot:vivy",
     "bot:chupa",
+    "bot:lumi",
     "bot:parrot",
     "bot:basura",
     "extension:about",
@@ -12,5 +13,6 @@ include(
     "extension:announcer",
     "extension:automove",
     "extension:counter",
+    "extension:moderation",
     "extension:music",
 )
