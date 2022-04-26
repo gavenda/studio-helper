@@ -56,7 +56,7 @@ fun createMediaEmbed(
                 inProgress.append("- ${embedMedia.discordName} ‣ [${embedMedia.progress}]\n")
             }
             MediaListStatus.DROPPED -> {
-                dropped.append("- ${embedMedia.progress} ‣ [${embedMedia.progress}]\n")
+                dropped.append("- ${embedMedia.discordName} ‣ [${embedMedia.progress}]\n")
             }
             MediaListStatus.PAUSED -> {
                 paused.append("- ${embedMedia.discordName} ‣ [${embedMedia.progress}]\n")
@@ -228,6 +228,14 @@ fun createMediaEmbed(
         field {
             name = "Not On List"
             value = notOnList.toString()
+            inline = false
+        }
+    }
+
+    if (paused.isNotBlank()) {
+        field {
+            name = "Paused"
+            value = paused.toString()
             inline = false
         }
     }
