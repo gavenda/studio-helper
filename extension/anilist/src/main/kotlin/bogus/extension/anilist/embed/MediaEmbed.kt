@@ -184,6 +184,14 @@ fun createMediaEmbed(
     }
 
     // User scores
+    if (paused.isNotBlank()) {
+        field {
+            name = "Paused"
+            value = paused.toString()
+            inline = false
+        }
+    }
+
     if (inProgress.isNotBlank()) {
         field {
             name = "In Progress"
@@ -228,14 +236,6 @@ fun createMediaEmbed(
         field {
             name = "Not On List"
             value = notOnList.toString()
-            inline = false
-        }
-    }
-
-    if (paused.isNotBlank()) {
-        field {
-            name = "Paused"
-            value = paused.toString()
             inline = false
         }
     }
