@@ -50,6 +50,7 @@ query(
       coverImage {
         extraLarge
       }
+      bannerImage
       genres
       synonyms
       meanScore

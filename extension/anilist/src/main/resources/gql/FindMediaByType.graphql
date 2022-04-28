@@ -33,6 +33,7 @@ query($page: Int, $perPage: Int, $query: String, $type: MediaType, $genreNotIn: 
       coverImage {
         extraLarge
       }
+      bannerImage
       genres
       synonyms
       meanScore
