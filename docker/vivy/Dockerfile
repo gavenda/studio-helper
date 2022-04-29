@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM eclipse-temurin:11-alpine
 RUN mkdir /bot
 COPY ./dist/vivy /bot/vivy
 WORKDIR /bot/vivy

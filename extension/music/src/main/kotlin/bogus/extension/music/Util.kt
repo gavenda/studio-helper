@@ -126,19 +126,6 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
                     }
                 }
             }
-            ephemeralButton {
-                deferredAck = true
-                style = ButtonStyle.Danger
-                label = "Cancel"
-
-                action {
-                    edit {
-                        content = "Cancelled."
-                        components { removeAll() }
-                    }
-                }
-            }
-            sort()
         }
     }
 }
@@ -166,19 +153,6 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
                     }
                 }
             }
-            ephemeralButton {
-                deferredAck = true
-                style = ButtonStyle.Danger
-                label = "Cancel"
-
-                action {
-                    edit {
-                        content = "Cancelled."
-                        components { removeAll() }
-                    }
-                }
-            }
-            sort()
         }
     }
 }
