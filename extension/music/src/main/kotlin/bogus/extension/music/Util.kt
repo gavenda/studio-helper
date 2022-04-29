@@ -5,9 +5,11 @@ import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommand
 import com.kotlindiscord.kord.extensions.commands.application.message.EphemeralMessageCommandContext
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommandContext
 import com.kotlindiscord.kord.extensions.components.components
+import com.kotlindiscord.kord.extensions.components.ephemeralButton
 import com.kotlindiscord.kord.extensions.components.ephemeralSelectMenu
 import com.kotlindiscord.kord.extensions.types.edit
 import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.common.entity.ButtonStyle
 import dev.kord.core.behavior.GuildBehavior
 import dev.schlaubi.lavakord.audio.Link
 import dev.schlaubi.lavakord.audio.player.Track
@@ -124,6 +126,17 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
                     }
                 }
             }
+            ephemeralButton {
+                deferredAck = true
+                style = ButtonStyle.Danger
+                label = "Cancel"
+
+                action {
+                    edit {
+                        content = "Cancelled."
+                    }
+                }
+            }
         }
     }
 }
@@ -148,6 +161,17 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
                     edit {
                         content = select(track)
                         components { removeAll() }
+                    }
+                }
+            }
+            ephemeralButton {
+                deferredAck = true
+                style = ButtonStyle.Danger
+                label = "Cancel"
+
+                action {
+                    edit {
+                        content = "Cancelled."
                     }
                 }
             }
