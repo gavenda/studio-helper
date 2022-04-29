@@ -138,6 +138,7 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
                     }
                 }
             }
+            sort()
         }
     }
 }
@@ -177,6 +178,7 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
                     }
                 }
             }
+            sort()
         }
     }
 }
