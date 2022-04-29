@@ -8,4 +8,5 @@ val AUDIO_FILES = mapOf(
     "Patrick: Bargain My Ass" to "patrick_bargain_my_ass.mp3",
     "Umbao: Hoy Buang Hunt Oy" to "umbao_scammed.mp3",
     "Umbao: Way Evidence" to "umbao_way_evidence.mp3",
+    "Richard: Who has entered?" to "richard_entered.mp3"
 )

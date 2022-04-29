@@ -62,30 +62,6 @@ jobs:
           context: .
           push: true
           tags: gavenda/basura:latest
-  docker-standalone:
-    name: Push to Docker (Standalone)
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download Distribution
-        uses: actions/download-artifact@v3
-        with:
-          name: basura
-          path: ./dist/basura
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          file: ./docker/basura-standalone/Dockerfile
-          context: .
-          push: true
-          tags: gavenda/basura:standalone-latest
   deploy:
     name: Deploy
     needs: build
