@@ -134,6 +134,7 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
                 action {
                     edit {
                         content = "Cancelled."
+                        components { removeAll() }
                     }
                 }
             }
@@ -172,6 +173,7 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
                 action {
                     edit {
                         content = "Cancelled."
+                        components { removeAll() }
                     }
                 }
             }
