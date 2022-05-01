@@ -49,10 +49,24 @@ documentation.
 Feel free to fork the code. You are free to host your own instance.
 
 ## Get me up and running!
-Rename `example.env` to `.env` and put your discord bot token.
-
-```bash
-./gradlew installDist
-docker-compose build
-docker-compose up
+In a simple docker compose configuration:
+```yaml
+version: '3'
+services:
+  bot:
+    image: 'gavenda/basura:latest'
+    environment:
+      TOKEN: <your bot token>
+      ANILIST_DB_USER: basura
+      ANILIST_DB_PASS: basura
+      ANILIST_DB_URL: jdbc:postgresql://database:5432/basura
+  database:
+    image: 'postgres:latest'
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: basura
+      POSTGRES_PASSWORD: basura
+      POSTGRES_DB: basura
 ```
