@@ -16,3 +16,7 @@ log
 
 # Ignore .env file
 .env
+
+# Ignore root announcer files
+/voicelines
+/mapping.json

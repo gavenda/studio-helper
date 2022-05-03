@@ -1,6 +1,7 @@
 plugins {
     id("bogus.common")
     id("bogus.kordex")
+    kotlin("plugin.serialization")
 }
 
 version = "1.0"

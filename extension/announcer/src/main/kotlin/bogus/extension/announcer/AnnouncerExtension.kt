@@ -1,6 +1,5 @@
 package bogus.extension.announcer
 
-
 import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -29,10 +28,10 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.user.VoiceStateUpdateEvent
 import dev.kord.gateway.Intent
 import dev.kord.voice.AudioFrame
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -45,7 +44,7 @@ import kotlin.random.Random
 class AnnouncerExtension(
     val defaultGuildId: Snowflake,
     val defaultVoiceChannelId: Snowflake,
-    val audioFiles: Map<String, String>
+    val audioFileMapPath: String = "mapping.json",
 ) : Extension() {
     override val name = EXTENSION_NAME
     override val bundle = TRANSLATIONS_BUNDLE
@@ -57,7 +56,6 @@ class AnnouncerExtension(
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
     private val log = KotlinLogging.logger { }.asLogFMT()
-    private val filePaths = mutableMapOf<String, Path>()
 
     override suspend fun setup() {
         // We need guild voice states
@@ -108,24 +106,6 @@ class AnnouncerExtension(
 
         event<ReadyEvent> {
             action {
-                withContext(Dispatchers.IO) {
-                    audioFiles.forEach { (audioName, audioFile) ->
-                        val (audioFileName, audioFileExt) = audioFile.split(".")
-                        val audioFileStream =
-                            object {}.javaClass.getResourceAsStream("/${audioFile}") ?: error("Cannot extract file")
-
-                        filePaths[audioName] = Files.createTempFile(audioFileName, ".$audioFileExt").apply {
-                            Files.write(this, audioFileStream.readAllBytes())
-                            log.info(
-                                msg = "Audio file extracted",
-                                context = mapOf(
-                                    "tmpDir" to this
-                                )
-                            )
-                        }
-                    }
-                }
-
                 // Auto join channel
                 val guild = kord.getGuild(defaultGuildId) ?: return@action
                 val voiceChannel = guild.getChannelOfOrNull<VoiceChannel>(defaultVoiceChannelId) ?: return@action
@@ -136,6 +116,16 @@ class AnnouncerExtension(
             }
         }
     }
+
+    private val filePaths: Map<String, Path>
+        get() {
+            val cwd = Path.of("")
+            val mapping = Files.readString(cwd.resolve(audioFileMapPath), Charsets.UTF_8)
+            val audioFileMap = Json.decodeFromString<List<AudioFileMap>>(mapping)
+            return audioFileMap.associate {
+                it.name to cwd.resolve(it.filePath)
+            }
+        }
 
     private fun playAudio(path: Path, delay: Long = 0) {
         val filePathStr = path.toAbsolutePath().toString()

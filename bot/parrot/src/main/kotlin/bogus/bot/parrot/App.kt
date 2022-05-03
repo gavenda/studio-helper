@@ -18,12 +18,13 @@ suspend fun main() {
             val defaultGuildId = Snowflake(env("DEFAULT_GUILD_ID"))
             val defaultVoiceChannelId = Snowflake(env("DEFAULT_VOICE_CHANNEL_ID"))
             val deafVoiceChannelId = Snowflake(env("DEAF_VOICE_CHANNEL_ID"))
+            val audioFileMapPath = envOrNull("AUDIO_FILE_MAP") ?: "mapping.json"
 
             add {
                 AnnouncerExtension(
                     defaultGuildId = defaultGuildId,
                     defaultVoiceChannelId = defaultVoiceChannelId,
-                    audioFiles = AUDIO_FILES
+                    audioFileMapPath = audioFileMapPath
                 )
             }
             add {
