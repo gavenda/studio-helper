@@ -52,6 +52,8 @@ class AutoMoveExtension(
     }
 
     suspend fun autoMove(voiceState: VoiceState, member: MemberBehavior) {
+        // Ignore if not both default channels
+        if (!(voiceState.channelId == defaultChannel || voiceState.channelId == deafChannel)) return
         if (voiceState.channelId != deafChannel && voiceState.isSelfDeafened) {
             member.edit {
                 voiceChannelId = deafChannel
