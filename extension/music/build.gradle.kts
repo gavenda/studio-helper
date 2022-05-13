@@ -8,7 +8,7 @@ version = "1.0"
 
 dependencies {
     implementation(project(":common"))
-    implementation("dev.schlaubi.lavakord:kord:3.6.0")
+    implementation("dev.schlaubi.lavakord:kord:3.6.2")
     implementation("de.sonallux.spotify:spotify-web-api-java:2.4.0")
 }
 
