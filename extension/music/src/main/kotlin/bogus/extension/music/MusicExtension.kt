@@ -124,7 +124,7 @@ object MusicExtension : Extension() {
                 val linkNodes = env("LINK_NODES").split(";")
                 val lavaKord = kord.lavakord {
                     link {
-                        autoReconnect = false
+                        autoReconnect = true
                     }
                 }
 
