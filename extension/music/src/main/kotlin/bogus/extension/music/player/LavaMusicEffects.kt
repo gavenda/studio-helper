@@ -13,9 +13,9 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
     private var equalizer = EqualizerType.NONE
     private val filters = mutableListOf<Filter>()
     private var nightcoreRate = 0
-    private var _volume = 0f
+    private var _volume = 100
     override val volume: Int
-        get() = player.volume
+        get() = _volume
 
     private fun bandGain(bandGain: Int, gain: Float) {
         equalizerBands[bandGain] = gain
@@ -67,7 +67,7 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
                 filter = equalizer
             }
 
-            val volume = VolumePcmAudioFilter(filter).setVolume(_volume)
+            val volume = VolumePcmAudioFilter(filter).setVolume(_volume / 100f)
             filterList.add(volume)
 
             filterList.reversed()
@@ -81,13 +81,13 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
     override suspend fun clearFilter() {
         player.setFilterFactory { _, _, output ->
             listOf(
-                VolumePcmAudioFilter(output).setVolume(_volume)
+                VolumePcmAudioFilter(output).setVolume(_volume / 100f)
             )
         }
     }
 
     override suspend fun applyVolume(value: Int) {
-        _volume = value / 100f
+        _volume = value
     }
 
     override suspend fun applyNightcore(value: Int) {
