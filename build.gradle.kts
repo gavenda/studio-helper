@@ -30,6 +30,10 @@ allprojects {
             name = "DRSchlaubi Releases"
             url = uri("https://schlaubi.jfrog.io/artifactory/lavakord")
         }
+        maven {
+            name = "JCenter"
+            url = uri("https://jcenter.bintray.com/")
+        }
     }
 
     tasks {

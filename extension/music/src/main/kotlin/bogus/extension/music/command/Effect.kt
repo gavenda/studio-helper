@@ -3,7 +3,7 @@ package bogus.extension.music.command
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
-import bogus.extension.music.player.Equalizer
+import bogus.extension.music.player.EqualizerType
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.SlashGroup
@@ -125,11 +125,11 @@ private suspend fun SlashGroup.rock() {
             hasDJRole()
         }
         action {
-            player.effects.applyEqualizer(Equalizer.ROCK)
+            player.effects.applyEqualizer(EqualizerType.ROCK)
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
-                    "filter" to Equalizer.ROCK,
+                    "filter" to EqualizerType.ROCK,
                     "user" to user.id
                 )
             )
@@ -149,11 +149,11 @@ private suspend fun SlashGroup.pop() {
             hasDJRole()
         }
         action {
-            player.effects.applyEqualizer(Equalizer.POP)
+            player.effects.applyEqualizer(EqualizerType.POP)
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
-                    "filter" to Equalizer.POP,
+                    "filter" to EqualizerType.POP,
                     "user" to user.id
                 )
             )
@@ -173,11 +173,11 @@ private suspend fun SlashGroup.trebleBass() {
             hasDJRole()
         }
         action {
-            player.effects.applyEqualizer(Equalizer.BASS_BOOST)
+            player.effects.applyEqualizer(EqualizerType.BASS_BOOST)
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
-                    "filter" to Equalizer.BASS_BOOST,
+                    "filter" to EqualizerType.BASS_BOOST,
                     "user" to user.id
                 )
             )

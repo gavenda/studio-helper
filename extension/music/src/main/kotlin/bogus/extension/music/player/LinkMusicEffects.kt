@@ -4,7 +4,7 @@ import dev.schlaubi.lavakord.audio.player.*
 
 class LinkMusicEffects(private val player: Player) : MusicEffects {
     private val filters = mutableListOf<Filter>()
-    private var equalizer = Equalizer.NONE
+    private var equalizer = EqualizerType.NONE
     private var nightcoreRate = 0
     private var _volume = 100
     override val volume get() = _volume
@@ -12,45 +12,44 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
     override suspend fun applyFilters() {
         player.applyFilters {
             volume = _volume / 100f
-            filters.forEach { effect ->
-                when (effect) {
-                    Filter.NIGHTCORE -> {
-                        timescale {
-                            rate = nightcoreRate / 100f
-                        }
-                    }
-                    Filter.VAPORWAVE -> {
-                        timescale {
-                            speed = 0.5f
-                        }
-                        tremolo {
-                            depth = 0.3f
-                            frequency = 14f
-                        }
-                    }
-                    Filter.KARAOKE -> {
-                        karaoke {
-                            level = 1.0f
-                            monoLevel = 1.0f
-                            filterBand = 220f
-                            filterWidth = 100f
-                        }
-                    }
+
+            if (filters.contains(Filter.NIGHTCORE)) {
+                timescale {
+                    rate = nightcoreRate / 100f
+                }
+            }
+
+            if (filters.contains(Filter.VAPORWAVE)) {
+                timescale {
+                    speed = 0.5f
+                }
+                tremolo {
+                    depth = 0.3f
+                    frequency = 14f
+                }
+            }
+
+            if (filters.contains(Filter.KARAOKE)) {
+                karaoke {
+                    level = 1.0f
+                    monoLevel = 1.0f
+                    filterBand = 220f
+                    filterWidth = 100f
                 }
             }
 
             when (equalizer) {
-                Equalizer.BASS_BOOST -> applyBassBoostEqualizer()
-                Equalizer.POP -> applyPopEqualizer()
-                Equalizer.ROCK -> applyRockEqualizer()
-                Equalizer.NONE -> bands.clear()
+                EqualizerType.BASS_BOOST -> applyBassBoostEqualizer()
+                EqualizerType.POP -> applyPopEqualizer()
+                EqualizerType.ROCK -> applyRockEqualizer()
+                EqualizerType.NONE -> bands.clear()
             }
         }
     }
 
     override suspend fun clearEqualizer() {
         player.applyFilters { bands.clear() }
-        equalizer = Equalizer.NONE
+        equalizer = EqualizerType.NONE
     }
 
     override suspend fun clearFilter() {
@@ -80,7 +79,7 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
         applyFilters()
     }
 
-    override suspend fun applyEqualizer(effect: Equalizer) {
+    override suspend fun applyEqualizer(effect: EqualizerType) {
         equalizer = effect
         applyFilters()
     }

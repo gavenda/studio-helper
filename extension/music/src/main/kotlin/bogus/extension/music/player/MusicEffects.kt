@@ -17,10 +17,10 @@ interface MusicEffects {
 
     suspend fun applyKaraoke()
 
-    suspend fun applyEqualizer(effect: Equalizer)
+    suspend fun applyEqualizer(effect: EqualizerType)
 }
 
-enum class Equalizer {
+enum class EqualizerType {
     BASS_BOOST,
     POP,
     ROCK,
