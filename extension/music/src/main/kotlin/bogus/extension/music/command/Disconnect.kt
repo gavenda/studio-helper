@@ -2,7 +2,6 @@ package bogus.extension.music.command
 
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.checks.hasDJRole
-import bogus.extension.music.link
 import bogus.extension.music.player
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
@@ -18,7 +17,7 @@ suspend fun MusicExtension.disconnect() {
         }
         action {
             player.stop()
-            link.disconnectAudio()
+            player.disconnect()
 
             log.info(
                 msg = "Disconnected from voice",

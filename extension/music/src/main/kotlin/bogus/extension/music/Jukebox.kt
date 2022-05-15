@@ -1,6 +1,7 @@
 package bogus.extension.music
 
 import bogus.extension.music.db.guilds
+import bogus.extension.music.player.*
 import bogus.util.asLogFMT
 import bogus.util.escapedBackticks
 import bogus.util.idLong
@@ -9,12 +10,10 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.GuildBehavior
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.channel.GuildMessageChannel
-import dev.schlaubi.lavakord.audio.Link
-import dev.schlaubi.lavakord.audio.player.Track
-import dev.schlaubi.lavakord.rest.TrackResponse
-import dev.schlaubi.lavakord.rest.loadItem
-import dev.schlaubi.lavakord.rest.mapToTrack
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -31,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object Jukebox : KoinComponent {
     private val log = KotlinLogging.logger {}.asLogFMT()
-    private val players = ConcurrentHashMap<Snowflake, GuildMusicPlayer>()
+    private val players = ConcurrentHashMap<Snowflake, MusicPlayer>()
     private val mutex = Mutex()
     private val tp by inject<TranslationsProvider>()
     private val db by inject<Database>()
@@ -43,14 +42,18 @@ object Jukebox : KoinComponent {
     suspend fun register(guildId: Snowflake) {
         mutex.withLock {
             players.computeIfAbsent(guildId) {
-                val gmp = GuildMusicPlayer(guildId)
+                val musicPlayer = if (LAVAKORD_ENABLED) {
+                    LinkMusicPlayer(guildId)
+                } else {
+                    LavaMusicPlayer()
+                }
                 log.debug(
-                    msg = "GMP created",
+                    msg = "Music player created",
                     context = mapOf(
                         "guildId" to guildId
                     )
                 )
-                return@computeIfAbsent gmp
+                return@computeIfAbsent musicPlayer
             }
         }
     }
@@ -59,7 +62,7 @@ object Jukebox : KoinComponent {
      * Returns a player for the specified guild snowflake.
      * @param guildId the guild snowflake to retrieve a player from
      */
-    fun playerFor(guildId: Snowflake): GuildMusicPlayer {
+    fun playerFor(guildId: Snowflake): MusicPlayer {
         return players[guildId] ?: error("Guild not registered")
     }
 
@@ -94,13 +97,10 @@ object Jukebox : KoinComponent {
     }
 
     suspend fun tryToDisconnect() {
-        players.forEach { (guildId, player) ->
+        players.values.forEach { player ->
             val lastPlayMillis = player.lastPlayMillis.value
             if (!player.playing && System.currentTimeMillis() > lastPlayMillis) {
-                val link = Lava.linkFor(guildId)
-                if (link.state == Link.State.CONNECTED) {
-                    link.disconnectAudio()
-                }
+                player.disconnect()
             }
         }
     }
@@ -118,7 +118,7 @@ object Jukebox : KoinComponent {
 
     data class PlayRequest(
         val respond: suspend (String) -> Unit,
-        val respondMultiple: suspend (List<TrackResponse.PartialTrack>, suspend (TrackResponse.PartialTrack) -> String) -> Unit,
+        val respondMultiple: suspend (List<MusicTrack>, suspend (MusicTrack) -> String) -> Unit,
         val parseResult: IdentifierParser.IdentifierParseResult,
         val guild: GuildBehavior,
         val mention: String,
@@ -150,13 +150,12 @@ object Jukebox : KoinComponent {
         }
 
         val identifier = identifiers.first()
-        val item = guild.link.loadItem(identifier)
+        val item = guild.player.loader.loadItem(identifier)
 
-        val trackLoaded: suspend (Track) -> String = { track ->
-            track.meta = AudioTrackMeta(mention, userId)
-
+        val trackLoaded: suspend (MusicTrack) -> String = {
+            val track = it.copy(userId = userId, mention = mention)
             if (guild.player.playing) {
-                val currentTrack = guild.player.playingTrack
+                val currentTrack = guild.player.findPlayingTrack()
                 if (currentTrack != null) {
                     guild.player.addFirst(currentTrack)
                 }
@@ -175,22 +174,22 @@ object Jukebox : KoinComponent {
         }
 
         when (item.loadType) {
-            TrackResponse.LoadType.TRACK_LOADED -> {
-                trackLoaded(item.track.toTrack())
+            TrackLoadType.TRACK_LOADED -> {
+                respond(trackLoaded(item.track))
             }
-            TrackResponse.LoadType.PLAYLIST_LOADED -> {
+            TrackLoadType.PLAYLIST_LOADED -> {
                 respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
             }
-            TrackResponse.LoadType.SEARCH_RESULT -> {
+            TrackLoadType.SEARCH_RESULT -> {
                 if (parseResult.spotify) {
-                    respond(trackLoaded(item.tracks.first().toTrack()))
+                    respond(trackLoaded(item.tracks.first()))
                 } else {
                     respondMultiple(item.tracks) {
-                        trackLoaded(it.toTrack())
+                        trackLoaded(it)
                     }
                 }
             }
-            TrackResponse.LoadType.NO_MATCHES -> {
+            TrackLoadType.NO_MATCHES -> {
                 respond(
                     tp.translate(
                         key = "jukebox.response.no-matches",
@@ -200,13 +199,13 @@ object Jukebox : KoinComponent {
                     )
                 )
             }
-            TrackResponse.LoadType.LOAD_FAILED -> {
+            TrackLoadType.LOAD_FAILED -> {
                 respond(
                     tp.translate(
                         key = "jukebox.response.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
-                        replacements = arrayOf(item.exception?.message ?: "Loading failed")
+                        replacements = arrayOf(item.error ?: "Loading failed")
                     )
                 )
             }
@@ -248,11 +247,10 @@ object Jukebox : KoinComponent {
         }
 
         val identifier = identifiers.first()
-        val item = guild.link.loadItem(identifier)
+        val item = guild.player.loader.loadItem(identifier)
 
-        val trackLoaded: suspend (Track) -> String = { track ->
-            track.meta = AudioTrackMeta(mention, userId)
-
+        val trackLoaded: suspend (MusicTrack) -> String = {
+            val track = it.copy(userId = userId, mention = mention)
             val started = guild.player.addFirst(track, update = true)
 
             if (started) {
@@ -273,22 +271,22 @@ object Jukebox : KoinComponent {
         }
 
         when (item.loadType) {
-            TrackResponse.LoadType.TRACK_LOADED -> {
-                respond(trackLoaded(item.track.toTrack()))
+            TrackLoadType.TRACK_LOADED -> {
+                respond(trackLoaded(item.track))
             }
-            TrackResponse.LoadType.PLAYLIST_LOADED -> {
+            TrackLoadType.PLAYLIST_LOADED -> {
                 respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
             }
-            TrackResponse.LoadType.SEARCH_RESULT -> {
+            TrackLoadType.SEARCH_RESULT -> {
                 if (parseResult.spotify) {
-                    respond(trackLoaded(item.tracks.first().toTrack()))
+                    respond(trackLoaded(item.tracks.first()))
                 } else {
                     respondMultiple(item.tracks) {
-                        trackLoaded(it.toTrack())
+                        trackLoaded(it)
                     }
                 }
             }
-            TrackResponse.LoadType.NO_MATCHES -> {
+            TrackLoadType.NO_MATCHES -> {
                 respond(
                     tp.translate(
                         key = "jukebox.response.no-matches",
@@ -298,13 +296,13 @@ object Jukebox : KoinComponent {
                     )
                 )
             }
-            TrackResponse.LoadType.LOAD_FAILED -> {
+            TrackLoadType.LOAD_FAILED -> {
                 respond(
                     tp.translate(
                         key = "jukebox.response.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
-                        replacements = arrayOf(item.exception?.message ?: "Loading failed")
+                        replacements = arrayOf(item.error ?: "Loading failed")
                     )
                 )
             }
@@ -331,32 +329,26 @@ object Jukebox : KoinComponent {
         mention: String,
         userId: Snowflake
     ) {
-        val trackLoaded: suspend (Track) -> Unit = { track ->
-            track.meta = AudioTrackMeta(mention, userId)
+        val trackLoaded: suspend (MusicTrack) -> Unit = {
+            val track = it.copy(userId = userId, mention = mention)
             guild.player.add(track, update = true, play = false)
         }
-        val item = guild.link.loadItem(identifier)
+        val item = guild.player.loader.loadItem(identifier)
 
         when (item.loadType) {
-            TrackResponse.LoadType.TRACK_LOADED -> {
-                trackLoaded(item.track.toTrack())
+            TrackLoadType.TRACK_LOADED -> {
+                trackLoaded(item.track)
             }
-            TrackResponse.LoadType.PLAYLIST_LOADED -> {
-                val tracks = item.tracks.mapToTrack()
-
-                tracks.forEach {
-                    it.meta = AudioTrackMeta(mention, userId)
-                }
-
-                guild.player.add(*tracks.toTypedArray(), update = true)
+            TrackLoadType.PLAYLIST_LOADED -> {
+                guild.player.add(*item.tracks.toTypedArray(), update = true)
             }
-            TrackResponse.LoadType.SEARCH_RESULT -> {
-                trackLoaded(item.tracks.first().toTrack())
+            TrackLoadType.SEARCH_RESULT -> {
+                trackLoaded(item.tracks.first())
             }
-            TrackResponse.LoadType.NO_MATCHES -> {
+            TrackLoadType.NO_MATCHES -> {
                 log.debug("Nothing found")
             }
-            TrackResponse.LoadType.LOAD_FAILED -> {
+            TrackLoadType.LOAD_FAILED -> {
                 log.debug("Nothing found")
             }
         }
@@ -366,11 +358,9 @@ object Jukebox : KoinComponent {
      * Plays a play request later in the queue.
      * @return response, empty string if successful.
      */
-    @OptIn(DelicateCoroutinesApi::class)
     suspend fun playLater(request: PlayRequest): String = mutex.withLock {
         val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
         val identifiers = parseResult.identifiers
-        val link = Lava.linkFor(guild)
 
         if (identifiers.isEmpty()) {
             log.info(
@@ -410,10 +400,9 @@ object Jukebox : KoinComponent {
         }
 
         val identifier = identifiers.first()
-        val item = link.loadItem(identifier)
-        val trackLoaded: suspend (Track) -> String = { track ->
-            track.meta = AudioTrackMeta(mention, userId)
-
+        val item = guild.player.loader.loadItem(identifier)
+        val trackLoaded: suspend (MusicTrack) -> String = {
+            val track = it.copy(userId = userId, mention = mention)
             val started = guild.player.add(track, update = true)
 
             if (started) {
@@ -434,18 +423,14 @@ object Jukebox : KoinComponent {
         }
 
         when (item.loadType) {
-            TrackResponse.LoadType.TRACK_LOADED -> {
-                respond(trackLoaded(item.track.toTrack()))
+            TrackLoadType.TRACK_LOADED -> {
+                respond(trackLoaded(item.track))
             }
-            TrackResponse.LoadType.PLAYLIST_LOADED -> {
-                val tracks = item.tracks.mapToTrack()
-
-                tracks.forEach {
-                    it.meta = AudioTrackMeta(mention, userId)
-                }
-
+            TrackLoadType.PLAYLIST_LOADED -> {
+                val tracks = item.tracks
+                    .map { it.copy(userId = userId, mention = mention) }
                 val started = guild.player.add(*tracks.toTypedArray(), update = true)
-                val playlistName = item.playlistInfo.name?.escapedBackticks
+                val playlistName = item.playlistInfo.name.escapedBackticks
 
                 if (started) {
                     respond(
@@ -473,16 +458,19 @@ object Jukebox : KoinComponent {
                     )
                 }
             }
-            TrackResponse.LoadType.SEARCH_RESULT -> {
+            TrackLoadType.SEARCH_RESULT -> {
                 if (parseResult.spotify) {
-                    respond(trackLoaded(item.tracks.first().toTrack()))
+                    respond(trackLoaded(item.tracks.first()))
                 } else {
-                    respondMultiple(item.tracks) {
-                        trackLoaded(it.toTrack())
+                    val tracks = item.tracks
+                        .map { it.copy(userId = userId, mention = mention) }
+
+                    respondMultiple(tracks) {
+                        trackLoaded(it)
                     }
                 }
             }
-            TrackResponse.LoadType.NO_MATCHES -> {
+            TrackLoadType.NO_MATCHES -> {
                 respond(
                     tp.translate(
                         key = "jukebox.response.no-matches",
@@ -492,13 +480,13 @@ object Jukebox : KoinComponent {
                     )
                 )
             }
-            TrackResponse.LoadType.LOAD_FAILED -> {
+            TrackLoadType.LOAD_FAILED -> {
                 respond(
                     tp.translate(
                         key = "jukebox.response.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
-                        replacements = arrayOf(item.exception?.message ?: "Loading failed")
+                        replacements = arrayOf(item.error ?: "Loading failed")
                     )
                 )
             }

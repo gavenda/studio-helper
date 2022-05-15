@@ -6,6 +6,8 @@ import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.db.*
+import bogus.extension.music.player.MusicTrack
+import bogus.extension.music.player.TrackLoadType
 import bogus.paginator.editingStandardPaginator
 import bogus.util.abbreviate
 import bogus.util.escapedBrackets
@@ -21,8 +23,6 @@ import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
-import dev.schlaubi.lavakord.rest.TrackResponse
-import dev.schlaubi.lavakord.rest.loadItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -235,6 +235,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
             hasDJRole()
         }
         action {
+            val guild = guild ?: return@action
             val dbPlaylist = db.playlists.find {
                 (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
             }
@@ -244,27 +245,27 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                 val identifiers = parseResult.identifiers
                 CoroutineScope(Dispatchers.IO).launch {
                     identifiers.forEach { parsedIdentifier ->
-                        val addTrack: suspend (TrackResponse.PartialTrack) -> Unit = { track ->
+                        val addTrack: suspend (MusicTrack) -> Unit = { track ->
                             val dbPlaylistSong = DbPlaylistSong {
                                 playlistId = dbPlaylist.playlistId
-                                title = track.info.title
-                                uri = track.info.uri
-                                identifier = track.info.identifier
+                                title = track.title
+                                uri = track.uri
+                                identifier = track.identifier
                             }
 
                             db.playlistSongs.add(dbPlaylistSong)
                         }
 
-                        val item = link.loadItem(parsedIdentifier)
+                        val item = guild.player.loader.loadItem(parsedIdentifier)
 
                         when (item.loadType) {
-                            TrackResponse.LoadType.TRACK_LOADED -> {
+                            TrackLoadType.TRACK_LOADED -> {
                                 addTrack(item.track)
                             }
-                            TrackResponse.LoadType.PLAYLIST_LOADED -> {
+                            TrackLoadType.PLAYLIST_LOADED -> {
                                 item.tracks.forEach { addTrack(it) }
                             }
-                            TrackResponse.LoadType.SEARCH_RESULT -> {
+                            TrackLoadType.SEARCH_RESULT -> {
                                 addTrack(item.tracks.first())
                             }
                             else -> {}

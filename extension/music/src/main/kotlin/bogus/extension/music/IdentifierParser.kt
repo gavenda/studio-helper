@@ -24,6 +24,9 @@ object IdentifierParser : KoinComponent {
     )
 
     fun listFiles(): Sequence<String> {
+        if (!Files.exists(musicDirectory)) {
+            return emptySequence()
+        }
         return Files.walk(musicDirectory)
             .asSequence()
             .filter { Files.isRegularFile(it) }

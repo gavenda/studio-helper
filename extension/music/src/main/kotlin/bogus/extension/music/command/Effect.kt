@@ -3,6 +3,7 @@ package bogus.extension.music.command
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
+import bogus.extension.music.player.Equalizer
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.SlashGroup
@@ -124,11 +125,11 @@ private suspend fun SlashGroup.rock() {
             hasDJRole()
         }
         action {
-            player.effects.applyEqualizer(MusicEffects.Equalizer.ROCK)
+            player.effects.applyEqualizer(Equalizer.ROCK)
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
-                    "filter" to MusicEffects.Equalizer.ROCK,
+                    "filter" to Equalizer.ROCK,
                     "user" to user.id
                 )
             )
@@ -148,11 +149,11 @@ private suspend fun SlashGroup.pop() {
             hasDJRole()
         }
         action {
-            player.effects.applyEqualizer(MusicEffects.Equalizer.POP)
+            player.effects.applyEqualizer(Equalizer.POP)
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
-                    "filter" to MusicEffects.Equalizer.POP,
+                    "filter" to Equalizer.POP,
                     "user" to user.id
                 )
             )
@@ -172,11 +173,11 @@ private suspend fun SlashGroup.trebleBass() {
             hasDJRole()
         }
         action {
-            player.effects.applyEqualizer(MusicEffects.Equalizer.BASS_BOOST)
+            player.effects.applyEqualizer(Equalizer.BASS_BOOST)
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
-                    "filter" to MusicEffects.Equalizer.BASS_BOOST,
+                    "filter" to Equalizer.BASS_BOOST,
                     "user" to user.id
                 )
             )

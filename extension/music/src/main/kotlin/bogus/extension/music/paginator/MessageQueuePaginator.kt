@@ -1,6 +1,6 @@
 package bogus.extension.music.paginator
 
-import bogus.extension.music.GuildMusicPlayer
+import bogus.extension.music.player.MusicPlayer
 import com.kotlindiscord.kord.extensions.pagination.EXPAND_EMOJI
 import com.kotlindiscord.kord.extensions.pagination.SWITCH_EMOJI
 import com.kotlindiscord.kord.extensions.pagination.pages.Pages
@@ -25,7 +25,7 @@ import java.util.*
  * @param targetChannel Target channel to send the paginator to, if [targetMessage] isn't provided.
  */
 class MessageQueuePaginator(
-    player: GuildMusicPlayer,
+    player: MusicPlayer,
     pages: Pages,
     owner: UserBehavior? = null,
     timeoutSeconds: Long? = null,
@@ -110,7 +110,7 @@ class MessageQueuePaginator(
 /** Convenience function for creating a message button paginator from a paginator builder. **/
 @Suppress("FunctionNaming")  // Factory function
 fun MessageQueuePaginator(
-    player: GuildMusicPlayer,
+    player: MusicPlayer,
     pingInReply: Boolean = true,
     targetChannel: MessageChannelBehavior? = null,
     targetMessage: Message? = null,
@@ -136,8 +136,8 @@ fun MessageQueuePaginator(
  * Create a paginator that edits the original interaction. This is the only option for an ephemeral interaction, as
  * it's impossible to edit an ephemeral follow-up.
  */
-suspend inline fun messageQueuePaginator(
-    player: GuildMusicPlayer,
+inline fun messageQueuePaginator(
+    player: MusicPlayer,
     targetChannel: MessageChannelBehavior? = null,
     targetMessage: Message? = null,
     defaultGroup: String = "",

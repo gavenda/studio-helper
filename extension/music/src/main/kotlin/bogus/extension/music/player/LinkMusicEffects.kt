@@ -1,31 +1,15 @@
-package bogus.extension.music
+package bogus.extension.music.player
 
 import dev.schlaubi.lavakord.audio.player.*
 
-class MusicEffects(private val player: Player) {
-
-    enum class Equalizer {
-        BASS_BOOST,
-        POP,
-        ROCK,
-        NONE
-    }
-
-    enum class Filter {
-        KARAOKE,
-        VAPORWAVE,
-        NIGHTCORE
-    }
-
+class LinkMusicEffects(private val player: Player) : MusicEffects {
     private val filters = mutableListOf<Filter>()
     private var equalizer = Equalizer.NONE
-
     private var nightcoreRate = 0
     private var _volume = 100
+    override val volume get() = _volume
 
-    val volume get() = _volume
-
-    suspend fun applyFilters() {
+    override suspend fun applyFilters() {
         player.applyFilters {
             volume = _volume / 100f
             filters.forEach { effect ->
@@ -64,39 +48,39 @@ class MusicEffects(private val player: Player) {
         }
     }
 
-    suspend fun clearEqualizer() {
+    override suspend fun clearEqualizer() {
         player.applyFilters { bands.clear() }
         equalizer = Equalizer.NONE
     }
 
-    suspend fun clearFilter() {
+    override suspend fun clearFilter() {
         player.resetFilters()
         filters.clear()
         applyFilters()
     }
 
-    suspend fun applyVolume(value: Int) {
+    override suspend fun applyVolume(value: Int) {
         _volume = value
         applyFilters()
     }
 
-    suspend fun applyNightcore(value: Int) {
+    override suspend fun applyNightcore(value: Int) {
         nightcoreRate = value
         filters.add(Filter.NIGHTCORE)
         applyFilters()
     }
 
-    suspend fun applyVaporwave() {
+    override suspend fun applyVaporwave() {
         filters.add(Filter.VAPORWAVE)
         applyFilters()
     }
 
-    suspend fun applyKaraoke() {
+    override suspend fun applyKaraoke() {
         filters.add(Filter.KARAOKE)
         applyFilters()
     }
 
-    suspend fun applyEqualizer(effect: Equalizer) {
+    override suspend fun applyEqualizer(effect: Equalizer) {
         equalizer = effect
         applyFilters()
     }

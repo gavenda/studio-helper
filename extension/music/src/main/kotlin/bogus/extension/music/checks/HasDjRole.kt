@@ -1,8 +1,9 @@
 package bogus.extension.music.checks
 
 import bogus.util.asLogFMT
-import com.kotlindiscord.kord.extensions.checks.*
+import com.kotlindiscord.kord.extensions.checks.guildFor
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
+import com.kotlindiscord.kord.extensions.checks.userFor
 import com.kotlindiscord.kord.extensions.utils.hasRole
 import dev.kord.core.event.Event
 import kotlinx.coroutines.flow.firstOrNull

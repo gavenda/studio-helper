@@ -8,8 +8,10 @@ import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.env
-import com.kotlindiscord.kord.extensions.utils.envOrNull
 import com.kotlindiscord.kord.extensions.utils.loadModule
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import de.sonallux.spotify.api.SpotifyWebApi
@@ -51,7 +53,12 @@ object MusicExtension : Extension() {
     private suspend fun setupEvents() {
         event<ReadyEvent> {
             action {
-                setupLavaKord()
+                if (LAVAKORD_ENABLED) {
+                    setupLavaKord()
+                } else {
+                    setupLavaPlayer()
+                }
+
                 setupSpotify()
                 setupDatabase()
             }
@@ -98,7 +105,7 @@ object MusicExtension : Extension() {
 
     private fun setupSpotify() {
         if (!SPOTIFY_ENABLED) return
-
+        log.info("Using Spotify Client")
         loadModule {
             factory<SpotifyWebApi> {
                 val credentials = ClientCredentialsFlow(
@@ -118,6 +125,7 @@ object MusicExtension : Extension() {
     }
 
     private fun setupLavaKord() {
+        log.info("Using Lava Link")
         loadModule(createdAtStart = true) {
             single {
                 val linkPasswords = env("LINK_PASSWORDS").split(";")
@@ -132,6 +140,18 @@ object MusicExtension : Extension() {
                     linkNodes.forEachIndexed { index, node ->
                         addNode(node, linkPasswords[index])
                     }
+                }
+            }
+        }
+    }
+
+    private fun setupLavaPlayer() {
+        log.info("Using Lava Player")
+        loadModule(createdAtStart = true) {
+            single<AudioPlayerManager> {
+                DefaultAudioPlayerManager().apply {
+                    AudioSourceManagers.registerRemoteSources(this)
+                    AudioSourceManagers.registerLocalSource(this)
                 }
             }
         }

@@ -1,18 +1,23 @@
 package bogus.extension.music.checks
 
+import bogus.extension.music.LAVAKORD_ENABLED
 import bogus.extension.music.TRANSLATION_BUNDLE
-import bogus.extension.music.link
 import bogus.extension.music.player
+import bogus.extension.music.player.LavaMusicPlayer
+import bogus.extension.music.player.LinkMusicPlayer
 import bogus.util.asLogFMT
-import com.kotlindiscord.kord.extensions.checks.*
+import com.kotlindiscord.kord.extensions.checks.guildFor
+import com.kotlindiscord.kord.extensions.checks.memberFor
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
 import com.kotlindiscord.kord.extensions.utils.hasPermissions
+import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Permission
 import dev.kord.core.event.Event
 import dev.schlaubi.lavakord.audio.Link
 import dev.schlaubi.lavakord.kord.connectAudio
 import mu.KotlinLogging
 
+@OptIn(KordVoice::class)
 suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
     if (!passed) {
         return
@@ -59,7 +64,20 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         }
 
         guild.player.assureConnection()
-        guild.link.connectAudio(theirVoiceChannel.id)
+
+        if (LAVAKORD_ENABLED) {
+            log.info("Connected using lava link")
+            (guild.player as LinkMusicPlayer).link.connectAudio(theirVoiceChannel.id)
+        } else {
+            log.info("Connected using lava player")
+
+            val lava = (guild.player as LavaMusicPlayer)
+            val voiceConnection = theirVoiceChannel.connect {
+                audioProvider { lava.audioProvider() }
+            }
+            lava.useVoiceConnection(voiceConnection)
+        }
+
         guild.player.effects.applyFilters()
         pass()
         return
@@ -72,8 +90,12 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         fail(translate("check.voice-channel-same.fail", TRANSLATION_BUNDLE))
     }
 
-    if (guild.link.state != Link.State.CONNECTED) {
-        guild.player.assureConnection()
-        guild.link.connectAudio(theirVoiceChannel.id)
+    if (LAVAKORD_ENABLED) {
+        val link = (guild.player as LinkMusicPlayer).link
+
+        if (link.state != Link.State.CONNECTED) {
+            guild.player.assureConnection()
+            link.connectAudio(theirVoiceChannel.id)
+        }
     }
 }

@@ -4,6 +4,7 @@ import bogus.extension.music.MusicExtension
 import bogus.extension.music.TRANSLATION_BUNDLE
 import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
+import bogus.extension.music.player.MusicTrack
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommandContext
@@ -12,7 +13,6 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalInt
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.types.respond
-import dev.schlaubi.lavakord.audio.player.Track
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -48,11 +48,12 @@ suspend fun MusicExtension.remove() {
     }
 }
 
-private suspend fun EphemeralSlashCommandContext<*>.removedMessage(skipped: List<Track>): String = when (skipped.size) {
-    0 -> translate("remove.response.nothing")
-    1 -> translate("remove.response.single", arrayOf(skipped.first().title))
-    else -> translate("remove.response.multiple", arrayOf(skipped.size))
-}
+private suspend fun EphemeralSlashCommandContext<*>.removedMessage(skipped: List<MusicTrack>): String =
+    when (skipped.size) {
+        0 -> translate("remove.response.nothing")
+        1 -> translate("remove.response.single", arrayOf(skipped.first().title))
+        else -> translate("remove.response.multiple", arrayOf(skipped.size))
+    }
 
 internal class RemoveArgs : KoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()

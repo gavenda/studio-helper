@@ -2,6 +2,7 @@ package bogus.extension.music.paginator
 
 import bogus.extension.music.*
 import bogus.extension.music.checks.hasDJRole
+import bogus.extension.music.player.MusicPlayer
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.components.ComponentContainer
 import com.kotlindiscord.kord.extensions.components.buttons.PublicInteractionButton
@@ -22,7 +23,7 @@ import java.util.*
  * Abstract class containing some common functionality needed by interactive button-based paginators.
  */
 abstract class QueuePaginator(
-    val player: GuildMusicPlayer,
+    val player: MusicPlayer,
     pages: Pages,
     owner: UserBehavior? = null,
     timeoutSeconds: Long? = null,
@@ -137,7 +138,7 @@ abstract class QueuePaginator(
             }
 
             action {
-                val volume = (player.effects.volume - 10).coerceIn(0, 100)
+                val volume = (player.volume - 10).coerceIn(0, 100)
                 player.volumeTo(volume)
                 task?.restart()
             }
@@ -154,7 +155,7 @@ abstract class QueuePaginator(
             }
 
             action {
-                val volume = (player.effects.volume + 10).coerceIn(0, 100)
+                val volume = (player.volume + 10).coerceIn(0, 100)
                 player.volumeTo(volume)
                 task?.restart()
             }

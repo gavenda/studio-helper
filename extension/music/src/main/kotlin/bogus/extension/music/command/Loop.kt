@@ -1,6 +1,5 @@
 package bogus.extension.music.command
 
-import bogus.extension.music.MusicEffects
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.hasDJRole
