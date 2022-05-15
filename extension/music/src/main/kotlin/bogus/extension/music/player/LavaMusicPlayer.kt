@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import dev.kord.common.annotation.KordVoice
+import dev.kord.common.entity.Snowflake
 import dev.kord.voice.AudioFrame
 import dev.kord.voice.VoiceConnection
 import kotlinx.coroutines.runBlocking
@@ -15,7 +16,7 @@ import org.koin.core.component.inject
 import java.nio.ByteBuffer
 
 @OptIn(KordVoice::class)
-class LavaMusicPlayer : MusicPlayer(), AudioEventListener {
+class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventListener {
     private val playerManager by inject<AudioPlayerManager>()
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
@@ -63,7 +64,6 @@ class LavaMusicPlayer : MusicPlayer(), AudioEventListener {
     override suspend fun stop() {
         queue.clear()
         player.stopTrack()
-        updateBoundQueue()
     }
 
     override fun findPlayingTrack(): MusicTrack? {

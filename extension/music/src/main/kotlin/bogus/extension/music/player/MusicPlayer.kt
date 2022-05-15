@@ -2,6 +2,7 @@ package bogus.extension.music.player
 
 import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.*
+import bogus.extension.music.db.guilds
 import bogus.extension.music.paginator.MessageQueuePaginator
 import bogus.extension.music.paginator.MutablePages
 import bogus.extension.music.paginator.messageQueuePaginator
@@ -21,12 +22,16 @@ import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.ktorm.database.Database
+import org.ktorm.dsl.eq
+import org.ktorm.entity.firstOrNull
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingDeque
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-abstract class MusicPlayer : KoinComponent {
+abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
+    private val db by inject<Database>()
     private val tp by inject<TranslationsProvider>()
     protected val queue = LinkedBlockingDeque<MusicTrack>()
     protected val log = KotlinLogging.logger {}.asLogFMT()
@@ -317,9 +322,17 @@ abstract class MusicPlayer : KoinComponent {
      * Set volume to specified value.
      * @param value the volume to set
      */
-    suspend fun volumeTo(value: Int) {
+    suspend fun volumeTo(value: Int, update: Boolean = true) {
         effects.applyVolume(value)
-        updateBoundQueue()
+
+        if (update) {
+            val dbGuild = db.guilds.firstOrNull { it.discordGuildId eq guildId.value.toLong() } ?: return
+
+            dbGuild.volume = volume
+            dbGuild.flushChanges()
+
+            updateBoundQueue()
+        }
     }
 
     /**

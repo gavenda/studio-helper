@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 /**
  * The guild's music player.
  */
-class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer() {
+class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
     val link = Lava.linkFor(guildId)
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {

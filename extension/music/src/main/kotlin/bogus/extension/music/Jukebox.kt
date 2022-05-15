@@ -45,7 +45,7 @@ object Jukebox : KoinComponent {
                 val musicPlayer = if (LAVAKORD_ENABLED) {
                     LinkMusicPlayer(guildId)
                 } else {
-                    LavaMusicPlayer()
+                    LavaMusicPlayer(guildId)
                 }
                 log.debug(
                     msg = "Music player created",
@@ -80,6 +80,9 @@ object Jukebox : KoinComponent {
                     textMessage.delete("Crash cleanup")
                 }
 
+                // Apply volume
+                volumeTo(dbGuild.volume, update = false)
+
                 dbGuild.lastMessageId = bind(textChannel)?.value?.toLong()
                 dbGuild.flushChanges()
 
@@ -90,9 +93,6 @@ object Jukebox : KoinComponent {
                     )
                 )
             }
-
-            // Apply volume
-            volumeTo(dbGuild.volume)
         }
     }
 
