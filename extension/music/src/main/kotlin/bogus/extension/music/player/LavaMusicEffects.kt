@@ -93,14 +93,17 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
     override suspend fun applyNightcore(value: Int) {
         nightcoreRate = value
         filters.add(Filter.NIGHTCORE)
+        applyFilters()
     }
 
     override suspend fun applyVaporwave() {
         filters.add(Filter.VAPORWAVE)
+        applyFilters()
     }
 
     override suspend fun applyKaraoke() {
         filters.add(Filter.KARAOKE)
+        applyFilters()
     }
 
     override suspend fun applyEqualizer(effect: EqualizerType) {
