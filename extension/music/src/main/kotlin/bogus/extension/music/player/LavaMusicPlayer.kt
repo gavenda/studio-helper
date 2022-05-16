@@ -71,7 +71,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     }
 
     override suspend fun playTrack(track: MusicTrack) {
-        player.playTrack(track.track as AudioTrack)
+        player.playTrack((track.track as AudioTrack).makeClone())
     }
 
     override suspend fun stopTrack() {
@@ -107,10 +107,10 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
         val musicTrack = track.asMusicTrack()
 
         if (looped) {
-            queue.offerFirst(track.asMusicTrack())
+            queue.offerFirst(track.asMusicTrack(true))
         }
         if (loopedAll) {
-            queue.offer(track.asMusicTrack())
+            queue.offer(track.asMusicTrack(true))
         }
 
         when (endReason) {

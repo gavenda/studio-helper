@@ -32,6 +32,13 @@ data class MusicTrack(
             position = 0.milliseconds,
         )
     }
+
+    fun makeClone(): MusicTrack {
+        if (track is AudioTrack) {
+            return copy(track = track.makeClone())
+        }
+        return copy()
+    }
 }
 
 fun Track.asMusicTrack(): MusicTrack {
@@ -48,9 +55,9 @@ fun Track.asMusicTrack(): MusicTrack {
     )
 }
 
-fun AudioTrack.asMusicTrack(): MusicTrack {
+fun AudioTrack.asMusicTrack(clone: Boolean = false): MusicTrack {
     return MusicTrack(
-        track = this,
+        track = if (clone) makeClone() else this,
         title = info.title,
         author = info.author,
         length = info.length.milliseconds,

@@ -157,7 +157,7 @@ object Jukebox : KoinComponent {
             if (guild.player.playing) {
                 val currentTrack = guild.player.findPlayingTrack()
                 if (currentTrack != null) {
-                    guild.player.addFirst(currentTrack)
+                    guild.player.addFirst(currentTrack.makeClone())
                 }
                 guild.player.addFirst(track)
                 guild.player.skip()
