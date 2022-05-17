@@ -79,6 +79,7 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
     }
 
     override suspend fun clearFilter() {
+        filters.clear()
         player.setFilterFactory { _, _, output ->
             listOf(
                 VolumePcmAudioFilter(output).setVolume(_volume / 100f)
