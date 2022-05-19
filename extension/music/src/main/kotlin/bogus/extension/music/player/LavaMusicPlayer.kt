@@ -11,6 +11,7 @@ import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
 import dev.kord.voice.AudioFrame
 import dev.kord.voice.VoiceConnection
+import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
@@ -22,7 +23,7 @@ import java.nio.ByteBuffer
 class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventListener {
     private val playerManager by inject<AudioPlayerManager>()
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
-    private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
+    private val frame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player = playerManager.createPlayer()
     private var voiceConnection: VoiceConnection? = null
 
@@ -33,7 +34,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     val audioProvider: () -> AudioFrame? = {
         val canProvide = player.provide(frame)
         if (canProvide) {
-            AudioFrame.fromData(buffer.flip().array())
+            AudioFrame.fromData(buffer.flip().moveToByteArray())
         } else {
             AudioFrame.fromData(null)
         }
