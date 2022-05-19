@@ -5,10 +5,15 @@ import com.github.natanbc.lavadsp.timescale.TimescalePcmAudioFilter
 import com.github.natanbc.lavadsp.volume.VolumePcmAudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.AudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.FloatPcmAudioFilter
+import com.sedmelluq.discord.lavaplayer.filter.ResamplingPcmAudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.equalizer.Equalizer
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 
-class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
+class LavaMusicEffects(
+    private val player: AudioPlayer,
+    private val configuration: AudioConfiguration
+) : MusicEffects {
     private val equalizerBands = FloatArray(15)
     private var equalizer = EqualizerType.NONE
     private val filters = mutableListOf<Filter>()
@@ -26,18 +31,25 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
             var filter: FloatPcmAudioFilter = output
             val filterList = mutableListOf<AudioFilter>()
 
-            if (filters.contains(Filter.NIGHTCORE) || filters.contains(Filter.VAPORWAVE)) {
+            if (filters.contains(Filter.NIGHTCORE)) {
+                val nightcore = nightcoreRate / 100f
+
+                val resamplingFilter = ResamplingPcmAudioFilter(
+                    configuration,
+                    format.channelCount,
+                    filter,
+                    format.sampleRate,
+                    (format.sampleRate / nightcore).toInt()
+                )
+
+                filterList.add(resamplingFilter)
+                filter = resamplingFilter
+            }
+
+            if (filters.contains(Filter.VAPORWAVE)) {
                 val timescale = TimescalePcmAudioFilter(filter, format.channelCount, format.sampleRate)
 
-                if (filters.contains(Filter.NIGHTCORE)) {
-                    timescale.rate = nightcoreRate / 100.0
-                }
-
-                if (filters.contains(Filter.VAPORWAVE)) {
-                    timescale.setSpeed(0.5).setPitchSemiTones(-7.0)
-                } else {
-                    timescale.setSpeed(1.0).setPitchSemiTones(0.0)
-                }
+                timescale.setSpeed(0.5).setPitchSemiTones(-7.0)
 
                 filterList.add(timescale)
                 filter = timescale
@@ -70,12 +82,13 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
             val volume = VolumePcmAudioFilter(filter).setVolume(_volume / 100f)
             filterList.add(volume)
 
-            filterList.reversed()
+            return@setFilterFactory filterList.reversed()
         }
     }
 
     override suspend fun clearEqualizer() {
         equalizer = EqualizerType.NONE
+        applyFilters()
     }
 
     override suspend fun clearFilter() {
@@ -89,6 +102,7 @@ class LavaMusicEffects(private val player: AudioPlayer) : MusicEffects {
 
     override suspend fun applyVolume(value: Int) {
         _volume = value
+        applyFilters()
     }
 
     override suspend fun applyNightcore(value: Int) {

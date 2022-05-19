@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 /**
- * The guild's music player.
+ * Music player using lava link.
  */
 class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
     val link = Lava.linkFor(guildId)
@@ -82,10 +82,8 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
 
     override val paused: Boolean
         get() = player.paused
-    override val effects: MusicEffects
-        get() = LinkMusicEffects(player)
-    override val loader: TrackLoader
-        get() = LinkTrackLoader(link)
+    override val effects: MusicEffects = LinkMusicEffects(player)
+    override val loader: TrackLoader = LinkTrackLoader(link)
 
     override suspend fun disconnect() {
         link.disconnectAudio()

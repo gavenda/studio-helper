@@ -152,6 +152,8 @@ object MusicExtension : Extension() {
                 DefaultAudioPlayerManager().apply {
                     AudioSourceManagers.registerRemoteSources(this)
                     AudioSourceManagers.registerLocalSource(this)
+
+                    configuration.isFilterHotSwapEnabled = true
                 }
             }
         }

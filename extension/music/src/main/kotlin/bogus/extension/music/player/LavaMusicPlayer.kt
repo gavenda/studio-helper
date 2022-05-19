@@ -15,6 +15,9 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
 
+/**
+ * Music player using lava player locally.
+ */
 @OptIn(KordVoice::class)
 class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventListener {
     private val playerManager by inject<AudioPlayerManager>()
@@ -42,10 +45,8 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
 
     override val paused: Boolean
         get() = player.isPaused
-    override val effects: MusicEffects
-        get() = LavaMusicEffects(player)
-    override val loader: TrackLoader
-        get() = LavaTrackLoader(playerManager)
+    override val effects: MusicEffects = LavaMusicEffects(player, playerManager.configuration)
+    override val loader: TrackLoader = LavaTrackLoader(playerManager)
 
     override suspend fun disconnect() {
         voiceConnection?.leave()
