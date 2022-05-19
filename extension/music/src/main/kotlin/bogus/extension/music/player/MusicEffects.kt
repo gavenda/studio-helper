@@ -2,6 +2,8 @@ package bogus.extension.music.player
 
 interface MusicEffects {
     val volume: Int
+    val activeEqualizer: String
+    val activeFilters: String
 
     /**
      * Apply filters.

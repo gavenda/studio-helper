@@ -1,5 +1,6 @@
 package bogus.extension.music.player
 
+import com.kotlindiscord.kord.extensions.utils.capitalizeWords
 import dev.schlaubi.lavakord.audio.player.*
 
 class LinkMusicEffects(private val player: Player) : MusicEffects {
@@ -7,7 +8,12 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
     private var equalizer = EqualizerType.NONE
     private var nightcoreRate = 0
     private var _volume = 100
+
     override val volume get() = _volume
+    override val activeEqualizer: String
+        get() = equalizer.name.capitalizeWords()
+    override val activeFilters: String
+        get() = filters.joinToString(prefix = " - ", postfix = "\n") { it.name.capitalizeWords() }
 
     override suspend fun applyFilters() {
         player.applyFilters {

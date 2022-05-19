@@ -3,6 +3,7 @@ package bogus.extension.music.player
 import com.github.natanbc.lavadsp.karaoke.KaraokePcmAudioFilter
 import com.github.natanbc.lavadsp.timescale.TimescalePcmAudioFilter
 import com.github.natanbc.lavadsp.volume.VolumePcmAudioFilter
+import com.kotlindiscord.kord.extensions.utils.capitalizeWords
 import com.sedmelluq.discord.lavaplayer.filter.AudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.FloatPcmAudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.ResamplingPcmAudioFilter
@@ -21,6 +22,10 @@ class LavaMusicEffects(
     private var _volume = 100
     override val volume: Int
         get() = _volume
+    override val activeEqualizer: String
+        get() = equalizer.name.capitalizeWords()
+    override val activeFilters: String
+        get() = filters.joinToString(prefix = " - ", postfix = "\n") { it.name.capitalizeWords() }
 
     private fun bandGain(bandGain: Int, gain: Float) {
         equalizerBands[bandGain] = gain

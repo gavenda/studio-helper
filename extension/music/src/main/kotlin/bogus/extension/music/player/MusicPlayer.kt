@@ -455,6 +455,16 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
                 value = "${volume}%"
                 inline = true
             }
+            field {
+                name = "Filter(s)"
+                value = effects.activeFilters
+                inline = true
+            }
+            field {
+                name = "Equalizer"
+                value = effects.activeEqualizer
+                inline = true
+            }
         }
     }
 
