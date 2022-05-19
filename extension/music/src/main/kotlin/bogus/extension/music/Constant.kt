@@ -14,6 +14,7 @@ const val NIGHTCORE_MIN = 10
 const val FRAME_BUFFER_SIZE = 1024
 const val PLAY_NEXT_LIMIT = "play:next"
 const val PLAY_NOW_LIMIT = "play:now"
+const val SOURCE_YOUTUBE = "youtube"
 
 val SPOTIFY_ENABLED: Boolean
     get() {

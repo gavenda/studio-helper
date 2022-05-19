@@ -7,7 +7,7 @@ version = "1.0"
 
 dependencies {
     implementation(project(":common"))
-    implementation("com.sedmelluq:lavaplayer:1.3.78")
+    implementation("com.github.walkyst:lavaplayer-fork:custom-SNAPSHOT")
 }
 
 tasks {

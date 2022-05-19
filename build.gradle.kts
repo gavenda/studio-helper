@@ -34,6 +34,10 @@ allprojects {
             name = "JCenter"
             url = uri("https://jcenter.bintray.com/")
         }
+        maven {
+            name = "Jitpack"
+            url = uri("https://jitpack.io/")
+        }
     }
 
     tasks {

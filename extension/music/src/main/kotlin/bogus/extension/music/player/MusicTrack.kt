@@ -1,5 +1,7 @@
 package bogus.extension.music.player
 
+import bogus.extension.music.SOURCE_YOUTUBE
+import bogus.extension.music.youtubeThumbnail
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import dev.kord.common.entity.Snowflake
 import dev.schlaubi.lavakord.audio.player.Track
@@ -17,7 +19,9 @@ data class MusicTrack(
     val uri: String,
     val position: Duration,
     val userId: Snowflake = Snowflake(0),
-    val mention: String = ""
+    val mention: String = "",
+    val source: String = "",
+    val artworkUri: String = ""
 ) {
     companion object {
         val EMPTY = MusicTrack(
@@ -51,7 +55,11 @@ fun Track.asMusicTrack(): MusicTrack {
         isStream = isStream,
         isSeekable = isSeekable,
         uri = uri ?: "",
-        position = position
+        position = position,
+        source = source,
+        artworkUri = if (source == SOURCE_YOUTUBE) {
+            youtubeThumbnail(identifier)
+        } else ""
     )
 }
 
@@ -65,6 +73,8 @@ fun AudioTrack.asMusicTrack(clone: Boolean = false): MusicTrack {
         isStream = info.isStream,
         isSeekable = isSeekable,
         uri = info.uri,
-        position = position.milliseconds
+        position = position.milliseconds,
+        source = sourceManager.sourceName,
+        artworkUri = info.artworkUrl
     )
 }

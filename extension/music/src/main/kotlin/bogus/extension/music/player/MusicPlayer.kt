@@ -9,6 +9,7 @@ import bogus.extension.music.paginator.messageQueuePaginator
 import bogus.util.*
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.pagination.pages.Page
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.MessageChannelBehavior
@@ -411,8 +412,6 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
             } else "-"
         }
 
-        val identifier = playingTrack?.identifier
-
         return {
             title = tp.translate(
                 key = "jukebox.queue-list",
@@ -420,6 +419,8 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
             )
             color = Color(0x00FFFF)
             description = embedDescription()
+            image = playingTrack?.artworkUri
+
             field {
                 name = "Now Playing"
                 value = nowPlaying()
@@ -454,10 +455,6 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
                 name = "Volume"
                 value = "${volume}%"
                 inline = true
-            }
-
-            if (identifier != null && playingTrack.uri.isUrl) {
-                image = youtubeThumbnail(identifier)
             }
         }
     }
