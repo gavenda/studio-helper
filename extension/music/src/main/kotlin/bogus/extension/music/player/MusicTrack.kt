@@ -75,6 +75,6 @@ fun AudioTrack.asMusicTrack(clone: Boolean = false): MusicTrack {
         uri = info.uri,
         position = position.milliseconds,
         source = sourceManager.sourceName,
-        artworkUri = info.artworkUrl
+        artworkUri = info.artworkUrl ?: ""
     )
 }
