@@ -12,6 +12,8 @@ import com.kotlindiscord.kord.extensions.utils.loadModule
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
+import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameBufferFactory
+import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import de.sonallux.spotify.api.SpotifyWebApi
@@ -154,6 +156,9 @@ object MusicExtension : Extension() {
                     AudioSourceManagers.registerLocalSource(this)
 
                     configuration.isFilterHotSwapEnabled = true
+                    configuration.frameBufferFactory = AudioFrameBufferFactory { bufferDuration, format, stopping ->
+                        NonAllocatingAudioFrameBuffer(bufferDuration, format, stopping)
+                    }
                 }
             }
         }
