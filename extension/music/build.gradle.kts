@@ -8,6 +8,11 @@ version = "2.0"
 
 dependencies {
     implementation(project(":common"))
+    implementation("dev.kord:kord-core") {
+        capabilities {
+            requireCapability("dev.kord:core-voice")
+        }
+    }
     implementation("dev.schlaubi.lavakord:kord:3.6.2")
     implementation("com.github.walkyst:lavaplayer-fork:custom-SNAPSHOT")
     implementation("com.github.natanbc:lavadsp:0.7.7")

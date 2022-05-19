@@ -20,9 +20,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Permission
+import dev.kord.core.behavior.channel.connect
 import dev.kord.gateway.Intent
 import dev.kord.voice.AudioFrame
 import dev.kord.voice.VoiceConnection
+import io.ktor.util.*
 import mu.KotlinLogging
 import java.nio.ByteBuffer
 
@@ -145,7 +147,7 @@ class AniRadioExtension : Extension() {
     private val audioProvider: () -> AudioFrame? = {
         val canProvide = player.provide(frame)
         if (canProvide) {
-            AudioFrame.fromData(frame.data)
+            AudioFrame.fromData(buffer.flip().moveToByteArray())
         } else {
             AudioFrame.fromData(null)
         }

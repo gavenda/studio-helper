@@ -22,12 +22,14 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.behavior.channel.connect
 import dev.kord.core.behavior.getChannelOfOrNull
 import dev.kord.core.entity.channel.VoiceChannel
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.user.VoiceStateUpdateEvent
 import dev.kord.gateway.Intent
 import dev.kord.voice.AudioFrame
+import io.ktor.util.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
@@ -151,7 +153,7 @@ class AnnouncerExtension(
     private val audioProvider: () -> AudioFrame? = {
         val canProvide = player.provide(frame)
         if (canProvide) {
-            AudioFrame.fromData(frame.data)
+            AudioFrame.fromData(buffer.flip().moveToByteArray())
         } else {
             AudioFrame.fromData(null)
         }
