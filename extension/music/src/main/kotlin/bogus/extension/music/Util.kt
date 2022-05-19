@@ -39,7 +39,7 @@ val GuildBehavior.player: MusicPlayer
 val BlockingDeque<MusicTrack>.duration: Long
     get() {
         // Streams don't have a valid time.
-        val result = filter { it.isSeekable }
+        val result = filter { it.seekable }
 
         if (result.isNotEmpty()) {
             return result.sumOf { it.length.inWholeMilliseconds }
@@ -59,7 +59,9 @@ val Duration.humanReadableTime: String
  */
 val Long.humanReadableTime: String
     get() {
-        return if (this < 3600000) {
+        return if (this == Long.MIN_VALUE || this == Long.MAX_VALUE) {
+            "-"
+        } else if (this < 3600000) {
             String.format(
                 "%02d:%02d",
                 this.milliseconds.inWholeMinutes,

@@ -100,7 +100,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     private fun onTrackStart(track: AudioTrack) {
         updateBoundQueue()
         val musicTrack = track.asMusicTrack()
-        if (musicTrack.isSeekable) {
+        if (musicTrack.seekable) {
             updateLastPlayMillis(musicTrack.length.inWholeMilliseconds)
         }
     }

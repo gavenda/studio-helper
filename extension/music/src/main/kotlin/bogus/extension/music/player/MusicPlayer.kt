@@ -9,7 +9,6 @@ import bogus.extension.music.paginator.messageQueuePaginator
 import bogus.util.*
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.pagination.pages.Page
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.MessageChannelBehavior
@@ -83,7 +82,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
             var duration = 0L
             val playingTrack = findPlayingTrack()
             if (playingTrack != null) {
-                if (playing && playingTrack.isSeekable) {
+                if (playing && playingTrack.seekable) {
                     val delta = playingTrack.length.inWholeMilliseconds - playingTrack.position.inWholeMilliseconds
                     if (delta < 0) {
                         duration = playingTrack.length.inWholeMilliseconds
@@ -104,7 +103,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
             var duration = 0L
             val playingTrack = findPlayingTrack()
             if (playingTrack != null) {
-                if (playing && playingTrack.isSeekable) {
+                if (playing && playingTrack.seekable) {
                     duration = playingTrack.length.inWholeMilliseconds
                 }
             }
@@ -192,7 +191,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
     suspend fun attemptToPlay(): Boolean {
         if (playing.not()) {
             val track = queue.poll() ?: return false
-            if (track.isSeekable) {
+            if (track.seekable) {
                 updateLastPlayMillis(track.length.inWholeMilliseconds)
             }
             playTrack(track)
@@ -379,7 +378,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
                     val trackUri = request.uri
                     val trackDuration = request.length.humanReadableTime
 
-                    if (trackUri.isUrl) {
+                    if (request.source != SOURCE_LOCAL) {
                         append("`$trackNo.` [$trackTitle]($trackUri) `$trackDuration` <@!${request.userId}>\n")
                     } else {
                         val fileExt = trackUri.split(".").last().uppercase()
