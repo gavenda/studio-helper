@@ -33,7 +33,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     val audioProvider: () -> AudioFrame? = {
         val canProvide = player.provide(frame)
         if (canProvide) {
-            AudioFrame.fromData(frame.data)
+            AudioFrame.fromData(buffer.flip().array())
         } else {
             AudioFrame.fromData(null)
         }
