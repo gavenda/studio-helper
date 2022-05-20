@@ -51,6 +51,7 @@ private suspend fun SlashGroup.nightcore() {
             val speed = arguments.speed.coerceIn(10, 300)
 
             player.effects.applyNightcore(speed)
+            player.updateBoundQueue()
 
             log.info(
                 msg = "Applied filter",
@@ -78,6 +79,8 @@ private suspend fun SlashGroup.karaoke() {
         }
         action {
             player.effects.applyKaraoke()
+            player.updateBoundQueue()
+
             log.info(
                 msg = "Applied filter",
                 context = mapOf(
@@ -102,6 +105,8 @@ private suspend fun SlashGroup.vaporwave() {
         }
         action {
             player.effects.applyVaporwave()
+            player.updateBoundQueue()
+
             log.info(
                 msg = "Applied filter",
                 context = mapOf(
@@ -126,6 +131,8 @@ private suspend fun SlashGroup.rock() {
         }
         action {
             player.effects.applyEqualizer(EqualizerType.ROCK)
+            player.updateBoundQueue()
+
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
@@ -150,6 +157,8 @@ private suspend fun SlashGroup.pop() {
         }
         action {
             player.effects.applyEqualizer(EqualizerType.POP)
+            player.updateBoundQueue()
+
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
@@ -166,14 +175,16 @@ private suspend fun SlashGroup.pop() {
 
 private suspend fun SlashGroup.trebleBass() {
     ephemeralSubCommand {
-        name = "treble-bass"
-        description = "effect.equalizer.treble-bass.description"
+        name = "bass-boost"
+        description = "effect.equalizer.bass-boost.description"
         check {
             anyGuild()
             hasDJRole()
         }
         action {
             player.effects.applyEqualizer(EqualizerType.BASS_BOOST)
+            player.updateBoundQueue()
+
             log.info(
                 msg = "Applied equalizer",
                 context = mapOf(
@@ -197,7 +208,6 @@ internal class NightcoreArgs : KoinComponent, Arguments() {
             bundleName = TRANSLATION_BUNDLE,
             replacements = arrayOf(NIGHTCORE_MAX, NIGHTCORE_MIN)
         )
-
 
         validate {
             if (value > NIGHTCORE_MAX) {

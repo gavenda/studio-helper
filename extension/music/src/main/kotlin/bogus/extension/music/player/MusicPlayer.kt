@@ -221,7 +221,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
         }
     }
 
-    protected fun updateBoundQueue() {
+    fun updateBoundQueue() {
         queueUpdatePublisher.tryEmit(System.currentTimeMillis())
     }
 

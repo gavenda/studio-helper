@@ -23,9 +23,19 @@ class LavaMusicEffects(
     override val volume: Int
         get() = _volume
     override val activeEqualizer: String
-        get() = equalizer.name.capitalizeWords()
+        get() = if (equalizer != EqualizerType.NONE) {
+            equalizer.name
+                .lowercase()
+                .replace("_", " ")
+                .capitalizeWords()
+        } else "-"
     override val activeFilters: String
-        get() = filters.joinToString(prefix = " - ", postfix = "\n") { it.name.capitalizeWords() }
+        get() = filters.joinToString(prefix = "- ", postfix = "\n") {
+            it.name
+                .lowercase()
+                .replace("_", " ")
+                .capitalizeWords()
+        }
 
     private fun bandGain(bandGain: Int, gain: Float) {
         equalizerBands[bandGain] = gain
@@ -168,19 +178,9 @@ class LavaMusicEffects(
     }
 
     private fun applyBassBoostEqualizer() {
-        bandGain(0, 0.6f)
-        bandGain(1, 0.67f)
-        bandGain(2, 0.67f)
-        bandGain(3, 0f)
-        bandGain(4, -0.15f)
-        bandGain(5, 0.15f)
-        bandGain(6, -0.25f)
-        bandGain(7, 0.23f)
-        bandGain(8, 0.35f)
-        bandGain(9, 0.45f)
-        bandGain(10, 0.55f)
-        bandGain(11, 0.6f)
-        bandGain(12, 0.55f)
-        bandGain(13, 0f)
+        bandGain(0, 0.25f)
+        bandGain(1, 0.25f)
+        bandGain(2, 0.125f)
+        bandGain(3, 0.0625f)
     }
 }

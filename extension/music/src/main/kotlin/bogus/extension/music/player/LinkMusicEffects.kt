@@ -11,9 +11,19 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
 
     override val volume get() = _volume
     override val activeEqualizer: String
-        get() = equalizer.name.capitalizeWords()
+        get() = if (equalizer != EqualizerType.NONE) {
+            equalizer.name
+                .lowercase()
+                .replace("_", " ")
+                .capitalizeWords()
+        } else "-"
     override val activeFilters: String
-        get() = filters.joinToString(prefix = " - ", postfix = "\n") { it.name.capitalizeWords() }
+        get() = filters.joinToString(prefix = " - ", postfix = "\n") {
+            it.name
+                .lowercase()
+                .replace("_", " ")
+                .capitalizeWords()
+        }
 
     override suspend fun applyFilters() {
         player.applyFilters {
@@ -101,11 +111,6 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
         band(7) gain -0.24f
         band(8) gain -0.16f
         band(9) gain -0.16f
-        band(10) gain 0f
-        band(11) gain 0f
-        band(12) gain 0f
-        band(13) gain 0f
-        band(14) gain 0f
     }
 
     private fun Filters.applyRockEqualizer() {
@@ -127,19 +132,9 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
     }
 
     private fun Filters.applyBassBoostEqualizer() {
-        band(0) gain 0.6f
-        band(1) gain 0.67f
-        band(2) gain 0.67f
-        band(3) gain 0f
-        band(4) gain -0.15f
-        band(5) gain 0.15f
-        band(6) gain -0.25f
-        band(7) gain 0.23f
-        band(8) gain 0.35f
-        band(9) gain 0.45f
-        band(10) gain 0.55f
-        band(11) gain 0.6f
-        band(12) gain 0.55f
-        band(13) gain 0f
+        band(0) gain 0.25f
+        band(1) gain 0.25f
+        band(2) gain 0.125f
+        band(3) gain 0.0625f
     }
 }
