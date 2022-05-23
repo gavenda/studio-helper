@@ -8,6 +8,7 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.FilterStrategy
 import com.kotlindiscord.kord.extensions.utils.suggestStringMap
@@ -35,7 +36,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
 import java.nio.file.Files
@@ -159,7 +159,7 @@ class AnnouncerExtension(
         }
     }
 
-    inner class AnnounceArgs : KoinComponent, Arguments() {
+    inner class AnnounceArgs : KordExKoinComponent, Arguments() {
         val tp by inject<TranslationsProvider>()
         val name by string {
             name = "name"

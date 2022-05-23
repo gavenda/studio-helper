@@ -14,10 +14,10 @@ import com.kotlindiscord.kord.extensions.components.components
 import com.kotlindiscord.kord.extensions.components.linkButton
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.publicUserCommand
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
 import dev.kord.rest.builder.message.create.embed
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.and
@@ -153,7 +153,7 @@ suspend fun AniListExtension.user() {
     }
 }
 
-internal class UserArgs : KoinComponent, Arguments() {
+internal class UserArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }

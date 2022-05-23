@@ -6,6 +6,7 @@ import bogus.util.asLogFMT
 import bogus.util.escapedBackticks
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.GuildBehavior
 import dev.kord.core.entity.Guild
@@ -17,7 +18,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Plays music via a play request.
  */
-object Jukebox : KoinComponent {
+object Jukebox : KordExKoinComponent {
     private val log = KotlinLogging.logger {}.asLogFMT()
     private val players = ConcurrentHashMap<Snowflake, MusicPlayer>()
     private val mutex = Mutex()

@@ -2,10 +2,10 @@ package bogus.extension.music
 
 import bogus.extension.music.spotify.*
 import bogus.util.isUrl
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import de.sonallux.spotify.api.SpotifyWebApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.file.Files
 import java.nio.file.Path
@@ -13,7 +13,7 @@ import java.nio.file.Paths
 import kotlin.io.path.name
 import kotlin.streams.asSequence
 
-object IdentifierParser : KoinComponent {
+object IdentifierParser : KordExKoinComponent {
 
     private val musicDirectory: Path = Paths.get("", MUSIC_DIRECTORY).toAbsolutePath()
 

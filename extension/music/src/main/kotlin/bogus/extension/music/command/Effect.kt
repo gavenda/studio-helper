@@ -12,8 +12,8 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.group
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 suspend fun MusicExtension.effect() {
@@ -199,7 +199,7 @@ private suspend fun SlashGroup.trebleBass() {
     }
 }
 
-internal class NightcoreArgs : KoinComponent, Arguments() {
+internal class NightcoreArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     val speed by int {
         name = "speed"

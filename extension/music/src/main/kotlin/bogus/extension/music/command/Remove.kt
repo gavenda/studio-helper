@@ -12,8 +12,8 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalInt
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 suspend fun MusicExtension.remove() {
@@ -55,7 +55,7 @@ private suspend fun EphemeralSlashCommandContext<*>.removedMessage(skipped: List
         else -> translate("remove.response.multiple", arrayOf(skipped.size))
     }
 
-internal class RemoveArgs : KoinComponent, Arguments() {
+internal class RemoveArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
 
     val from by int {

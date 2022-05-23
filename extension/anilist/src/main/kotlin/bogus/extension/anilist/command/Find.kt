@@ -12,10 +12,10 @@ import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommand
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.PublicInteractionContext
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 suspend fun AniListExtension.find() {
@@ -80,7 +80,7 @@ private suspend fun ApplicationCommandContext.findMedia(
     sendMediaResult(guild, media)
 }
 
-internal class FindArgs : KoinComponent, Arguments() {
+internal class FindArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
@@ -108,7 +108,7 @@ internal class FindArgs : KoinComponent, Arguments() {
     }
 }
 
-internal class FindAnimeArgs : KoinComponent, Arguments() {
+internal class FindAnimeArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
@@ -138,7 +138,7 @@ internal class FindAnimeArgs : KoinComponent, Arguments() {
     }
 }
 
-internal class FindMangaArgs : KoinComponent, Arguments() {
+internal class FindMangaArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }

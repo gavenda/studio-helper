@@ -8,6 +8,7 @@ import bogus.extension.music.paginator.MutablePages
 import bogus.extension.music.paginator.messageQueuePaginator
 import bogus.util.*
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.pagination.pages.Page
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
@@ -20,7 +21,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
@@ -30,7 +30,7 @@ import java.util.concurrent.LinkedBlockingDeque
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-abstract class MusicPlayer(val guildId: Snowflake) : KoinComponent {
+abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     private val db by inject<Database>()
     private val tp by inject<TranslationsProvider>()
     protected val queue = LinkedBlockingDeque<MusicTrack>()

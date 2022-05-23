@@ -13,9 +13,9 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSub
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.minutes
 
@@ -128,7 +128,7 @@ private suspend fun EphemeralSlashCommand<*>.now() {
     }
 }
 
-internal class PlayArgs : KoinComponent, Arguments() {
+internal class PlayArgs : KordExKoinComponent, Arguments() {
 
     companion object {
         val cache = LRUCache<String, List<String>>(50)

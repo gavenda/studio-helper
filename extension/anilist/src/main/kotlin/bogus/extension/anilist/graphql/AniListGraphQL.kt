@@ -10,14 +10,14 @@ class AniListGraphQL : AniList {
     override suspend fun findUserByName(name: String): User? {
         val gqlQuery = findResourceAsText("/gql/FindUserByName.graphql")
         val variables = FindUser(name)
-        val result = gqlQuery<FindUser, UserResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindUser, UserResult>(graphUri, gqlQuery, variables)
         return result.User
     }
 
     override suspend fun findUserStatisticsByName(name: String): User? {
         val gqlQuery = findResourceAsText("/gql/FindStatisticsByUserName.graphql")
         val variables = FindUser(name)
-        val result = gqlQuery<FindUser, UserResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindUser, UserResult>(graphUri, gqlQuery, variables)
         return result.User
     }
 
@@ -34,7 +34,7 @@ class AniListGraphQL : AniList {
             perPage = 10,
             genreNotIn = if (!hentai) listOf("Hentai") else null
         )
-        val result = gqlQuery<FindMedia, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindMedia, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.media
     }
 
@@ -55,7 +55,7 @@ class AniListGraphQL : AniList {
             seasonYear = seasonYear,
             genreNotIn = if (!hentai) listOf("Hentai") else null
         )
-        val result = gqlQuery<FindMedia, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindMedia, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.media
     }
 
@@ -76,14 +76,14 @@ class AniListGraphQL : AniList {
             page = 1,
             perPage = 10
         )
-        val result = gqlQuery<FindMedia, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindMedia, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.media
     }
 
     override suspend fun findCharacterNames(query: String): List<String> {
         val gqlQuery = findResourceAsText("/gql/FindCharacterName.graphql")
         val variables = Find(query, page = 1, perPage = 10)
-        val result = gqlQuery<Find, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<Find, PageResult>(graphUri, gqlQuery, variables)
         return buildList {
             result.Page?.characters?.forEach {
                 it.name?.native?.let { title -> add(title) }
@@ -96,7 +96,7 @@ class AniListGraphQL : AniList {
     override suspend fun findStaffNames(query: String): List<String> {
         val gqlQuery = findResourceAsText("/gql/FindStaffName.graphql")
         val variables = Find(query, page = 1, perPage = 10)
-        val result = gqlQuery<Find, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<Find, PageResult>(graphUri, gqlQuery, variables)
         return buildList {
             result.Page?.staff?.forEach {
                 it.name?.native?.let { title -> add(title) }
@@ -109,7 +109,7 @@ class AniListGraphQL : AniList {
     override suspend fun findUserNames(query: String): List<String> {
         val gqlQuery = findResourceAsText("/gql/FindUserName.graphql")
         val variables = Find(query, page = 1, perPage = 10)
-        val result = gqlQuery<Find, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<Find, PageResult>(graphUri, gqlQuery, variables)
         return buildList {
             result.Page?.users?.forEach {
                 add(it.name)
@@ -123,28 +123,28 @@ class AniListGraphQL : AniList {
     ): List<MediaList>? {
         val gqlQuery = findResourceAsText("/gql/FindScoreByMediaIdAndUserId.graphql")
         val variables = FindScore(userIds, mediaIds)
-        val result = gqlQuery<FindScore, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindScore, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.mediaList
     }
 
     override suspend fun findCharacter(query: String?): List<Character>? {
         val gqlQuery = findResourceAsText("/gql/FindCharacter.graphql")
         val variables = Find(query, page = 1, perPage = 10)
-        val result = gqlQuery<Find, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<Find, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.characters
     }
 
     override suspend fun findStaff(query: String?): List<Staff>? {
         val gqlQuery = findResourceAsText("/gql/FindStaff.graphql")
         val variables = Find(query, page = 1, perPage = 10)
-        val result = gqlQuery<Find, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<Find, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.staff
     }
 
     override suspend fun findAiringMedia(mediaIds: List<Long>): List<AiringSchedule>? {
         val gqlQuery = findResourceAsText("/gql/FindAiringMedia.graphql")
         val variables = FindAiringMedia(mediaIds, page = 1, perPage = 100)
-        val result = gqlQuery<FindAiringMedia, PageResult>(graphUri, gqlQuery, variables)
+        val result = GQL.query<FindAiringMedia, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.airingSchedules
     }
 

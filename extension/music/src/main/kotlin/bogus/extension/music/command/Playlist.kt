@@ -20,13 +20,13 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
@@ -379,7 +379,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
     }
 }
 
-internal class PlaylistNameArgs : KoinComponent, Arguments() {
+internal class PlaylistNameArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     val name by string {
         name = "name"
@@ -390,7 +390,7 @@ internal class PlaylistNameArgs : KoinComponent, Arguments() {
     }
 }
 
-internal class PlaylistRemoveArgs : KoinComponent, Arguments() {
+internal class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     val name by string {
         name = "name"
@@ -408,7 +408,7 @@ internal class PlaylistRemoveArgs : KoinComponent, Arguments() {
     }
 }
 
-internal class PlaylistAddArgs : KoinComponent, Arguments() {
+internal class PlaylistAddArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     val name by string {
         name = "name"

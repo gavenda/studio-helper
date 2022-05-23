@@ -22,11 +22,11 @@ import dev.kord.core.behavior.GuildBehavior
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.getChannelOf
 import dev.kord.core.entity.channel.GuildMessageChannel
+import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -54,22 +54,21 @@ object AniListExtension : Extension() {
     private val notificationPollDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val pollers = mutableMapOf<Snowflake, AiringSchedulePoller>()
 
-    init {
-        setupDatabase()
-        setupGraphQL()
-    }
-
     override suspend fun setup() {
         setupEvents()
         setupCommands()
     }
 
     private suspend fun setupEvents() {
+        event<ReadyEvent> {
+            action {
+                setupDatabase()
+                setupGraphQL()
+            }
+        }
         event<GuildCreateEvent> {
             action {
-                CoroutineScope(Dispatchers.IO).launch {
-                    setupPolling(event.guild)
-                }
+                setupPolling(event.guild)
             }
         }
     }

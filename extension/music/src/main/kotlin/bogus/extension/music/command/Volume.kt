@@ -7,9 +7,9 @@ import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.suggestIntMap
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 suspend fun MusicExtension.volume() {
@@ -29,7 +29,7 @@ suspend fun MusicExtension.volume() {
     }
 }
 
-internal class VolumeArgs : KoinComponent, Arguments() {
+internal class VolumeArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     private val volumeMap = buildMap {
         for (v in 0..100 step 10) {

@@ -17,6 +17,7 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.long
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalChannel
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.botHasPermissions
 import dev.kord.common.entity.ChannelType
@@ -25,7 +26,6 @@ import dev.kord.core.behavior.interaction.suggestInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.and
@@ -149,7 +149,7 @@ suspend fun AniListExtension.notification() {
     }
 }
 
-internal class AiringAnimeArgs : KoinComponent, Arguments() {
+internal class AiringAnimeArgs : KordExKoinComponent, Arguments() {
     val aniList by inject<AniList>()
     val tp by inject<TranslationsProvider>()
     val mediaId by long {
@@ -174,7 +174,7 @@ internal class AiringAnimeArgs : KoinComponent, Arguments() {
     }
 }
 
-internal class BindNotificationArgs : KoinComponent, Arguments() {
+internal class BindNotificationArgs : KordExKoinComponent, Arguments() {
     val tp by inject<TranslationsProvider>()
     val channel by optionalChannel {
         name = "channel"
