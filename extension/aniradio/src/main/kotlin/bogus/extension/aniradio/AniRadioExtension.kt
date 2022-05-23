@@ -20,6 +20,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Permission
+import dev.kord.core.behavior.channel.connect
 import dev.kord.gateway.Intent
 import dev.kord.voice.AudioFrame
 import dev.kord.voice.VoiceConnection

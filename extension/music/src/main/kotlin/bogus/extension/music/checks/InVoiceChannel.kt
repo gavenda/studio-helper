@@ -12,6 +12,7 @@ import com.kotlindiscord.kord.extensions.checks.types.CheckContext
 import com.kotlindiscord.kord.extensions.utils.hasPermissions
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Permission
+import dev.kord.core.behavior.channel.connect
 import dev.kord.core.event.Event
 import dev.schlaubi.lavakord.audio.Link
 import dev.schlaubi.lavakord.kord.connectAudio
