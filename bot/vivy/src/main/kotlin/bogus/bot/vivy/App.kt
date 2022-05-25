@@ -18,7 +18,7 @@ suspend fun main() {
 
 suspend fun vivy(
     token: String,
-    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID")),
+    testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
     val log = KotlinLogging.logger { }.asLogFMT()
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD

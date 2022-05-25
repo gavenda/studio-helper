@@ -18,11 +18,11 @@ suspend fun main() {
 
 suspend fun parrot(
     token: String,
-    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID")),
+    testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
     defaultGuildId: Snowflake = Snowflake(env("DEFAULT_GUILD_ID")),
     defaultVoiceChannelId: Snowflake = Snowflake(env("DEFAULT_VOICE_CHANNEL_ID")),
     deafVoiceChannelId: Snowflake = Snowflake(env("DEAF_VOICE_CHANNEL_ID")),
-    audioFileMapPath: String = envOrNull("AUDIO_FILE_MAP") ?: "mapping.json"
+    audioFileMapPath: String = envOrNull("AUDIO_FILE_MAP") ?: "config.json"
 ): ExtensibleBot {
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
     val log = KotlinLogging.logger { }.asLogFMT()
@@ -33,7 +33,7 @@ suspend fun parrot(
                 AnnouncerExtension(
                     defaultGuildId = defaultGuildId,
                     defaultVoiceChannelId = defaultVoiceChannelId,
-                    audioFileMapPath = audioFileMapPath
+                    configPath = audioFileMapPath
                 )
             }
             add {

@@ -46,7 +46,7 @@ import kotlin.random.Random
 class AnnouncerExtension(
     val defaultGuildId: Snowflake,
     val defaultVoiceChannelId: Snowflake,
-    val audioFileMapPath: String = "mapping.json",
+    val configPath: String = "config.json",
 ) : Extension() {
     override val name = EXTENSION_NAME
     override val bundle = TRANSLATIONS_BUNDLE
@@ -99,9 +99,14 @@ class AnnouncerExtension(
                 if (event.state.channelId != defaultVoiceChannelId) return@action
                 if (event.state.channelId == event.old?.channelId) return@action
                 if (event.state.channelId != null) {
-                    val rndIdx = Random.nextInt(0, filePaths.size)
-                    val boldFilePathList = filePaths.values.toList()
-                    playAudio(boldFilePathList[rndIdx], 2000)
+                    // look for user specific map, then random
+                    if (userPaths.containsKey(event.state.userId)) {
+                        playAudio(userPaths.getValue(event.state.userId), 2000)
+                    } else {
+                        val rndIdx = Random.nextInt(0, filePaths.size)
+                        val boldFilePathList = filePaths.values.toList()
+                        playAudio(boldFilePathList[rndIdx], 2000)
+                    }
                 }
             }
         }
@@ -119,13 +124,24 @@ class AnnouncerExtension(
         }
     }
 
-    private val filePaths: Map<String, Path>
+    private val config: AnnouncerConfig
         get() {
             val cwd = Path.of("")
-            val mapping = Files.readString(cwd.resolve(audioFileMapPath), Charsets.UTF_8)
-            val audioFileMap = Json.decodeFromString<List<AudioFileMap>>(mapping)
-            return audioFileMap.associate {
-                it.name to cwd.resolve(it.filePath)
+            val configStr = Files.readString(cwd.resolve(configPath), Charsets.UTF_8)
+            return Json.decodeFromString(configStr)
+        }
+
+    private val userPaths: Map<Snowflake, Path>
+        get() {
+            return config.userMapping.map { entry ->
+                Snowflake(entry.key) to Path.of("").resolve(entry.value)
+            }.toMap()
+        }
+
+    private val filePaths: Map<String, Path>
+        get() {
+            return config.fileMapping.associate {
+                it.name to Path.of("").resolve(it.filePath)
             }
         }
 

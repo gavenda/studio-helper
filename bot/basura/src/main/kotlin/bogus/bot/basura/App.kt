@@ -19,7 +19,7 @@ suspend fun main() {
 
 suspend fun basura(
     token: String,
-    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID"))
+    testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
     val log = KotlinLogging.logger { }.asLogFMT()

@@ -20,3 +20,4 @@ log
 # Ignore root announcer files
 /voicelines
 /mapping.json
+/config.json
