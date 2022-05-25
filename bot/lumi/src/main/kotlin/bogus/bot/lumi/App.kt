@@ -1,5 +1,7 @@
 package bogus.bot.lumi
 
+import bogus.constants.ENVIRONMENT_DEV
+import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
 import bogus.extension.moderation.ModerationExtension
 import bogus.util.asLogFMT
@@ -10,10 +12,18 @@ import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 
 suspend fun main() {
-    val environment = envOrNull("ENVIRONMENT") ?: "production"
     val token = env("TOKEN")
+    lumi(token).start()
+}
+
+suspend fun lumi(
+    token: String,
+    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID"))
+): ExtensibleBot {
+    val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
     val log = KotlinLogging.logger { }.asLogFMT()
-    val bot = ExtensibleBot(token) {
+
+    return ExtensibleBot(token) {
         extensions {
             add(::AboutExtension)
             add(::ModerationExtension)
@@ -24,14 +34,15 @@ suspend fun main() {
         }
 
         applicationCommands {
-            if (environment == "dev") {
-                defaultGuild = Snowflake(env("TEST_GUILD_ID"))
+            if (environment == ENVIRONMENT_DEV) {
+                defaultGuild = testGuildId
             }
         }
 
         hooks {
+            kordShutdownHook = true
             setup {
-                log.info("Bot up and running")
+                log.info("Bot started", mapOf("bot" to "lumi"))
             }
         }
 
@@ -39,6 +50,4 @@ suspend fun main() {
             watching("Amnesia")
         }
     }
-
-    bot.start()
 }

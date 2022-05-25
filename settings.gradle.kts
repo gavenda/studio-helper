@@ -2,11 +2,11 @@ rootProject.name = "studio-helper"
 
 include(
     "common",
-    "bot:vivy",
+    "bot:basura",
     "bot:chupa",
     "bot:lumi",
     "bot:parrot",
-    "bot:basura",
+    "bot:vivy",
     "extension:about",
     "extension:anilist",
     "extension:aniradio",

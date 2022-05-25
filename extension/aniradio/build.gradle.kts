@@ -12,7 +12,7 @@ dependencies {
             requireCapability("dev.kord:core-voice")
         }
     }
-    implementation("com.github.walkyst:lavaplayer-fork:custom-SNAPSHOT")
+    implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
 }
 
 tasks {

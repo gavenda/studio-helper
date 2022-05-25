@@ -1,5 +1,7 @@
 package bogus.bot.parrot
 
+import bogus.constants.ENVIRONMENT_DEV
+import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.announcer.AnnouncerExtension
 import bogus.extension.automove.AutoMoveExtension
 import bogus.util.asLogFMT
@@ -10,16 +12,23 @@ import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 
 suspend fun main() {
-    val environment = envOrNull("ENVIRONMENT") ?: "production"
     val token = env("TOKEN")
-    val log = KotlinLogging.logger { }.asLogFMT()
-    val bot = ExtensibleBot(token) {
-        extensions {
-            val defaultGuildId = Snowflake(env("DEFAULT_GUILD_ID"))
-            val defaultVoiceChannelId = Snowflake(env("DEFAULT_VOICE_CHANNEL_ID"))
-            val deafVoiceChannelId = Snowflake(env("DEAF_VOICE_CHANNEL_ID"))
-            val audioFileMapPath = envOrNull("AUDIO_FILE_MAP") ?: "mapping.json"
+    parrot(token).start()
+}
 
+suspend fun parrot(
+    token: String,
+    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID")),
+    defaultGuildId: Snowflake = Snowflake(env("DEFAULT_GUILD_ID")),
+    defaultVoiceChannelId: Snowflake = Snowflake(env("DEFAULT_VOICE_CHANNEL_ID")),
+    deafVoiceChannelId: Snowflake = Snowflake(env("DEAF_VOICE_CHANNEL_ID")),
+    audioFileMapPath: String = envOrNull("AUDIO_FILE_MAP") ?: "mapping.json"
+): ExtensibleBot {
+    val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
+    val log = KotlinLogging.logger { }.asLogFMT()
+
+    return ExtensibleBot(token) {
+        extensions {
             add {
                 AnnouncerExtension(
                     defaultGuildId = defaultGuildId,
@@ -40,14 +49,15 @@ suspend fun main() {
         }
 
         applicationCommands {
-            if (environment == "dev") {
-                defaultGuild = Snowflake(env("TEST_GUILD_ID"))
+            if (environment == ENVIRONMENT_DEV) {
+                defaultGuild = testGuildId
             }
         }
 
         hooks {
+            kordShutdownHook = true
             setup {
-                log.info("Bot is up and running")
+                log.info("Bot started", mapOf("bot" to "parrot"))
             }
         }
 
@@ -55,6 +65,4 @@ suspend fun main() {
             listening("Birds")
         }
     }
-
-    bot.start()
 }

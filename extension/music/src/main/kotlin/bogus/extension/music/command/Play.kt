@@ -172,7 +172,7 @@ internal class PlayArgs : KordExKoinComponent, Arguments() {
                                 choice(it, it)
                             }
                         } else {
-                            val youtubeResult = youtubeQuery(input)
+                            val youtubeResult = YT.query(input)
                             youtubeResult.take(delta)
                                 .apply { cache[input] = this }
                                 .forEach {

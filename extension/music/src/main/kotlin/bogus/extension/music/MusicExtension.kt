@@ -101,6 +101,7 @@ object MusicExtension : Extension() {
 
         Flyway.configure()
             .dataSource(hikari)
+            .locations("db.music.migration")
             .load()
             .migrate()
     }

@@ -1,7 +1,7 @@
 package bogus.extension.music.player
 
 import bogus.extension.music.SOURCE_YOUTUBE
-import bogus.extension.music.youtubeThumbnail
+import bogus.extension.music.YT
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import dev.kord.common.entity.Snowflake
 import dev.schlaubi.lavakord.audio.player.Track
@@ -58,7 +58,7 @@ fun Track.asMusicTrack(): MusicTrack {
         position = position,
         source = source,
         artworkUri = if (source == SOURCE_YOUTUBE) {
-            youtubeThumbnail(identifier)
+            YT.thumbnail(identifier)
         } else ""
     )
 }
@@ -75,6 +75,8 @@ fun AudioTrack.asMusicTrack(clone: Boolean = false): MusicTrack {
         uri = info.uri,
         position = position.milliseconds,
         source = sourceManager.sourceName,
-        artworkUri = info.artworkUrl ?: ""
+        artworkUri = if (sourceManager.sourceName == SOURCE_YOUTUBE) {
+            YT.thumbnail(identifier)
+        } else ""
     )
 }

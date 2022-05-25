@@ -1,5 +1,7 @@
 package bogus.bot.basura
 
+import bogus.constants.ENVIRONMENT_DEV
+import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.aniradio.AniRadioExtension
@@ -11,10 +13,17 @@ import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 
 suspend fun main() {
-    val environment = envOrNull("ENVIRONMENT") ?: "production"
     val token = env("TOKEN")
+    basura(token).start()
+}
+
+suspend fun basura(
+    token: String,
+    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID"))
+): ExtensibleBot {
+    val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
     val log = KotlinLogging.logger { }.asLogFMT()
-    val bot = ExtensibleBot(token) {
+    return ExtensibleBot(token) {
         extensions {
             add(::AboutExtension)
             add { AniListExtension }
@@ -26,14 +35,15 @@ suspend fun main() {
         }
 
         applicationCommands {
-            if (environment == "dev") {
-                defaultGuild = Snowflake(env("TEST_GUILD_ID"))
+            if (environment == ENVIRONMENT_DEV) {
+                defaultGuild = testGuildId
             }
         }
 
         hooks {
+            kordShutdownHook = true
             setup {
-                log.info("Bot up and running")
+                log.info("Bot started", mapOf("bot" to "basura"))
             }
         }
 
@@ -41,6 +51,4 @@ suspend fun main() {
             competing("Trash")
         }
     }
-
-    bot.start()
 }

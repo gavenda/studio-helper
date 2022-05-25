@@ -202,6 +202,7 @@ object AniListExtension : Extension() {
 
         Flyway.configure()
             .dataSource(hikari)
+            .locations("db.anilist.migration")
             .load()
             .migrate()
     }

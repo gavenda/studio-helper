@@ -1,7 +1,9 @@
 package bogus.bot.vivy
 
-import bogus.extension.music.MusicExtension
+import bogus.constants.ENVIRONMENT_DEV
+import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
+import bogus.extension.music.MusicExtension
 import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
@@ -10,10 +12,18 @@ import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 
 suspend fun main() {
-    val environment = envOrNull("ENVIRONMENT") ?: "production"
     val token = env("TOKEN")
-    val log = KotlinLogging.logger {  }.asLogFMT()
-    val bot = ExtensibleBot(token) {
+    vivy(token).start()
+}
+
+suspend fun vivy(
+    token: String,
+    testGuildId: Snowflake = Snowflake(env("TEST_GUILD_ID")),
+): ExtensibleBot {
+    val log = KotlinLogging.logger { }.asLogFMT()
+    val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
+
+    return ExtensibleBot(token) {
         extensions {
             add { MusicExtension }
             add(::SingExtension)
@@ -24,15 +34,15 @@ suspend fun main() {
         }
 
         applicationCommands {
-            if (environment == "dev") {
-                defaultGuild = Snowflake(env("TEST_GUILD_ID"))
+            if (environment == ENVIRONMENT_DEV) {
+                defaultGuild = testGuildId
             }
         }
 
         hooks {
             kordShutdownHook = true
             setup {
-                log.info("Bot is up and running")
+                log.info("Bot started", mapOf("bot" to "vivy"))
             }
         }
 
@@ -40,6 +50,4 @@ suspend fun main() {
             playing("Fluorite Eye's Song")
         }
     }
-
-    bot.start()
 }
