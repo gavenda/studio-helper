@@ -1,6 +1,7 @@
 plugins {
     id("bogus.common")
     id("bogus.kordex")
+    id("bogus.player")
     kotlin("plugin.serialization")
 }
 
@@ -8,12 +9,6 @@ version = "1.0"
 
 dependencies {
     implementation(project(":common"))
-    implementation("dev.kord:kord-core") {
-        capabilities {
-            requireCapability("dev.kord:core-voice")
-        }
-    }
-    implementation("com.github.walkyst:lavaplayer-fork:1.3.97.1")
 }
 
 tasks {
