@@ -44,7 +44,8 @@ object AniListExtension : Extension() {
     override val name = "anilist"
     override val bundle = "anilist"
 
-    private val log = KotlinLogging.logger { }.asLogFMT()
+    val log = KotlinLogging.logger { }.asLogFMT()
+
     private val kronScheduler = buildSchedule {
         minutes {
             from(0) every 30
