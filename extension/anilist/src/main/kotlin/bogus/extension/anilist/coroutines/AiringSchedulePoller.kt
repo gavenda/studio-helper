@@ -1,23 +1,16 @@
 package bogus.extension.anilist.coroutines
 
-import bogus.coroutines.Poller
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.AiringSchedule
 import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.koin.core.component.inject
-import kotlin.time.Duration
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AiringSchedulePoller(
-    private val coroutineDispatcher: CoroutineDispatcher,
     private val mediaIdList: List<Long>
-) : KordExKoinComponent, Poller<List<AiringSchedule>> {
+) : KordExKoinComponent {
     val log = KotlinLogging.logger { }.asLogFMT()
 
     // Empty, gets populated at first run
@@ -25,36 +18,25 @@ class AiringSchedulePoller(
     val aniList by inject<AniList>()
     val mediaIds get() = mediaIdEpisode.keys.toList()
 
-    override fun poll(delay: Duration): Flow<List<AiringSchedule>> {
+    init {
         runBlocking {
             aniList.findAiringMedia(mediaIdList)?.forEach {
                 updateMediaEpisode(it.mediaId, it.episode)
             }
-
             log.debug("Initialized media list")
         }
+    }
 
-        return channelFlow {
-            while (!isClosedForSend) {
-                log.debug("Fetching latest media")
-
-                val airingSchedules = aniList.findAiringMedia(mediaIdList)
-                if (airingSchedules != null) {
-                    send(airingSchedules.filter { updateMediaEpisode(it.mediaId, it.episode) })
-                } else {
-                    send(emptyList())
-                }
-
-                delay(delay)
-            }
-        }.flowOn(coroutineDispatcher)
+    suspend fun poll(): List<AiringSchedule> {
+        val airingSchedules = aniList.findAiringMedia(mediaIdList)
+        return airingSchedules?.filter { updateMediaEpisode(it.mediaId, it.episode) } ?: emptyList()
     }
 
     /**
-     * Setup media ids
+     * Update media ids
      * @param mediaIds the media ids
      */
-    fun setupMediaIds(mediaIds: List<Long>) {
+    fun updateMediaIds(mediaIds: List<Long>) {
         mediaIds.forEach {
             mediaIdEpisode.putIfAbsent(it, 0)
         }
@@ -81,9 +63,5 @@ class AiringSchedulePoller(
             return true
         }
         return false
-    }
-
-    override fun close() {
-        coroutineDispatcher.cancel()
     }
 }

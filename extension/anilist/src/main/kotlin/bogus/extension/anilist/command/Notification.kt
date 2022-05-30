@@ -70,7 +70,7 @@ suspend fun AniListExtension.notification() {
                     db.airingAnimes.add(newDbAiringAnime)
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        setupPolling(guild)
+                        beginPoll(guild)
                     }
 
                     respond {

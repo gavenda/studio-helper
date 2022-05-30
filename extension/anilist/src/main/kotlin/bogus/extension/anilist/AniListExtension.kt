@@ -15,6 +15,8 @@ import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import dev.inmo.krontab.builder.buildSchedule
+import dev.inmo.krontab.doInfinity
 import dev.kord.common.Color
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
@@ -26,9 +28,6 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.flywaydb.core.Flyway
@@ -39,19 +38,18 @@ import org.ktorm.entity.filter
 import org.ktorm.entity.first
 import org.ktorm.entity.map
 import org.ktorm.support.postgresql.PostgreSqlDialect
-import java.util.concurrent.Executors
 import javax.sql.DataSource
-import kotlin.time.Duration.Companion.hours
 
 object AniListExtension : Extension() {
     override val name = "anilist"
     override val bundle = "anilist"
 
-    val log = KotlinLogging.logger { }.asLogFMT()
-
-    private val pollingQueueDispatcher = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        .asCoroutineDispatcher()
-    private val notificationPollDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val log = KotlinLogging.logger { }.asLogFMT()
+    private val kronScheduler = buildSchedule {
+        minutes {
+            from(0) every 30
+        }
+    }
     private val pollers = mutableMapOf<Snowflake, AiringSchedulePoller>()
 
     override suspend fun setup() {
@@ -64,11 +62,37 @@ object AniListExtension : Extension() {
             action {
                 setupDatabase()
                 setupGraphQL()
+                startPoll()
             }
         }
         event<GuildCreateEvent> {
             action {
-                setupPolling(event.guild)
+                beginPoll(event.guild)
+            }
+        }
+    }
+
+    suspend fun startPoll() = kronScheduler.doInfinity {
+        val db by inject<Database>()
+        pollers.forEach { (guildId, poller) ->
+            val guild = kord.getGuild(guildId) ?: return@forEach
+            val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
+            val airingSchedules = poller.poll()
+
+            airingSchedules.forEach { airingSchedule ->
+                val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
+                val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
+
+                if (channel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
+                    channel.createEmbed {
+                        title = "New Episode Aired!"
+                        description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
+                        color = Color(0xFF0000)
+                        thumbnail {
+                            url = airingSchedule.media.coverImage?.extraLarge ?: ""
+                        }
+                    }
+                }
             }
         }
     }
@@ -76,82 +100,28 @@ object AniListExtension : Extension() {
     fun removeAnimeFromPolling(guildId: Snowflake, mediaId: Long) {
         val poller = pollers[guildId] ?: return
 
-        log.info(
-            msg = "Remove airing anime from polling",
-            context = mapOf(
-                "guild" to guildId,
-                "mediaId" to mediaId
-            )
-        )
-
         if (poller.mediaIds.isEmpty()) {
-            poller.close()
             pollers.remove(guildId)
         }
 
         poller.removeMediaId(mediaId)
     }
 
-    suspend fun setupPolling(guild: GuildBehavior) {
+    fun beginPoll(guild: GuildBehavior) {
         val db by inject<Database>()
         val mediaIds = db.airingAnimes
             .filter { it.discordGuildId eq guild.idLong }
             .map { it.mediaId }
 
         if (mediaIds.isNotEmpty()) {
-            log.info(
-                msg = "Begin airing anime polling",
-                context = mapOf(
-                    "guildId" to guild.id,
-                    "mediaIds" to mediaIds
-                )
-            )
+            val poller = pollers[guild.id]
 
-            val runningPoller = pollers[guild.id]
-
-            if (runningPoller != null) {
-                runningPoller.setupMediaIds(mediaIds)
+            if (poller != null) {
+                poller.updateMediaIds(mediaIds)
                 return
             }
 
-            val poller = AiringSchedulePoller(pollingQueueDispatcher, mediaIds)
-            pollers.computeIfAbsent(guild.id) { poller }
-
-            CoroutineScope(notificationPollDispatcher).launch {
-                poller.poll(1.hours).collect { airingSchedules ->
-                    val titles = airingSchedules
-                        .sortedByDescending { it.episode }
-                        .distinctBy { it.mediaId }
-                        .mapNotNull { it.media.title?.english ?: it.media.title?.romaji }
-
-                    log.info(
-                        msg = "Collecting airing schedules",
-                        context = mapOf(
-                            "guildId" to guild.id,
-                            "titles" to titles
-                        )
-                    )
-
-                    val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
-                    airingSchedules.forEach { airingSchedule ->
-                        val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
-                        val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
-
-                        if (!channel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
-                            return@forEach
-                        }
-
-                        channel.createEmbed {
-                            title = "New Episode Aired!"
-                            description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
-                            color = Color(0xFF0000)
-                            thumbnail {
-                                url = airingSchedule.media.coverImage?.extraLarge ?: ""
-                            }
-                        }
-                    }
-                }
-            }
+            pollers.computeIfAbsent(guild.id) { AiringSchedulePoller(mediaIds) }
         } else {
             log.warn(
                 msg = "No media id given, will not poll",
