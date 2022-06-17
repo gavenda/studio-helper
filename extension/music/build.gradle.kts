@@ -1,21 +1,37 @@
 plugins {
-    id("bogus.common")
-    id("bogus.common-db")
-    id("bogus.kordex")
-    id("bogus.player")
+    alias(libs.plugins.kotlin.jvm)
 }
 
 version = "2.0"
 
 dependencies {
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.bundles.database)
+    runtimeOnly(libs.postgresql)
+
     implementation(project(":common"))
-    implementation("dev.schlaubi.lavakord:kord:3.6.2")
-    implementation("com.github.natanbc:lavadsp:0.7.7")
-    implementation("de.sonallux.spotify:spotify-web-api-java:2.4.0")
+    implementation(libs.kordex)
+    implementation(libs.kord) {
+        capabilities {
+            requireCapability("dev.kord:core-voice")
+        }
+    }
+    implementation(files("$rootDir/lib/lavaplayer-natives-extra-1.3.13.jar"))
+    implementation(libs.lavaplayer.fork)
+
+    implementation(libs.lavakord)
+    implementation(libs.lavadsp)
+    implementation(libs.spotify)
 }
 
 tasks {
     withType<org.gradle.jvm.tasks.Jar> {
         archiveBaseName.set("bogus-extension-music")
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        this.languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
