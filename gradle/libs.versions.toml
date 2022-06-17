@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.7.0"
+kotlin = "1.6.21"
 hikari = "5.0.1"
 flyway = "8.5.8"
 ktorm = "3.4.1"
