@@ -138,8 +138,12 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
                     mutablePages.addPage(Page { embedBuilder() })
                 }
 
-                boundPaginator?.send()
-                log.debug("Queue updated")
+                try {
+                    boundPaginator?.send()
+                    log.debug("Queue updated")
+                } catch (ex: Exception) {
+                    log.error(ex, "Unable to send bind message")
+                }
             }
             .launchIn(CoroutineScope(Dispatchers.IO))
     }
@@ -233,7 +237,11 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
                 page { embedBuilder() }
             }
         }
-        boundPaginator?.send()
+        try {
+            boundPaginator?.send()
+        } catch (ex: Exception) {
+            log.error(ex, "Unable to send bind message")
+        }
         return boundPaginator?.message?.id
     }
 
