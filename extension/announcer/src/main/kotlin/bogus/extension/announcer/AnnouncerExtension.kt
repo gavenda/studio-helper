@@ -100,12 +100,14 @@ class AnnouncerExtension(
                 if (event.state.channelId == event.old?.channelId) return@action
                 if (event.state.channelId != null) {
                     // look for user specific map, then random
-                    if (userPaths.containsKey(event.state.userId)) {
-                        playAudio(userPaths.getValue(event.state.userId), 2000)
+                    if (userFilePaths.containsKey(event.state.userId)) {
+                        val userFilePathList = userFilePaths.getValue(event.state.userId)
+                        val rndIdx = Random.nextInt(0, userFilePathList.size)
+                        playAudio(userFilePathList[rndIdx])
                     } else {
+                        val filePathList = filePaths.values.toList()
                         val rndIdx = Random.nextInt(0, filePaths.size)
-                        val boldFilePathList = filePaths.values.toList()
-                        playAudio(boldFilePathList[rndIdx], 2000)
+                        playAudio(filePathList[rndIdx])
                     }
                 }
             }
@@ -131,10 +133,10 @@ class AnnouncerExtension(
             return Json.decodeFromString(configStr)
         }
 
-    private val userPaths: Map<Snowflake, Path>
+    private val userFilePaths: Map<Snowflake, List<Path>>
         get() {
             return config.userMapping.map { entry ->
-                Snowflake(entry.key) to Path.of("").resolve(entry.value)
+                Snowflake(entry.key) to entry.value.map { Path.of("").resolve(it) }
             }.toMap()
         }
 
@@ -145,7 +147,7 @@ class AnnouncerExtension(
             }
         }
 
-    private fun playAudio(path: Path, delay: Long = 0) {
+    private fun playAudio(path: Path, delay: Long = DEFAULT_AUDIO_DELAY) {
         val filePathStr = path.toAbsolutePath().toString()
         playerManager.loadItem(filePathStr, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) = runBlocking {

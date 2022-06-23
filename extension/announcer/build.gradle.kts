@@ -29,4 +29,8 @@ kotlin {
     jvmToolchain {
         (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
     }
+
+    sourceSets.all {
+        languageSettings.optIn("kotlin.RequiresOptIn")
+    }
 }
