@@ -18,7 +18,7 @@ copy-down = "1.0"
 kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
-log4j2 = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j2" }
+log4j2-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j2" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2" }
 log4j2-sl4j-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version.ref = "log4j2" }
 flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
@@ -39,5 +39,5 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [bundles]
-log4j2 = ["log4j2", "log4j2-core", "log4j2-sl4j-impl"]
+log4j2 = ["log4j2-api", "log4j2-core", "log4j2-sl4j-impl"]
 database = ["flyway", "ktorm", "ktorm-support-postgres", "hikari"]
