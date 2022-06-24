@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("bogus.kotlin-conventions")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -15,11 +15,5 @@ dependencies {
 tasks {
     withType<org.gradle.jvm.tasks.Jar> {
         archiveBaseName.set("bogus-extension-counter")
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
     }
 }

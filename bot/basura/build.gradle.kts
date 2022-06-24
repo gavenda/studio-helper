@@ -1,6 +1,6 @@
 plugins {
-    application
-    alias(libs.plugins.kotlin.jvm)
+    id("bogus.kotlin-conventions")
+    id("bogus.bot-application")
 }
 
 version = "2.2"
@@ -21,25 +21,7 @@ dependencies {
 }
 
 tasks {
-    val distDir = file("$rootDir/dist")
-    val installDistDir = file("$rootDir/dist/${project.name}")
-
-    named<Sync>(name = "installDist") {
-        destinationDir = installDistDir
-    }
-    named<Zip>(name = "distZip") {
-        destinationDirectory.set(distDir)
-    }
-    named<Tar>(name = "distTar") {
-        destinationDirectory.set(distDir)
-    }
     withType<org.gradle.jvm.tasks.Jar> {
         archiveBaseName.set("bogus-bot-basura")
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
     }
 }

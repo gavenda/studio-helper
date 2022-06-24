@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("bogus.kotlin-conventions")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -12,18 +12,12 @@ dependencies {
 
     implementation(project(":common"))
     implementation(libs.kordex)
-    implementation("io.github.furstenheim:copy_down:1.0")
-    implementation("dev.inmo:krontab:0.7.2")
+    implementation(libs.copy.down)
+    implementation(libs.krontab)
 }
 
 tasks {
     withType<org.gradle.jvm.tasks.Jar> {
         archiveBaseName.set("bogus-extension-anilist")
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
     }
 }

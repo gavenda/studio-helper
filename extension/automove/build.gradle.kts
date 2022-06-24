@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("bogus.kotlin-conventions")
 }
 
 version = "1.0"
@@ -14,11 +14,5 @@ dependencies {
 tasks {
     withType<org.gradle.jvm.tasks.Jar> {
         archiveBaseName.set("bogus-extension-automove")
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
