@@ -79,7 +79,7 @@ jobs:
           destination_path: /bot
           remote_server_ip: ${{secrets.HOST}}
           ssh_port: ${{secrets.PORT}}
-          ssh_login_username: ${{secrets.USER}}
+          ssh_login_username: ${{secrets.BASURA_USER}}
           ssh_private_key: ${{secrets.KEY}}
           rsync_args: -o -g
       - name: Restart Discord Bot
