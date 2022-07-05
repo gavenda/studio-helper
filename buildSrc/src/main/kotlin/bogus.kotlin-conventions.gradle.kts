@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
+        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(Compiler.JVM_TARGET))
     }
 
     sourceSets.all {
@@ -17,7 +17,7 @@ kotlin {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = Compiler.JVM_TARGET
+            jvmTarget = Compiler.JVM_TARGET.toString()
         }
     }
 }

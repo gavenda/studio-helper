@@ -1,3 +1,3 @@
 object Compiler {
-    const val JVM_TARGET = "11"
+    const val JVM_TARGET = 17
 }
