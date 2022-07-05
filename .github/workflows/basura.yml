@@ -76,7 +76,7 @@ jobs:
         uses: yeshan333/rsync-deploy-action@v1.0.0
         with:
           source_path: ./basura
-          destination_path: /bot
+          destination_path: /home
           remote_server_ip: ${{secrets.HOST}}
           ssh_port: ${{secrets.PORT}}
           ssh_login_username: ${{secrets.BASURA_USER}}
