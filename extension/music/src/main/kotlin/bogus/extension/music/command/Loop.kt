@@ -2,7 +2,6 @@ package bogus.extension.music.command
 
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.MusicExtension.log
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
@@ -26,7 +25,6 @@ private suspend fun EphemeralSlashCommand<*>.single() {
         description = "loop.single.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.toggleLoop()
@@ -58,7 +56,6 @@ private suspend fun EphemeralSlashCommand<*>.all() {
         description = "loop.all.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.toggleLoopAll()

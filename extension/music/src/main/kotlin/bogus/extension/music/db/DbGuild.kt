@@ -1,5 +1,6 @@
 package bogus.extension.music.db
 
+import bogus.extension.music.EXTENSION_NAME
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
@@ -16,7 +17,10 @@ interface DbGuild : Entity<DbGuild> {
     var volume: Int
 }
 
-object DbGuilds : Table<DbGuild>("guild") {
+object DbGuilds : Table<DbGuild>(
+    tableName = "guild",
+    schema = EXTENSION_NAME
+) {
     val discordGuildId = long("discord_guild_id").primaryKey().bindTo { it.discordGuildId }
     val textChannelId = long("text_channel_id").bindTo { it.textChannelId }
     val lastMessageId = long("last_message_id").bindTo { it.lastMessageId }

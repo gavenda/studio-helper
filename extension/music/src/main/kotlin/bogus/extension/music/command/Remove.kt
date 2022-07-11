@@ -2,7 +2,6 @@ package bogus.extension.music.command
 
 import bogus.extension.music.MusicExtension
 import bogus.extension.music.TRANSLATION_BUNDLE
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
 import bogus.extension.music.player.MusicTrack
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -22,7 +21,6 @@ suspend fun MusicExtension.remove() {
         description = "remove.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             if (arguments.to == null) {

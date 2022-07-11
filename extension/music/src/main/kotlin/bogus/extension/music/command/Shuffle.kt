@@ -1,7 +1,6 @@
 package bogus.extension.music.command
 
 import bogus.extension.music.MusicExtension
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
@@ -13,7 +12,6 @@ suspend fun MusicExtension.shuffle() {
         description = "shuffle.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             if (player.playing) {

@@ -3,7 +3,6 @@ package bogus.extension.music.command
 import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.db.*
 import bogus.extension.music.player.MusicTrack
@@ -58,7 +57,6 @@ private suspend fun EphemeralSlashCommand<*>.list() {
         description = "playlist.list.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             var songList = buildString {
@@ -97,7 +95,6 @@ private suspend fun EphemeralSlashCommand<*>.show() {
         description = "playlist.show.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             val dbPlaylist = db.playlists.find {
@@ -152,7 +149,6 @@ private suspend fun EphemeralSlashCommand<*>.create() {
         description = "playlist.create.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             val dbPlaylist = DbPlaylist {
@@ -188,7 +184,6 @@ private suspend fun EphemeralSlashCommand<*>.delete() {
         description = "playlist.delete.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             val dbPlaylist = db.playlists.find {
@@ -232,7 +227,6 @@ private suspend fun EphemeralSlashCommand<*>.add() {
         description = "playlist.add.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             val guild = guild ?: return@action
@@ -299,7 +293,6 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
         description = "playlist.remove.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             val dbPlaylist = db.playlists.find {
@@ -348,7 +341,6 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
         description = "playlist.queue.description"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
         }
         action {

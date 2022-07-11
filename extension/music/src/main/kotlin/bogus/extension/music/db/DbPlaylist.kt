@@ -1,5 +1,6 @@
 package bogus.extension.music.db
 
+import bogus.extension.music.EXTENSION_NAME
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
@@ -25,7 +26,10 @@ interface DbPlaylistSong : Entity<DbPlaylistSong> {
     var identifier: String
 }
 
-object DbPlaylistSongs : Table<DbPlaylistSong>("playlist_song") {
+object DbPlaylistSongs : Table<DbPlaylistSong>(
+    tableName = "playlist_song",
+    schema = EXTENSION_NAME
+) {
     val playlistSongId = long("playlist_song_id").primaryKey().bindTo { it.playlistSongId }
     val playlistId = long("playlist_id").primaryKey().bindTo { it.playlistId }
     val title = varchar("title").bindTo { it.title }
@@ -33,7 +37,10 @@ object DbPlaylistSongs : Table<DbPlaylistSong>("playlist_song") {
     val identifier = varchar("identifier").bindTo { it.identifier }
 }
 
-object DbPlaylists : Table<DbPlaylist>("playlist") {
+object DbPlaylists : Table<DbPlaylist>(
+    tableName = "playlist",
+    schema = EXTENSION_NAME
+) {
     val playlistId = long("playlist_id").primaryKey().bindTo { it.playlistId }
     val discordUserId = long("discord_user_id").bindTo { it.discordUserId }
     val name = varchar("name").bindTo { it.name }

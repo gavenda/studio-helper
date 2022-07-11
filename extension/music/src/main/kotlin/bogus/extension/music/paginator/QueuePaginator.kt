@@ -1,7 +1,6 @@
 package bogus.extension.music.paginator
 
 import bogus.extension.music.*
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player.MusicPlayer
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.components.ComponentContainer
@@ -81,7 +80,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -102,7 +100,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -118,7 +115,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -134,7 +130,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -151,7 +146,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -168,7 +162,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -184,7 +177,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {
@@ -200,7 +192,6 @@ abstract class QueuePaginator(
 
             check {
                 anyGuild()
-                hasDJRole()
             }
 
             action {

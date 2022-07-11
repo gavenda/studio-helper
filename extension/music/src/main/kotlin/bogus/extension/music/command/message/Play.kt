@@ -2,7 +2,6 @@ package bogus.extension.music.command.message
 
 import bogus.checks.limit
 import bogus.extension.music.*
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralMessageCommand
@@ -14,7 +13,6 @@ suspend fun MusicExtension.playLater() {
         name = "play.later.message-command"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
         }
         action {
@@ -45,7 +43,6 @@ suspend fun MusicExtension.playNext() {
         name = "play.next.message-command"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
             limit(PLAY_NEXT_LIMIT, 5.minutes)
         }
@@ -77,7 +74,6 @@ suspend fun MusicExtension.playNow() {
         name = "play.now.message-command"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
             limit(PLAY_NOW_LIMIT, 5.minutes)
         }

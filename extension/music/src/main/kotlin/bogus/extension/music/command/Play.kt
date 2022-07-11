@@ -3,7 +3,6 @@ package bogus.extension.music.command
 import bogus.checks.limit
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.music.*
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.util.LRUCache
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -36,7 +35,6 @@ private suspend fun EphemeralSlashCommand<*>.later() {
         description = "play.later.description"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
         }
         action {
@@ -68,7 +66,6 @@ private suspend fun EphemeralSlashCommand<*>.next() {
         description = "play.next.description"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
             limit(PLAY_NEXT_LIMIT, 5.minutes)
         }
@@ -101,7 +98,6 @@ private suspend fun EphemeralSlashCommand<*>.now() {
         description = "play.now.description"
         check {
             anyGuild()
-            hasDJRole()
             inVoiceChannel()
             limit(PLAY_NOW_LIMIT, 5.minutes)
         }

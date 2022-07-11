@@ -2,7 +2,6 @@ package bogus.extension.music.command
 
 import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.player.EqualizerType
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -45,7 +44,6 @@ private suspend fun SlashGroup.nightcore() {
         description = "effect.filter.nightcore.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             val speed = arguments.speed.coerceIn(10, 300)
@@ -75,7 +73,6 @@ private suspend fun SlashGroup.karaoke() {
         description = "effect.filter.karaoke.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.effects.applyKaraoke()
@@ -101,7 +98,6 @@ private suspend fun SlashGroup.vaporwave() {
         description = "effect.filter.vaporwave.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.effects.applyVaporwave()
@@ -127,7 +123,6 @@ private suspend fun SlashGroup.rock() {
         description = "effect.equalizer.rock.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.effects.applyEqualizer(EqualizerType.ROCK)
@@ -153,7 +148,6 @@ private suspend fun SlashGroup.pop() {
         description = "effect.equalizer.pop.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.effects.applyEqualizer(EqualizerType.POP)
@@ -179,7 +173,6 @@ private suspend fun SlashGroup.trebleBass() {
         description = "effect.equalizer.bass-boost.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             player.effects.applyEqualizer(EqualizerType.BASS_BOOST)

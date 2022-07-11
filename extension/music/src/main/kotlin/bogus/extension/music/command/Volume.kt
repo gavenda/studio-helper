@@ -1,7 +1,6 @@
 package bogus.extension.music.command
 
 import bogus.extension.music.*
-import bogus.extension.music.checks.hasDJRole
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
@@ -18,7 +17,6 @@ suspend fun MusicExtension.volume() {
         description = "volume.description"
         check {
             anyGuild()
-            hasDJRole()
         }
         action {
             respond {
