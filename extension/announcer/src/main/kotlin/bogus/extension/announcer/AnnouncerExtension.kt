@@ -41,6 +41,8 @@ import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(KordVoice::class)
 class AnnouncerExtension(
@@ -103,11 +105,11 @@ class AnnouncerExtension(
                     if (userFilePaths.containsKey(event.state.userId)) {
                         val userFilePathList = userFilePaths.getValue(event.state.userId)
                         val rndIdx = Random.nextInt(0, userFilePathList.size)
-                        playAudio(userFilePathList[rndIdx])
+                        playAudio(userFilePathList[rndIdx], delayMillis)
                     } else {
                         val filePathList = filePaths.values.toList()
                         val rndIdx = Random.nextInt(0, filePaths.size)
-                        playAudio(filePathList[rndIdx])
+                        playAudio(filePathList[rndIdx], delayMillis)
                     }
                 }
             }
@@ -133,6 +135,11 @@ class AnnouncerExtension(
             return Json.decodeFromString(configStr)
         }
 
+    private val delayMillis: Duration
+        get() {
+            return config.delay.milliseconds
+        }
+
     private val userFilePaths: Map<Snowflake, List<Path>>
         get() {
             return config.userMapping.map { entry ->
@@ -147,7 +154,7 @@ class AnnouncerExtension(
             }
         }
 
-    private fun playAudio(path: Path, delay: Long = DEFAULT_AUDIO_DELAY) {
+    private fun playAudio(path: Path, delay: Duration = 0.milliseconds) {
         val filePathStr = path.toAbsolutePath().toString()
         playerManager.loadItem(filePathStr, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) = runBlocking {

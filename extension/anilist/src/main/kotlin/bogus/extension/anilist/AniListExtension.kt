@@ -6,15 +6,13 @@ import bogus.extension.anilist.db.airingAnimes
 import bogus.extension.anilist.db.guilds
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.graphql.AniListGraphQL
+import bogus.lib.database.migrate
 import bogus.util.asLogFMT
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.botHasPermissions
-import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.loadModule
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import dev.inmo.krontab.builder.buildSchedule
 import dev.inmo.krontab.doInfinity
 import dev.kord.common.Color
@@ -30,15 +28,12 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import org.flywaydb.core.Flyway
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.entity.filter
 import org.ktorm.entity.first
 import org.ktorm.entity.map
-import org.ktorm.support.postgresql.PostgreSqlDialect
-import javax.sql.DataSource
 
 object AniListExtension : Extension() {
     override val name = "anilist"
@@ -152,30 +147,10 @@ object AniListExtension : Extension() {
     }
 
     private fun setupDatabase() {
-        loadModule {
-            single<DataSource>(createdAtStart = true) {
-                HikariDataSource(HikariConfig().apply {
-                    maximumPoolSize = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
-                    jdbcUrl = env("ANILIST_DB_URL")
-                    username = env("ANILIST_DB_USER")
-                    password = env("ANILIST_DB_PASS")
-                })
-            }
-            single {
-                Database.connect(
-                    dataSource = get(),
-                    dialect = PostgreSqlDialect()
-                )
-            }
-        }
-
-        val hikari by inject<DataSource>()
-
-        Flyway.configure()
-            .dataSource(hikari)
-            .locations("db.anilist.migration")
-            .load()
-            .migrate()
+        migrate(
+            path = "classpath:db/anilist/migration",
+            schema = EXTENSION_NAME
+        )
     }
 
     private suspend fun setupCommands() {

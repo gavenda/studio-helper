@@ -6,7 +6,9 @@ version = "1.0"
 
 dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.kordex)
+
+    api(libs.kordex)
+    api(libs.kord)
 }
 
 tasks {

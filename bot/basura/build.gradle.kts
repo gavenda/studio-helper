@@ -10,14 +10,12 @@ application {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.kordex)
     implementation(libs.bundles.log4j2)
-
-    implementation(project(":common"))
-    implementation(project(":extension:about"))
-    implementation(project(":extension:aniradio"))
-    implementation(project(":extension:anilist"))
+    implementation(projects.common)
+    implementation(projects.library.database)
+    implementation(projects.extension.about)
+    implementation(projects.extension.aniradio)
+    implementation(projects.extension.anilist)
 }
 
 tasks {

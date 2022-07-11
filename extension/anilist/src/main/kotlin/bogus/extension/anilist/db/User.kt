@@ -1,5 +1,6 @@
 package bogus.extension.anilist.db
 
+import bogus.extension.anilist.EXTENSION_NAME
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
@@ -17,7 +18,10 @@ interface DbUser : Entity<DbUser> {
     var aniListUsername: String
 }
 
-object DbUsers : Table<DbUser>("user") {
+object DbUsers : Table<DbUser>(
+    tableName = "user",
+    schema = EXTENSION_NAME
+) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordId = long("discord_id").bindTo { it.discordId }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }
@@ -33,7 +37,10 @@ interface DbUserLocale : Entity<DbUserLocale> {
     var locale: String
 }
 
-object DbUserLocales : Table<DbUserLocale>("user_locale") {
+object DbUserLocales : Table<DbUserLocale>(
+    tableName = "user_locale",
+    schema = EXTENSION_NAME
+) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordId = long("discord_id").bindTo { it.discordId }
     val locale = varchar("locale").bindTo { it.locale }

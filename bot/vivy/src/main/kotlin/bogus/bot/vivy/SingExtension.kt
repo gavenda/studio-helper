@@ -1,7 +1,6 @@
 package bogus.bot.vivy
 
 import bogus.extension.music.Jukebox
-import bogus.extension.music.checks.hasDJRole
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.player
 import com.kotlindiscord.kord.extensions.extensions.Extension
@@ -35,7 +34,6 @@ class SingExtension : Extension() {
             description = "Vivy will sing you her songs."
             check {
                 inVoiceChannel()
-                hasDJRole()
             }
             action {
                 val guild = guild ?: return@action

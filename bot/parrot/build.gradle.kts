@@ -10,13 +10,10 @@ application {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.kordex)
     implementation(libs.bundles.log4j2)
-
-    implementation(project(":common"))
-    implementation(project(":extension:announcer"))
-    implementation(project(":extension:automove"))
+    implementation(projects.common)
+    implementation(projects.extension.announcer)
+    implementation(projects.extension.automove)
 }
 
 tasks {

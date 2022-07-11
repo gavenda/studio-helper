@@ -10,13 +10,10 @@ application {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.kordex)
     implementation(libs.bundles.log4j2)
-
-    implementation(project(":common"))
-    implementation(project(":extension:about"))
-    implementation(project(":extension:counter"))
+    implementation(projects.common)
+    implementation(projects.extension.about)
+    implementation(projects.extension.counter)
 }
 
 tasks {

@@ -1,5 +1,7 @@
 rootProject.name = "studio-helper"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include(
     "common",
     "bot:basura",
@@ -8,6 +10,7 @@ include(
     "bot:parrot",
     "bot:vivy",
     "extension:about",
+    "extension:administration",
     "extension:anilist",
     "extension:aniradio",
     "extension:announcer",
@@ -15,6 +18,8 @@ include(
     "extension:counter",
     "extension:moderation",
     "extension:music",
+    "extension:utility",
+    "library:database",
 )
 
 dependencyResolutionManagement {

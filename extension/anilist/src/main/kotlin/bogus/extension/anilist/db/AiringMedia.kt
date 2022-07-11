@@ -1,5 +1,6 @@
 package bogus.extension.anilist.db
 
+import bogus.extension.anilist.EXTENSION_NAME
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
@@ -14,7 +15,10 @@ interface DbAiringAnime : Entity<DbAiringAnime> {
     var mediaId: Long
 }
 
-object DbAiringAnimes : Table<DbAiringAnime>("anime_airing_schedule") {
+object DbAiringAnimes : Table<DbAiringAnime>(
+    tableName = "anime_airing_schedule",
+    schema = EXTENSION_NAME
+) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }
     val mediaId = long("media_id").bindTo { it.mediaId }

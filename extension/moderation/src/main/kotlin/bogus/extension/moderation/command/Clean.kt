@@ -3,6 +3,7 @@ package bogus.extension.moderation.command
 import bogus.extension.moderation.ModerationExtension
 import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.checks.anyGuild
+import com.kotlindiscord.kord.extensions.checks.hasPermission
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 
 suspend fun ModerationExtension.clean() {
-    val log = KotlinLogging.logger {  }
+    val log = KotlinLogging.logger { }
         .asLogFMT()
 
     ephemeralSlashCommand(::CleanArgs) {
@@ -24,6 +25,7 @@ suspend fun ModerationExtension.clean() {
         description = "Cleans a message up to 100 messages."
         check {
             anyGuild()
+            hasPermission(Permission.ManageMessages)
         }
         requireBotPermissions(Permission.ManageMessages)
         action {

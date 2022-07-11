@@ -3,7 +3,10 @@ package bogus.bot.lumi
 import bogus.constants.ENVIRONMENT_DEV
 import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
+import bogus.extension.administration.AdministrationExtension
 import bogus.extension.moderation.ModerationExtension
+import bogus.extension.utility.UtilityExtension
+import bogus.lib.database.setupDatabase
 import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
@@ -27,6 +30,8 @@ suspend fun lumi(
         extensions {
             add(::AboutExtension)
             add(::ModerationExtension)
+            add(::AdministrationExtension)
+            add(::UtilityExtension)
 
             help {
                 enableBundledExtension = false
@@ -41,6 +46,11 @@ suspend fun lumi(
 
         hooks {
             kordShutdownHook = true
+
+            created {
+                setupDatabase()
+            }
+
             setup {
                 log.info("Bot started", mapOf("bot" to "lumi"))
             }

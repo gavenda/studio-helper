@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(Compiler.JVM_TARGET))
+        languageVersion.set(JavaLanguageVersion.of(Compiler.JVM_TARGET))
     }
 
     sourceSets.all {

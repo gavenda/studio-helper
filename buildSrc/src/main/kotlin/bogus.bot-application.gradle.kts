@@ -22,4 +22,7 @@ tasks {
     named<Tar>(name = "distTar") {
         destinationDirectory.set(distDir)
     }
+    named<Delete>(name = "clean") {
+        delete.add("$rootDir/dist")
+    }
 }

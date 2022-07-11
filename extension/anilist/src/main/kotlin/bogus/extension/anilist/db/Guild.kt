@@ -1,5 +1,6 @@
 package bogus.extension.anilist.db
 
+import bogus.extension.anilist.EXTENSION_NAME
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
@@ -18,7 +19,10 @@ interface DbGuild : Entity<DbGuild> {
     var notificationChannelId: Long
 }
 
-object DbGuilds : Table<DbGuild>("guild") {
+object DbGuilds : Table<DbGuild>(
+    tableName = "guild",
+    schema = EXTENSION_NAME
+) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }
     val hentai = boolean("hentai").bindTo { it.hentai }

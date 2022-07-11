@@ -6,12 +6,8 @@ plugins {
 version = "1.0"
 
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)
-    implementation(libs.bundles.database)
-    runtimeOnly(libs.postgresql)
-
-    implementation(project(":common"))
-    implementation(libs.kordex)
+    implementation(projects.common)
+    implementation(projects.library.database)
     implementation(libs.copy.down)
     implementation(libs.krontab)
 }

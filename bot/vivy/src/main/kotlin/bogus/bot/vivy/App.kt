@@ -4,6 +4,7 @@ import bogus.constants.ENVIRONMENT_DEV
 import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
 import bogus.extension.music.MusicExtension
+import bogus.lib.database.setupDatabase
 import bogus.util.asLogFMT
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
@@ -41,6 +42,11 @@ suspend fun vivy(
 
         hooks {
             kordShutdownHook = true
+
+            created {
+                setupDatabase()
+            }
+
             setup {
                 log.info("Bot started", mapOf("bot" to "vivy"))
             }
