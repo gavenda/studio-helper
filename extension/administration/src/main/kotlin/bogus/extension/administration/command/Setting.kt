@@ -10,6 +10,7 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSla
 import com.kotlindiscord.kord.extensions.commands.application.slash.SlashGroup
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.group
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingOptionalString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalChannel
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
@@ -100,12 +101,12 @@ private suspend fun SlashGroup.leave() {
     }
 }
 
-internal class MessageArguments : Arguments() {
+private class MessageArguments : Arguments() {
     val textChannelId by optionalChannel {
         name = "text-channel-id"
         description = "setting.messages.arguments.text-channel-id"
     }
-    val message by optionalString {
+    val message by coalescingOptionalString {
         name = "message"
         description = "setting.messages.arguments.message"
     }

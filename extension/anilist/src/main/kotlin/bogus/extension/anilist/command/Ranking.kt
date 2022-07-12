@@ -51,7 +51,7 @@ suspend fun AniListExtension.ranking() {
     }
 }
 
-internal class RankingArgs : Arguments() {
+private class RankingArgs : Arguments() {
     val amount by optionalInt {
         name = "amount"
         description = "Number of media to show."

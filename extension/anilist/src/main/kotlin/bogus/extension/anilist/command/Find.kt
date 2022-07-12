@@ -9,6 +9,7 @@ import bogus.util.LRUCache
 import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
@@ -80,13 +81,13 @@ private suspend fun ApplicationCommandContext.findMedia(
     sendMediaResult(guild, media)
 }
 
-internal class FindArgs : KordExKoinComponent, Arguments() {
+private class FindArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
 
     val aniList by inject<AniList>()
-    val query by string {
+    val query by coalescingString {
         name = "query"
         description = "Name of the anime/manga."
         autoComplete {
@@ -108,13 +109,13 @@ internal class FindArgs : KordExKoinComponent, Arguments() {
     }
 }
 
-internal class FindAnimeArgs : KordExKoinComponent, Arguments() {
+private class FindAnimeArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
 
     val aniList by inject<AniList>()
-    val query by string {
+    val query by coalescingString {
         name = "query"
         description = "Name of the anime."
 
@@ -138,13 +139,13 @@ internal class FindAnimeArgs : KordExKoinComponent, Arguments() {
     }
 }
 
-internal class FindMangaArgs : KordExKoinComponent, Arguments() {
+private class FindMangaArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
 
     val aniList by inject<AniList>()
-    val query by string {
+    val query by coalescingString {
         name = "query"
         description = "Name of the manga."
 

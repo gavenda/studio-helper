@@ -15,6 +15,7 @@ import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
@@ -371,9 +372,9 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
     }
 }
 
-internal class PlaylistNameArgs : KordExKoinComponent, Arguments() {
+private class PlaylistNameArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
-    val name by string {
+    val name by coalescingString {
         name = "name"
         description = tp.translate(
             key = "playlist.args.name.description",
@@ -382,9 +383,9 @@ internal class PlaylistNameArgs : KordExKoinComponent, Arguments() {
     }
 }
 
-internal class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
+private class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
-    val name by string {
+    val name by coalescingString {
         name = "name"
         description = tp.translate(
             key = "playlist.args.name.description",
@@ -400,9 +401,9 @@ internal class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
     }
 }
 
-internal class PlaylistAddArgs : KordExKoinComponent, Arguments() {
+private class PlaylistAddArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
-    val name by string {
+    val name by coalescingString {
         name = "name"
         description = tp.translate(
             key = "playlist.args.name.description",

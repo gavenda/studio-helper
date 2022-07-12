@@ -10,6 +10,7 @@ import bogus.util.LRUCache
 import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
@@ -69,13 +70,13 @@ private suspend fun ApplicationCommandContext.findCharacter(query: String) {
     paginator.send()
 }
 
-internal class CharacterArgs : KordExKoinComponent, Arguments() {
+private class CharacterArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
 
     val aniList by inject<AniList>()
-    val query by string {
+    val query by coalescingString {
         name = "query"
         description = "Name of the anime/manga character."
 

@@ -153,7 +153,7 @@ suspend fun AniListExtension.user() {
     }
 }
 
-internal class UserArgs : KordExKoinComponent, Arguments() {
+private class UserArgs : KordExKoinComponent, Arguments() {
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }

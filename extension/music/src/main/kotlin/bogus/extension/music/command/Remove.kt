@@ -53,7 +53,7 @@ private suspend fun EphemeralSlashCommandContext<*>.removedMessage(skipped: List
         else -> translate("remove.response.multiple", arrayOf(skipped.size))
     }
 
-internal class RemoveArgs : KordExKoinComponent, Arguments() {
+private class RemoveArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
 
     val from by int {

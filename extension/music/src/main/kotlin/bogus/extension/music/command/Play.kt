@@ -9,6 +9,7 @@ import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
@@ -124,14 +125,14 @@ private suspend fun EphemeralSlashCommand<*>.now() {
     }
 }
 
-internal class PlayArgs : KordExKoinComponent, Arguments() {
+private class PlayArgs : KordExKoinComponent, Arguments() {
 
     companion object {
         val cache = LRUCache<String, List<String>>(50)
     }
 
     private val tp by inject<TranslationsProvider>()
-    val query by string {
+    val query by coalescingString {
         name = "query"
         description = tp.translate(
             key = "play.args.query.description",

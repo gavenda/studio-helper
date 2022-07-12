@@ -7,6 +7,7 @@ import bogus.extension.anilist.db.users
 import bogus.extension.anilist.graphql.AniList
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
@@ -106,8 +107,8 @@ suspend fun AniListExtension.link() {
     }
 }
 
-internal class LinkArgs : Arguments() {
-    val username by string {
+private class LinkArgs : Arguments() {
+    val username by coalescingString {
         name = "username"
         description = "AniList username, defaults to your own if linked."
     }

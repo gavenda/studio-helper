@@ -149,7 +149,7 @@ suspend fun AniListExtension.notification() {
     }
 }
 
-internal class AiringAnimeArgs : KordExKoinComponent, Arguments() {
+private class AiringAnimeArgs : KordExKoinComponent, Arguments() {
     val aniList by inject<AniList>()
     val tp by inject<TranslationsProvider>()
     val mediaId by long {
@@ -174,7 +174,7 @@ internal class AiringAnimeArgs : KordExKoinComponent, Arguments() {
     }
 }
 
-internal class BindNotificationArgs : KordExKoinComponent, Arguments() {
+private class BindNotificationArgs : KordExKoinComponent, Arguments() {
     val tp by inject<TranslationsProvider>()
     val channel by optionalChannel {
         name = "channel"

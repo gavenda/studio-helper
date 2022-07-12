@@ -27,7 +27,7 @@ suspend fun MusicExtension.volume() {
     }
 }
 
-internal class VolumeArgs : KordExKoinComponent, Arguments() {
+private class VolumeArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     private val volumeMap = buildMap {
         for (v in 0..100 step 10) {

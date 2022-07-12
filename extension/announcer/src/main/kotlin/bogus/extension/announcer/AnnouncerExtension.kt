@@ -188,7 +188,7 @@ class AnnouncerExtension(
         val tp by inject<TranslationsProvider>()
         val name by string {
             name = "name"
-            description = tp.translate("announce.args.description", TRANSLATIONS_BUNDLE)
+            description = "announce.args.description"
 
             autoComplete {
                 val fileMap = mapOf(*filePaths.keys.map { it to it }.toTypedArray())

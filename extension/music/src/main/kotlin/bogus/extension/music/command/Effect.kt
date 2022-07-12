@@ -197,7 +197,7 @@ private suspend fun SlashGroup.trebleBass() {
     }
 }
 
-internal class NightcoreArgs : KordExKoinComponent, Arguments() {
+private class NightcoreArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
     val speed by int {
         name = "speed"

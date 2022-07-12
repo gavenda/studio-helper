@@ -60,7 +60,7 @@ suspend fun ModerationExtension.clean() {
     }
 }
 
-internal class CleanArgs : Arguments() {
+private class CleanArgs : Arguments() {
     val amount by defaultingInt {
         name = "amount"
         description = "The amount of messages to clean."
