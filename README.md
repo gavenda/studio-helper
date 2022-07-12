@@ -7,7 +7,6 @@ An all-in-one repository for the Discord server I am making bots in.
 ## Bot List
 - [Vivy](bot/vivy) - A modern music bot
 - [Basura](bot/basura) - An AniList bot
-- [Chupa](bot/chupa) - A simple counter bot
 - [Lumi](bot/lumi) - A management bot
 
 ## Extension List

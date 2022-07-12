@@ -5,7 +5,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
     "common",
     "bot:basura",
-    "bot:chupa",
     "bot:lumi",
     "bot:parrot",
     "bot:vivy",
