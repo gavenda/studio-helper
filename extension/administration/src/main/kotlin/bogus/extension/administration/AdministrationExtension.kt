@@ -1,5 +1,6 @@
 package bogus.extension.administration
 
+import bogus.extension.administration.command.broadcast
 import bogus.extension.administration.command.leaveMessage
 import bogus.extension.administration.command.setting
 import bogus.extension.administration.command.welcomeMessage
@@ -33,6 +34,7 @@ class AdministrationExtension : Extension() {
     }
 
     private suspend fun setupSlashCommands() {
+        broadcast()
         setting()
         welcomeMessage()
         leaveMessage()
