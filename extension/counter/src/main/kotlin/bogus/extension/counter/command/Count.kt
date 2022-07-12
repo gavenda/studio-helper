@@ -21,6 +21,7 @@ import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.capitalizeWords
 import dev.kord.common.Color
 import dev.kord.core.behavior.interaction.suggestString
+import dev.kord.rest.Image
 import dev.kord.rest.builder.message.create.embed
 import org.koin.core.component.inject
 import org.ktorm.database.Database
@@ -52,7 +53,7 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
     }
 
     action {
-        val guild = guild ?: return@action
+        val guild = guild?.asGuildOrNull() ?: return@action
         val dbGuildCount = db.counts.firstOrNull {
             (it.discordGuildId eq guild.idLong) and (it.countName ilike arguments.counter)
         } ?: DbGuildCount {
@@ -73,9 +74,11 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
         respond {
             embed {
                 color = Color(EMBED_COLOR)
-                title = "Count Increased"
+                author {
+                    name = "Count Increased"
+                }
                 description = """
-                    **${dbGuildCount.countName}** has been increased to **${dbGuildCount.countAmount}**!
+                    :chart_with_upwards_trend: **${dbGuildCount.countName}** has been increased to **${dbGuildCount.countAmount}**!
                 """.trimIndent()
                 footer {
                     text = "Note: You can list the current count by executing /count list"
@@ -97,20 +100,28 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
         val counters = db.counts.filter {
             it.discordGuildId eq guild.idLong
         }
+
         if (counters.isEmpty()) {
             respond {
                 embed {
                     color = Color(EMBED_COLOR)
-                    title = "Counter List"
+                    author {
+                        name = "Counter Information"
+                        icon = guild.getIconUrl(Image.Format.WEBP)
+                    }
                     description = """
                         Counter(s) for **${guild.name}**
                         
                         __(there is no counter available)__
                     """.trimIndent()
+                    footer {
+                        text = "Note: Lacking count? Increase it now using /count increase"
+                    }
                 }
             }
             return@action
         }
+
         val paginator = respondingStandardPaginator {
             timeoutSeconds = PAGINATOR_TIMEOUT
             val chunked = counters.asKotlinSequence().chunked(ITEMS_PER_CHUNK)
@@ -118,8 +129,11 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
             chunked.forEach { sequenceChunked ->
                 page {
                     color = Color(EMBED_COLOR)
-                    title = "Counter List"
-                    description = "Counter for **${guild.name}**"
+                    author {
+                        name = "Counter Information"
+                        icon = guild.getIconUrl(Image.Format.WEBP)
+                    }
+                    description = ":chart_with_upwards_trend: List of counters for **${guild.name}**"
                     sequenceChunked.forEach { counter ->
                         val dateFormatted = DATE_FORMATTER.format(counter.lastTimestamp)
 
@@ -131,6 +145,9 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
                                 - By: <@${counter.lastUserId}>
                             """.trimIndent()
                         }
+                    }
+                    footer {
+                        text = "Note: Lacking count? Increase it now using /count increase"
                     }
                 }
             }
