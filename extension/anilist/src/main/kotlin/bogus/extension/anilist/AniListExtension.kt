@@ -7,7 +7,7 @@ import bogus.extension.anilist.db.guilds
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.graphql.AniListGraphQL
 import bogus.lib.database.migrate
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
@@ -39,7 +39,7 @@ object AniListExtension : Extension() {
     override val name = "anilist"
     override val bundle = "anilist"
 
-    val log = KotlinLogging.logger { }.asLogFMT()
+    val log = KotlinLogging.logger { }.asFMTLogger()
 
     private val kronScheduler = buildSchedule {
         minutes {
@@ -119,12 +119,12 @@ object AniListExtension : Extension() {
 
             pollers.computeIfAbsent(guild.id) { AiringSchedulePoller(mediaIds) }
         } else {
-            log.warn(
-                msg = "No media id given, will not poll",
+            log.warn {
+                message = "No media id given, will not poll"
                 context = mapOf(
                     "guildId" to guild.id
                 )
-            )
+            }
         }
     }
 

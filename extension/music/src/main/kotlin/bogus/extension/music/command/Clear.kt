@@ -42,12 +42,12 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
             } else {
                 player.clear()
 
-                log.info(
-                    msg = "Cleared queue",
+                log.info {
+                    message = "Cleared queue"
                     context = mapOf(
                         "user" to user.id
                     )
-                )
+                }
 
                 respond {
                     content = translate("clear.queue.response.cleared")
@@ -67,12 +67,12 @@ private suspend fun SlashGroup.filter() {
         action {
             player.effects.clearFilter()
 
-            log.info(
-                msg = "Cleared filters",
+            log.info {
+                message = "Cleared filters"
                 context = mapOf(
                     "user" to user.id
                 )
-            )
+            }
 
             respond {
                 content = translate("clear.filter.response")
@@ -91,12 +91,12 @@ private suspend fun SlashGroup.equalizer() {
         action {
             player.effects.clearEqualizer()
 
-            log.info(
-                msg = "Cleared equalizer",
+            log.info {
+                message = "Cleared equalizer"
                 context = mapOf(
                     "user" to user.id
                 )
-            )
+            }
 
             respond {
                 content = translate("clear.equalizer.response")

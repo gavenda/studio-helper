@@ -15,6 +15,7 @@ dependencies {
     implementation(projects.library.database)
     implementation(projects.extension.about)
     implementation(projects.extension.administration)
+    implementation(projects.extension.counter)
     implementation(projects.extension.moderation)
     implementation(projects.extension.utility)
 }

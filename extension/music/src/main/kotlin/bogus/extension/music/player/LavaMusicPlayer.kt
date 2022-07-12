@@ -117,12 +117,12 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
 
         when (endReason) {
             AudioTrackEndReason.LOAD_FAILED -> {
-                log.debug(
-                    msg = "Track load failed",
+                log.debug {
+                    message = "Track load failed"
                     context = mapOf(
                         "track" to musicTrack.title
                     )
-                )
+                }
 
                 val retried = retryTrack(musicTrack)
                 if (retried.not()) {
@@ -130,12 +130,12 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
                 }
             }
             else -> {
-                log.debug(
-                    msg = "Track end",
+                log.debug {
+                    message = "Track end"
                     context = mapOf(
                         "track" to musicTrack.title
                     )
-                )
+                }
                 playFromQueue()
             }
         }
@@ -144,24 +144,23 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     }
 
     private fun onTrackException(exception: FriendlyException) {
-        log.error(
-            throwable = exception,
-            msg = "Track error",
+        log.error(exception) {
+            message = "Track error"
             context = mapOf(
                 "errorMessage" to exception.message
             )
-        )
+        }
 
         updateBoundQueue()
     }
 
     private fun onTrackStuck(track: AudioTrack, thresholdMs: Long) {
-        log.error(
-            msg = "Track stuck",
+        log.error {
+            message = "Track stuck"
             context = mapOf(
                 "track" to track,
                 "duration" to "${thresholdMs}ms"
             )
-        )
+        }
     }
 }

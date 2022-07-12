@@ -3,12 +3,18 @@ package bogus.extension.about
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.common.Color
 import dev.kord.rest.builder.message.create.embed
 import java.util.*
 
 class AboutExtension : Extension() {
     override val name: String = "about"
     override val bundle: String = "about"
+
+    companion object {
+        var EMBED_COLOR = 0
+    }
+
     override suspend fun setup() {
 
         ephemeralSlashCommand {
@@ -29,6 +35,7 @@ class AboutExtension : Extension() {
                         title = translate("about.embed.title")
                         url = translate("about.embed.url")
                         description = translate("about.embed.description")
+                        color = Color(EMBED_COLOR)
                         field {
                             name = translate("about.embed.version")
                             value = version

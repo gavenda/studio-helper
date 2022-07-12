@@ -86,14 +86,14 @@ suspend fun AniListExtension.link() {
                 return@action
             }
 
-            log.info(
-                msg = "Unlinking AniList from Discord",
+            log.info {
+                message = "Unlinking AniList from Discord"
                 context = mapOf(
                     "aniListUsername" to existingUser.aniListUsername,
                     "discordUserId" to user.id,
                     "guildId" to guild.id
                 )
-            )
+            }
 
             db.users.removeIf {
                 (it.discordId eq user.idLong) and (it.discordGuildId eq guild.idLong)

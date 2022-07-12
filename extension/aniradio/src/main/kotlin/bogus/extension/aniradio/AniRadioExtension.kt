@@ -1,6 +1,6 @@
 package bogus.extension.aniradio
 
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.memberFor
 import com.kotlindiscord.kord.extensions.extensions.Extension
@@ -38,7 +38,7 @@ class AniRadioExtension : Extension() {
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
-    private val log = KotlinLogging.logger { }.asLogFMT()
+    private val log = KotlinLogging.logger { }.asFMTLogger()
     private var voiceConnection: VoiceConnection? = null
 
     override suspend fun setup() {
@@ -73,7 +73,9 @@ class AniRadioExtension : Extension() {
                 val theirVoiceChannel = member.getVoiceStateOrNull()?.getChannelOrNull()
 
                 if (theirVoiceChannel == null) {
-                    log.debug("No voice channel")
+                    log.debug {
+                        message = "No voice channel"
+                    }
                     respond {
                         content = translate("checks.voiceChannel.notInVoice")
                     }
@@ -86,7 +88,9 @@ class AniRadioExtension : Extension() {
                         Permission.Connect
                     )
                     if (!canTalk) {
-                        log.debug("No permission")
+                        log.debug {
+                            message = "No permission"
+                        }
                         respond {
                             content = translate("checks.voiceChannel.noPermission")
                         }
@@ -133,12 +137,12 @@ class AniRadioExtension : Extension() {
             override fun playlistLoaded(playlist: AudioPlaylist) {}
             override fun noMatches() {}
             override fun loadFailed(exception: FriendlyException) {
-                log.error(
-                    msg = "Audio file failed to load",
+                log.error {
+                    message = "Audio file failed to load"
                     context = mapOf(
                         "reason" to exception.message
                     )
-                )
+                }
             }
         })
     }

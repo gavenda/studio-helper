@@ -1,6 +1,6 @@
 package bogus.extension.announcer
 
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -59,7 +59,7 @@ class AnnouncerExtension(
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
-    private val log = KotlinLogging.logger { }.asLogFMT()
+    private val log = KotlinLogging.logger { }.asFMTLogger()
 
     override suspend fun setup() {
         // We need guild voice states
@@ -165,12 +165,12 @@ class AnnouncerExtension(
             override fun playlistLoaded(playlist: AudioPlaylist) {}
             override fun noMatches() {}
             override fun loadFailed(exception: FriendlyException) {
-                log.error(
-                    msg = "Audio file failed to load",
+                log.error {
+                    message = "Audio file failed to load"
                     context = mapOf(
                         "reason" to exception.message
                     )
-                )
+                }
             }
         })
     }

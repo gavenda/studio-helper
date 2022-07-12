@@ -34,7 +34,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     private val db by inject<Database>()
     private val tp by inject<TranslationsProvider>()
     protected val queue = LinkedBlockingDeque<MusicTrack>()
-    protected val log = KotlinLogging.logger {}.asLogFMT()
+    protected val log = KotlinLogging.logger {}.asFMTLogger()
     private val queueUpdatePublisher = MutableSharedFlow<Long>(
         extraBufferCapacity = Channel.UNLIMITED
     )
@@ -140,9 +140,9 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
 
                 try {
                     boundPaginator?.send()
-                    log.debug("Queue updated")
+                    log.debug { message = "Queue updated" }
                 } catch (ex: Exception) {
-                    log.error(ex, "Unable to send bind message")
+                    log.error(ex) { message = "Unable to send bind message" }
                 }
             }
             .launchIn(CoroutineScope(Dispatchers.IO))
@@ -240,7 +240,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
         try {
             boundPaginator?.send()
         } catch (ex: Exception) {
-            log.error(ex, "Unable to send bind message")
+            log.error(ex) { message = "Unable to send bind message" }
         }
         return boundPaginator?.message?.id
     }

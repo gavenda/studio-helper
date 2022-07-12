@@ -2,7 +2,7 @@ package bogus.extension.anilist.coroutines
 
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.AiringSchedule
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -11,7 +11,7 @@ import org.koin.core.component.inject
 class AiringSchedulePoller(
     private val mediaIdList: List<Long>
 ) : KordExKoinComponent {
-    val log = KotlinLogging.logger { }.asLogFMT()
+    val log = KotlinLogging.logger { }.asFMTLogger()
 
     // Empty, gets populated at first run
     private val mediaIdEpisode = mutableMapOf<Long, Int>()
@@ -23,7 +23,7 @@ class AiringSchedulePoller(
             aniList.findAiringMedia(mediaIdList)?.forEach {
                 updateMediaEpisode(it.mediaId, it.episode)
             }
-            log.debug("Initialized media list")
+            log.debug { message ="Initialized media list" }
         }
     }
 
@@ -41,7 +41,7 @@ class AiringSchedulePoller(
             mediaIdEpisode.putIfAbsent(it, 0)
         }
 
-        log.debug("Poller updated")
+        log.debug { message = "Poller updated" }
     }
 
     /**

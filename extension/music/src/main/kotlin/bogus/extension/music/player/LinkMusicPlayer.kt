@@ -14,25 +14,24 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
     val link = Lava.linkFor(guildId)
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error(
-                throwable = exception,
-                msg = "Track error",
+            log.error(exception) {
+                message = "Track error"
                 context = mapOf(
                     "errorMessage" to exception.message
                 )
-            )
+            }
 
             updateBoundQueue()
         }
 
         on<TrackStuckEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error(
-                msg = "Track stuck",
+            log.error {
+                message = "Track stuck"
                 context = mapOf(
                     "track" to track,
                     "duration" to "${threshold.inWholeMilliseconds}ms"
                 )
-            )
+            }
         }
 
         on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
@@ -53,12 +52,12 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
             when (reason) {
                 TrackEndEvent.EndReason.LOAD_FAILED -> {
 
-                    log.debug(
-                        msg = "Track load failed",
+                    log.debug {
+                        message = "Track load failed"
                         context = mapOf(
                             "track" to track.title
                         )
-                    )
+                    }
 
                     val retried = retryTrack(track.asMusicTrack())
                     if (retried.not()) {
@@ -66,12 +65,12 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
                     }
                 }
                 else -> {
-                    log.debug(
-                        msg = "Track end",
+                    log.debug {
+                        message = "Track end"
                         context = mapOf(
                             "track" to track.title
                         )
-                    )
+                    }
                     playFromQueue()
                 }
             }

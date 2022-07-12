@@ -29,13 +29,13 @@ private suspend fun EphemeralSlashCommand<*>.single() {
         action {
             player.toggleLoop()
 
-            log.info(
-                msg = "Toggled loop single",
+            log.info {
+                message = "Toggled loop single"
                 context = mapOf(
                     "looped" to player.looped,
                     "user" to user.id
                 )
-            )
+            }
 
             if (player.looped) {
                 respond {
@@ -59,13 +59,13 @@ private suspend fun EphemeralSlashCommand<*>.all() {
         }
         action {
             player.toggleLoopAll()
-            log.info(
-                msg = "Toggled loop all",
+            log.info {
+                message = "Toggled loop all"
                 context = mapOf(
                     "looped" to player.loopedAll,
                     "user" to user.id
                 )
-            )
+            }
             if (player.loopedAll) {
                 respond {
                     content = translate("loop.response.all.start")

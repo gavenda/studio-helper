@@ -4,7 +4,7 @@ import bogus.constants.ENVIRONMENT_DEV
 import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
 import bogus.extension.counter.CounterExtension
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -21,7 +21,7 @@ suspend fun chupa(
     testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
-    val log = KotlinLogging.logger { }.asLogFMT()
+    val log = KotlinLogging.logger { }.asFMTLogger()
 
     return ExtensibleBot(token) {
         extensions {
@@ -42,7 +42,10 @@ suspend fun chupa(
         hooks {
             kordShutdownHook = true
             setup {
-                log.info("Bot started", mapOf("bot" to "chupa"))
+                log.info {
+                    message = "Bot started"
+                    context = mapOf("bot" to "chupa")
+                }
             }
         }
 

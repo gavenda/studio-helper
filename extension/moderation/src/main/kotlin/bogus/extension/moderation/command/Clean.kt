@@ -1,7 +1,7 @@
 package bogus.extension.moderation.command
 
 import bogus.extension.moderation.ModerationExtension
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.hasPermission
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -12,13 +12,15 @@ import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.entity.Permission
 import dev.kord.core.behavior.channel.asChannelOf
 import dev.kord.core.entity.channel.GuildMessageChannel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 
 suspend fun ModerationExtension.clean() {
     val log = KotlinLogging.logger { }
-        .asLogFMT()
+        .asFMTLogger()
 
     ephemeralSlashCommand(::CleanArgs) {
         name = "clean"
@@ -29,24 +31,27 @@ suspend fun ModerationExtension.clean() {
         }
         requireBotPermissions(Permission.ManageMessages)
         action {
-            val gmc = channel.asChannelOf<GuildMessageChannel>()
-            val limit = arguments.amount + 1
-            val lastMessage = gmc.lastMessage ?: return@action
+            val lastMessageId = channel.messages
+                .take(1)
+                .first()
+                .id
 
-            log.info(
-                msg = "Cleaning messages",
+            val limit = arguments.amount
+
+            log.info {
+                message = "Cleaning messages"
                 context = mapOf(
                     "amount" to arguments.amount,
-                    "lastMessageId" to lastMessage.id,
+                    "lastMessageId" to lastMessageId,
                     "reason" to arguments.reason
                 )
-            )
+            }
 
-            val messages = gmc.getMessagesBefore(lastMessage.id, limit)
+            val messages = channel.getMessagesBefore(lastMessageId, limit)
                 .map { it.id }
                 .toList()
 
-            gmc.bulkDelete(messages, arguments.reason)
+            channel.asChannelOf<GuildMessageChannel>().bulkDelete(messages, arguments.reason)
 
             respond {
                 content = "Cleaned ${arguments.amount} message(s)."

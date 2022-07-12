@@ -17,12 +17,12 @@ suspend fun MusicExtension.shuffle() {
             if (player.playing) {
                 player.shuffle()
 
-                log.info(
-                    msg = "Playlist shuffled",
+                log.info {
+                    message = "Playlist shuffled"
                     context = mapOf(
                         "user" to user.id
                     )
-                )
+                }
 
                 respond {
                     content = translate("shuffle.response.success")

@@ -6,7 +6,7 @@ import bogus.extension.about.AboutExtension
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.aniradio.AniRadioExtension
 import bogus.lib.database.setupDatabase
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -23,7 +23,7 @@ suspend fun basura(
     testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
-    val log = KotlinLogging.logger { }.asLogFMT()
+    val log = KotlinLogging.logger { }.asFMTLogger()
     return ExtensibleBot(token) {
         extensions {
             add(::AboutExtension)
@@ -49,7 +49,10 @@ suspend fun basura(
             }
 
             setup {
-                log.info("Bot started", mapOf("bot" to "basura"))
+                log.info {
+                    message = "Bot started"
+                    context = mapOf("bot" to "basura")
+                }
             }
         }
 

@@ -2,7 +2,7 @@ package bogus.extension.music
 
 import bogus.extension.music.db.guilds
 import bogus.extension.music.player.*
-import bogus.util.asLogFMT
+import bogus.util.asFMTLogger
 import bogus.util.escapedBackticks
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Plays music via a play request.
  */
 object Jukebox : KordExKoinComponent {
-    private val log = KotlinLogging.logger {}.asLogFMT()
+    private val log = KotlinLogging.logger {}.asFMTLogger()
     private val players = ConcurrentHashMap<Snowflake, MusicPlayer>()
     private val mutex = Mutex()
     private val tp by inject<TranslationsProvider>()
@@ -47,12 +47,12 @@ object Jukebox : KordExKoinComponent {
                 } else {
                     LavaMusicPlayer(guildId)
                 }
-                log.debug(
-                    msg = "Music player created",
+                log.debug {
+                    message = "Music player created"
                     context = mapOf(
                         "guildId" to guildId
                     )
-                )
+                }
                 return@computeIfAbsent musicPlayer
             }
         }
@@ -86,12 +86,12 @@ object Jukebox : KordExKoinComponent {
                 dbGuild.lastMessageId = bind(textChannel)?.value?.toLong()
                 dbGuild.flushChanges()
 
-                log.info(
-                    msg = "Guild bound",
+                log.info {
+                    message = "Guild bound"
                     context = mapOf(
                         "guildId" to guild.id
                     )
-                )
+                }
             }
         }
     }
@@ -135,14 +135,14 @@ object Jukebox : KordExKoinComponent {
         val identifiers = parseResult.identifiers
 
         if (identifiers.isEmpty()) {
-            log.info(
-                msg = "No identifiers found",
+            log.info {
+                message = "No identifiers found"
                 context = mapOf(
                     "identifiers" to identifiers,
                     "userId" to userId,
                     "guildId" to guild.id
                 )
-            )
+            }
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -211,14 +211,14 @@ object Jukebox : KordExKoinComponent {
             }
         }
 
-        log.info(
-            msg = "Playing now",
+        log.info {
+            message = "Playing now"
             context = mapOf(
                 "identifier" to identifier,
                 "userId" to userId,
                 "guildId" to guild.id
             )
-        )
+        }
 
         return ""
     }
@@ -232,14 +232,14 @@ object Jukebox : KordExKoinComponent {
         val identifiers = parseResult.identifiers
 
         if (identifiers.isEmpty()) {
-            log.info(
-                msg = "No identifiers found",
+            log.info {
+                message = "No identifiers found"
                 context = mapOf(
                     "identifiers" to identifiers,
                     "userId" to userId,
                     "guildId" to guild.id
                 )
-            )
+            }
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -308,14 +308,14 @@ object Jukebox : KordExKoinComponent {
             }
         }
 
-        log.info(
-            msg = "Playing next",
+        log.info {
+            message = "Playing next"
             context = mapOf(
                 "identifier" to identifier,
                 "userId" to userId,
                 "guildId" to guild.id
             )
-        )
+        }
 
         return ""
     }
@@ -346,10 +346,10 @@ object Jukebox : KordExKoinComponent {
                 trackLoaded(item.tracks.first())
             }
             TrackLoadType.NO_MATCHES -> {
-                log.debug("Nothing found")
+                log.debug { message = "Nothing found" }
             }
             TrackLoadType.LOAD_FAILED -> {
-                log.debug("Nothing found")
+                log.debug { message = "Nothing found" }
             }
         }
     }
@@ -363,14 +363,14 @@ object Jukebox : KordExKoinComponent {
         val identifiers = parseResult.identifiers
 
         if (identifiers.isEmpty()) {
-            log.info(
-                msg = "No identifiers found",
+            log.info {
+                message = "No identifiers found"
                 context = mapOf(
                     "identifiers" to identifiers,
                     "userId" to userId,
                     "guildId" to guild.id
                 )
-            )
+            }
 
             return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
@@ -492,14 +492,14 @@ object Jukebox : KordExKoinComponent {
             }
         }
 
-        log.info(
-            msg = "Playing later",
+        log.info {
+            message = "Playing later"
             context = mapOf(
                 "identifier" to identifier,
                 "userId" to userId,
                 "guildId" to guild.id
             )
-        )
+        }
 
         return ""
     }

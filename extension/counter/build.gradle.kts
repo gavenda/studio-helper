@@ -1,12 +1,12 @@
 plugins {
     id("bogus.kotlin-conventions")
-    alias(libs.plugins.kotlin.serialization)
 }
 
-version = "1.0"
+version = "1.1"
 
 dependencies {
     implementation(projects.common)
+    implementation(projects.library.database)
 }
 
 tasks {
