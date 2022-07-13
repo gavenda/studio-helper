@@ -8,8 +8,8 @@ import com.kotlindiscord.kord.extensions.types.respond
 
 suspend fun MusicExtension.disconnect() {
     ephemeralSlashCommand {
-        name = "disconnect"
-        description = "disconnect.description"
+        name = "command.disconnect"
+        description = "command.disconnect.description"
         check {
             anyGuild()
         }

@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.minutes
 
 suspend fun MusicExtension.playLater() {
     ephemeralMessageCommand {
-        name = "play.later.message-command"
+        name = "command.play.later.message-command"
         check {
             anyGuild()
             inVoiceChannel()
@@ -40,7 +40,7 @@ suspend fun MusicExtension.playLater() {
 
 suspend fun MusicExtension.playNext() {
     ephemeralMessageCommand {
-        name = "play.next.message-command"
+        name = "command.play.next.message-command"
         check {
             anyGuild()
             inVoiceChannel()
@@ -71,7 +71,7 @@ suspend fun MusicExtension.playNext() {
 
 suspend fun MusicExtension.playNow() {
     ephemeralMessageCommand {
-        name = "play.now.message-command"
+        name = "command.play.now.message-command"
         check {
             anyGuild()
             inVoiceChannel()

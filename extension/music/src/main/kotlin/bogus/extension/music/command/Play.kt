@@ -4,25 +4,20 @@ import bogus.checks.limit
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.music.*
 import bogus.extension.music.checks.inVoiceChannel
-import bogus.util.LRUCache
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.EphemeralSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
-import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
-import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
-import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.minutes
 
 suspend fun MusicExtension.play() {
     ephemeralSlashCommand {
-        name = "play"
-        description = "play.description"
+        name = "command.play"
+        description = "command.play.description"
 
         later()
         next()
@@ -32,8 +27,8 @@ suspend fun MusicExtension.play() {
 
 private suspend fun EphemeralSlashCommand<*>.later() {
     ephemeralSubCommand(::PlayArgs) {
-        name = "later"
-        description = "play.later.description"
+        name = "command.play.later"
+        description = "command.play.later.description"
         check {
             anyGuild()
             inVoiceChannel()
@@ -63,8 +58,8 @@ private suspend fun EphemeralSlashCommand<*>.later() {
 
 private suspend fun EphemeralSlashCommand<*>.next() {
     ephemeralSubCommand(::PlayArgs) {
-        name = "next"
-        description = "play.next.description"
+        name = "command.play.next"
+        description = "command.play.next.description"
         check {
             anyGuild()
             inVoiceChannel()
@@ -95,8 +90,8 @@ private suspend fun EphemeralSlashCommand<*>.next() {
 
 private suspend fun EphemeralSlashCommand<*>.now() {
     ephemeralSubCommand(::PlayArgs) {
-        name = "now"
-        description = "play.now.description"
+        name = "command.play.now"
+        description = "command.play.now.description"
         check {
             anyGuild()
             inVoiceChannel()
@@ -125,19 +120,10 @@ private suspend fun EphemeralSlashCommand<*>.now() {
     }
 }
 
-private class PlayArgs : KordExKoinComponent, Arguments() {
-
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
-    private val tp by inject<TranslationsProvider>()
+private class PlayArgs : Arguments() {
     val query by coalescingString {
-        name = "query"
-        description = tp.translate(
-            key = "play.args.query.description",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        name = "command.play.args.query"
+        description = "command.play.args.query.description"
 
         autoComplete {
             val input = focusedOption.value
@@ -160,22 +146,12 @@ private class PlayArgs : KordExKoinComponent, Arguments() {
                     }
 
                     if (fileResult.size < AUTOCOMPLETE_ITEMS_LIMIT) {
-                        // Check cache
-                        val cacheLookup = cache[input]
                         val delta = (AUTOCOMPLETE_ITEMS_LIMIT - fileResult.size).coerceAtLeast(0)
-
-                        if (cacheLookup != null) {
-                            cacheLookup.take(delta).forEach {
+                        val youtubeResult = YT.query(input)
+                        youtubeResult.take(delta)
+                            .forEach {
                                 choice(it, it)
                             }
-                        } else {
-                            val youtubeResult = YT.query(input)
-                            youtubeResult.take(delta)
-                                .apply { cache[input] = this }
-                                .forEach {
-                                    choice(it, it)
-                                }
-                        }
                     }
                 }
             }

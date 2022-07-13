@@ -1,10 +1,13 @@
 package bogus.extension.music.command
 
 import bogus.constants.ITEMS_PER_CHUNK
-import bogus.extension.music.*
+import bogus.extension.music.IdentifierParser
+import bogus.extension.music.Jukebox
+import bogus.extension.music.MusicExtension
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.db.*
+import bogus.extension.music.player
 import bogus.extension.music.player.MusicTrack
 import bogus.extension.music.player.TrackLoadType
 import bogus.paginator.editingStandardPaginator
@@ -19,8 +22,6 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingStri
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
-import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
-import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
@@ -37,8 +38,8 @@ import org.ktorm.support.postgresql.ilike
 
 suspend fun MusicExtension.playlist() {
     ephemeralSlashCommand {
-        name = "playlist"
-        description = "playlist.description"
+        name = "command.playlist"
+        description = "command.playlist.description"
 
         list()
         show()
@@ -54,8 +55,8 @@ private suspend fun EphemeralSlashCommand<*>.list() {
     val db by inject<Database>()
 
     ephemeralSubCommand {
-        name = "list"
-        description = "playlist.list.description"
+        name = "command.playlist.list"
+        description = "command.playlist.list.description"
         check {
             anyGuild()
         }
@@ -92,8 +93,8 @@ private suspend fun EphemeralSlashCommand<*>.show() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
-        name = "show"
-        description = "playlist.show.description"
+        name = "command.playlist.show"
+        description = "command.playlist.show.description"
         check {
             anyGuild()
         }
@@ -146,8 +147,8 @@ private suspend fun EphemeralSlashCommand<*>.create() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
-        name = "create"
-        description = "playlist.create.description"
+        name = "command.playlist.create"
+        description = "command.playlist.create.description"
         check {
             anyGuild()
         }
@@ -181,8 +182,8 @@ private suspend fun EphemeralSlashCommand<*>.delete() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
-        name = "delete"
-        description = "playlist.delete.description"
+        name = "command.playlist.delete"
+        description = "command.playlist.delete.description"
         check {
             anyGuild()
         }
@@ -224,8 +225,8 @@ private suspend fun EphemeralSlashCommand<*>.add() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistAddArgs) {
-        name = "add"
-        description = "playlist.add.description"
+        name = "command.playlist.add"
+        description = "command.playlist.add.description"
         check {
             anyGuild()
         }
@@ -290,8 +291,8 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistRemoveArgs) {
-        name = "remove"
-        description = "playlist.remove.description"
+        name = "command.playlist.remove"
+        description = "command.playlist.remove.description"
         check {
             anyGuild()
         }
@@ -338,8 +339,8 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
-        name = "queue"
-        description = "playlist.queue.description"
+        name = "command.playlist.queue"
+        description = "command.playlist.queue.description"
         check {
             anyGuild()
             inVoiceChannel()
@@ -372,49 +373,31 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
     }
 }
 
-private class PlaylistNameArgs : KordExKoinComponent, Arguments() {
-    private val tp by inject<TranslationsProvider>()
+private class PlaylistNameArgs : Arguments() {
     val name by coalescingString {
         name = "name"
-        description = tp.translate(
-            key = "playlist.args.name.description",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        description = "playlist.args.name.description"
     }
 }
 
-private class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
-    private val tp by inject<TranslationsProvider>()
+private class PlaylistRemoveArgs : Arguments() {
     val name by coalescingString {
         name = "name"
-        description = tp.translate(
-            key = "playlist.args.name.description",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        description = "playlist.args.name.description"
     }
     val songId by int {
         name = "id"
-        description = tp.translate(
-            key = "playlist.args.id.description",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        description = "playlist.args.id.description"
     }
 }
 
-private class PlaylistAddArgs : KordExKoinComponent, Arguments() {
-    private val tp by inject<TranslationsProvider>()
+private class PlaylistAddArgs : Arguments() {
     val name by coalescingString {
         name = "name"
-        description = tp.translate(
-            key = "playlist.args.name.description",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        description = "playlist.args.name.description"
     }
     val music by string {
         name = "music"
-        description = tp.translate(
-            key = "playlist.args.music.description",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        description = "playlist.args.music.description"
     }
 }

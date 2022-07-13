@@ -38,14 +38,14 @@ suspend fun AniListExtension.notification() {
     val db by inject<Database>()
 
     ephemeralSlashCommand {
-        name = "notification"
-        description = "Setup notifications."
+        name = "command.notification"
+        description = "command.notification.description"
 
-        group("airing-anime") {
-            description = "Airing anime notifications."
+        group("command.notification.airing-anime") {
+            description = "command.notification.airing-anime.description"
             ephemeralSubCommand(::AiringAnimeArgs) {
-                name = "add"
-                description = "notification.airingAnime.add.description"
+                name = "command.notification.airing-anime.add"
+                description = "command.notification.airing-anime.add.description"
                 check {
                     anyGuild()
                 }
@@ -57,7 +57,7 @@ suspend fun AniListExtension.notification() {
 
                     if (dbAiringAnime != null) {
                         respond {
-                            content = translate("notification.airingAnime.add.fail")
+                            content = translate("notification.airing-anime.add.fail")
                         }
                         return@action
                     }
@@ -74,14 +74,14 @@ suspend fun AniListExtension.notification() {
                     }
 
                     respond {
-                        content = translate("notification.airingAnime.add.success")
+                        content = translate("notification.airing-anime.add.success")
                     }
                 }
             }
 
             ephemeralSubCommand(::AiringAnimeArgs) {
-                name = "remove"
-                description = "notification.airingAnime.remove.description"
+                name = "command.notification.airing-anime.remove"
+                description = "command.notification.airing-anime.remove.description"
                 check {
                     anyGuild()
                 }
@@ -93,7 +93,7 @@ suspend fun AniListExtension.notification() {
 
                     if (dbAiringAnime == null) {
                         respond {
-                            content = translate("notification.airingAnime.remove.fail")
+                            content = translate("notification.airing-anime.remove.fail")
                         }
                         return@action
                     }
@@ -102,15 +102,15 @@ suspend fun AniListExtension.notification() {
                     removeAnimeFromPolling(guild.id, arguments.mediaId)
 
                     respond {
-                        content = translate("notification.airingAnime.remove.success")
+                        content = translate("notification.airing-anime.remove.success")
                     }
                 }
             }
         }
 
         ephemeralSubCommand(::BindNotificationArgs) {
-            name = "bind"
-            description = "notification.bind.description"
+            name = "command.notification.bind"
+            description = "command.notification.bind.description"
             check {
                 anyGuild()
             }
@@ -123,7 +123,7 @@ suspend fun AniListExtension.notification() {
 
                 if (!guildChannel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
                     respond {
-                        content = translate("notification.bind.response.noPermission")
+                        content = translate("notification.bind.response.no-permission")
                     }
                     return@action
                 }
@@ -151,13 +151,9 @@ suspend fun AniListExtension.notification() {
 
 private class AiringAnimeArgs : KordExKoinComponent, Arguments() {
     val aniList by inject<AniList>()
-    val tp by inject<TranslationsProvider>()
     val mediaId by long {
-        name = "media-id"
-        description = tp.translate(
-            key = "notification.airingAnime.args.anime",
-            bundleName = TRANSLATIONS_BUNDLE
-        )
+        name = "command.notification.airing-anime.add.args.media-id"
+        description = "command.notification.airing-anime.add.args.media-id.description"
         autoComplete {
             suggestInt {
                 val input = focusedOption.value
@@ -175,14 +171,12 @@ private class AiringAnimeArgs : KordExKoinComponent, Arguments() {
 }
 
 private class BindNotificationArgs : KordExKoinComponent, Arguments() {
-    val tp by inject<TranslationsProvider>()
     val channel by optionalChannel {
-        name = "channel"
-        description = tp.translate(
-            key = "notification.bind.args.channel",
-            bundleName = TRANSLATIONS_BUNDLE
-        )
+        name = "command.notification.bind.args.channel"
+        description = "command.notification.bind.args.channel.description"
 
         requireChannelType(ChannelType.GuildText)
+        requireChannelType(ChannelType.PublicGuildThread)
+        requireChannelType(ChannelType.PrivateThread)
     }
 }

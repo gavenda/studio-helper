@@ -5,12 +5,10 @@ import bogus.extension.anilist.AniListExtension.log
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaType
 import bogus.extension.anilist.sendMediaResult
-import bogus.util.LRUCache
 import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
@@ -21,31 +19,31 @@ import org.koin.core.component.inject
 
 suspend fun AniListExtension.find() {
     publicSlashCommand(::FindArgs) {
-        name = "find"
-        description = "Looks up the name of the anime/manga."
+        name = "command.find"
+        description = "command.find.description"
         action {
             findMedia(arguments.query)
         }
     }
 
     publicSlashCommand(::FindAnimeArgs) {
-        name = "anime"
-        description = "Looks up the name of the anime."
+        name = "command.find.anime"
+        description = "command.find.anime.description"
         action {
             findMedia(arguments.query, MediaType.ANIME)
         }
     }
 
     publicSlashCommand(::FindMangaArgs) {
-        name = "manga"
-        description = "Looks up the name of the manga."
+        name = "command.find.manga"
+        description = "command.find.manga.description"
         action {
             findMedia(arguments.query, MediaType.MANGA)
         }
     }
 
     publicMessageCommand {
-        name = "Search Trash"
+        name = "command.find.message-command"
         action {
             findMedia(targetMessages.first().content)
         }
@@ -73,7 +71,7 @@ private suspend fun ApplicationCommandContext.findMedia(
 
     if (media == null || media.isEmpty()) {
         respond {
-            content = translate("find.error.noMatchingMedia")
+            content = translate("find.error.no-matching-media")
         }
         return
     }
@@ -82,89 +80,54 @@ private suspend fun ApplicationCommandContext.findMedia(
 }
 
 private class FindArgs : KordExKoinComponent, Arguments() {
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
     val aniList by inject<AniList>()
     val query by coalescingString {
-        name = "query"
-        description = "Name of the anime/manga."
+        name = "command.find.args.query"
+        description = "command.find.args.query.description"
         autoComplete {
             suggestString {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
-                val cacheLookup = cache[input]
-
-                if (cacheLookup != null) {
-                    cacheLookup.forEach { choice(it, it) }
-                } else {
-                    aniList.findMediaTitlesAsString(input)
-                        .map { it.abbreviate(80) }
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
-                }
+                aniList.findMediaTitlesAsString(input)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
             }
         }
     }
 }
 
 private class FindAnimeArgs : KordExKoinComponent, Arguments() {
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
     val aniList by inject<AniList>()
     val query by coalescingString {
-        name = "query"
-        description = "Name of the anime."
+        name = "command.find.args.query"
+        description = "command.find.anime.args.query.description"
 
         autoComplete {
             suggestString {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
-                val cacheLookup = cache[input]
 
-                if (cacheLookup != null) {
-                    cacheLookup.forEach { choice(it, it) }
-
-                } else {
-                    aniList.findMediaTitlesAsString(input, MediaType.ANIME)
-                        .map { it.abbreviate(80) }
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
-                }
+                aniList.findMediaTitlesAsString(input, MediaType.ANIME)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
             }
         }
     }
 }
 
 private class FindMangaArgs : KordExKoinComponent, Arguments() {
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
     val aniList by inject<AniList>()
     val query by coalescingString {
-        name = "query"
-        description = "Name of the manga."
+        name = "command.find.args.query"
+        description = "command.find.manga.args.query.description"
 
         autoComplete {
             suggestString {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
-
-                val cacheLookup = cache[input]
-
-                if (cacheLookup != null) {
-                    cacheLookup.forEach { choice(it, it) }
-                } else {
-                    aniList.findMediaTitlesAsString(input, MediaType.MANGA)
-                        .map { it.abbreviate(80) }
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
-
-                }
+                aniList.findMediaTitlesAsString(input, MediaType.MANGA)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
             }
         }
     }

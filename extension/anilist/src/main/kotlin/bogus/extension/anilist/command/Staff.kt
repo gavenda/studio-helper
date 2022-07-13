@@ -6,12 +6,10 @@ import bogus.extension.anilist.PAGINATOR_TIMEOUT
 import bogus.extension.anilist.embed.createStaffEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.paginator.respondingStandardPaginator
-import bogus.util.LRUCache
 import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
@@ -22,8 +20,8 @@ import org.koin.core.component.inject
 
 suspend fun AniListExtension.staff() {
     publicSlashCommand(::StaffArgs) {
-        name = "staff"
-        description = "Looks up the name of an anime/manga staff."
+        name = "command.staff"
+        description = "command.staff.description"
         action {
             findStaff(arguments.query)
         }
@@ -53,11 +51,11 @@ private suspend fun ApplicationCommandContext.findStaff(query: String) {
 
     if (staffs == null || staffs.isEmpty()) {
         respond {
-            content = translate("staff.error.noMatchingStaff")
+            content = translate("staff.error.no-matching-staff")
         }
         return
     }
-    val paginator = respondingStandardPaginator(linkLabel = translate("link.label")) {
+    val paginator = respondingStandardPaginator(linkLabel = translate("find.link.label")) {
         timeoutSeconds = PAGINATOR_TIMEOUT
         staffs.forEach { staff ->
             page {
@@ -70,28 +68,18 @@ private suspend fun ApplicationCommandContext.findStaff(query: String) {
 }
 
 private class StaffArgs : KordExKoinComponent, Arguments() {
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
     val aniList by inject<AniList>()
     val query by coalescingString {
-        name = "query"
-        description = "Name of the anime/manga staff."
+        name = "command.staff.args.query"
+        description = "command.staff.args.query.description"
         autoComplete {
             suggestString {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
-                val cacheLookup = cache[input]
 
-                if (cacheLookup != null) {
-                    cacheLookup.forEach { choice(it, it) }
-                } else {
-                    aniList.findStaffNames(input)
-                        .map { it.abbreviate(80) }
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
-                }
+                aniList.findStaffNames(input)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
             }
         }
     }

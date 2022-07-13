@@ -143,7 +143,7 @@ suspend fun ApplicationCommandContext.sendMediaResult(
     val mediaList = Util.lookupMediaList(media, guild?.id?.value?.toLong())
     val userIds = mediaList?.mapNotNull { it.user?.id }
     val aniToDiscordName = Util.aniListToDiscordNameMap(userIds)
-    val paginator = respondingStandardPaginator(linkLabel = translate("link.label")) {
+    val paginator = respondingStandardPaginator(linkLabel = translate("find.link.label")) {
         timeoutSeconds = PAGINATOR_TIMEOUT
         media.forEach {
             page {

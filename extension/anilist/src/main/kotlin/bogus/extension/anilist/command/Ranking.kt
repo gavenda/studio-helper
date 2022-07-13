@@ -7,6 +7,7 @@ import bogus.extension.anilist.model.MediaSeason
 import bogus.extension.anilist.sendMediaResult
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.defaultingStringChoice
+import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalInt
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
@@ -17,8 +18,8 @@ suspend fun AniListExtension.ranking() {
     val aniList by inject<AniList>()
 
     publicSlashCommand(::RankingArgs) {
-        name = "ranking"
-        description = "Shows the current ranking based on given parameters."
+        name = "command.ranking"
+        description = "command.ranking.description"
         action {
             log.info {
                 message = "Looking up ranking"
@@ -33,7 +34,7 @@ suspend fun AniListExtension.ranking() {
             val mediaFormat = MediaFormat.valueOf(arguments.format)
 
             val media = aniList.findMediaByRanking(
-                amount = arguments.amount ?: 10,
+                amount = arguments.amount,
                 formatIn = listOf(mediaFormat),
                 season = mediaSeason,
                 seasonYear = arguments.year,
@@ -42,7 +43,7 @@ suspend fun AniListExtension.ranking() {
 
             if (media == null || media.isEmpty()) {
                 respond {
-                    content = translate("ranking.error.noResultsFromCriteria")
+                    content = translate("ranking.error.no-criteria-results")
                 }
             } else {
                 sendMediaResult(guild, media)
@@ -52,21 +53,22 @@ suspend fun AniListExtension.ranking() {
 }
 
 private class RankingArgs : Arguments() {
-    val amount by optionalInt {
-        name = "amount"
-        description = "Number of media to show."
+    val amount by defaultingInt {
+        name = "command.ranking.args.amount"
+        description = "command.ranking.args.amount.description"
+        defaultValue = 10
     }
     val season by optionalString {
-        name = "season"
-        description = "The media season."
+        name = "command.ranking.args.season"
+        description = "command.ranking.args.season.description"
     }
     val year by optionalInt {
-        name = "year"
-        description = "The media year."
+        name = "command.ranking.args.year"
+        description = "command.ranking.args.year.description"
     }
     val format by defaultingStringChoice {
-        name = "format"
-        description = "The media format."
+        name = "command.ranking.args.format"
+        description = "command.ranking.args.format.description"
         defaultValue = "TV"
 
         choice("Manga", "MANGA")

@@ -11,8 +11,8 @@ import com.kotlindiscord.kord.extensions.types.respond
 
 suspend fun MusicExtension.loop() {
     ephemeralSlashCommand {
-        name = "loop"
-        description = "loop.description"
+        name = "command.loop"
+        description = "command.loop.description"
 
         single()
         all()
@@ -21,8 +21,8 @@ suspend fun MusicExtension.loop() {
 
 private suspend fun EphemeralSlashCommand<*>.single() {
     ephemeralSubCommand {
-        name = "single"
-        description = "loop.single.description"
+        name = "command.loop.single"
+        description = "command.loop.single.description"
         check {
             anyGuild()
         }
@@ -52,8 +52,8 @@ private suspend fun EphemeralSlashCommand<*>.single() {
 
 private suspend fun EphemeralSlashCommand<*>.all() {
     ephemeralSubCommand {
-        name = "all"
-        description = "loop.all.description"
+        name = "command.loop.all"
+        description = "command.loop.all.description"
         check {
             anyGuild()
         }

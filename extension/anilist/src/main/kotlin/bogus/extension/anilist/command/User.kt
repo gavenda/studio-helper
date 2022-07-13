@@ -4,7 +4,6 @@ import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.db.users
 import bogus.extension.anilist.embed.createUserEmbed
 import bogus.extension.anilist.graphql.AniList
-import bogus.util.LRUCache
 import bogus.util.abbreviate
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -29,8 +28,8 @@ suspend fun AniListExtension.user() {
     val db by inject<Database>()
 
     publicSlashCommand(::UserArgs) {
-        name = "user"
-        description = "Looks up the statistics of a user's AniList."
+        name = "command.user"
+        description = "command.user.description"
         action {
             val username = arguments.username
 
@@ -38,11 +37,11 @@ suspend fun AniListExtension.user() {
                 val user = aniList.findUserStatisticsByName(username)
                 if (user == null) {
                     respond {
-                        content = translate("user.error.userNotFound")
+                        content = translate("user.error.user-not-found")
                     }
                 } else if (user.statistics == null) {
                     respond {
-                        content = translate("user.error.noUserStatistics")
+                        content = translate("user.error.no-user-statistics")
                     }
                 } else {
                     respond {
@@ -51,7 +50,7 @@ suspend fun AniListExtension.user() {
                         }
                         components {
                             linkButton {
-                                label = "Follow on AniList"
+                                label = translate("user.link.label")
                                 url = user.siteUrl
                             }
                         }
@@ -60,7 +59,7 @@ suspend fun AniListExtension.user() {
             } else {
                 if (guild == null) {
                     respond {
-                        content = translate("user.error.usernameRequired")
+                        content = translate("user.error.username-required")
                     }
                     return@action
                 }
@@ -72,7 +71,7 @@ suspend fun AniListExtension.user() {
 
                 if (dbUsername == null) {
                     respond {
-                        content = translate("user.error.accountNotLinked")
+                        content = translate("user.error.account-not-linked")
                     }
                     return@action
                 }
@@ -82,11 +81,11 @@ suspend fun AniListExtension.user() {
                 // Linked, but not found
                 if (user == null) {
                     respond {
-                        content = translate("user.error.linkNotFound")
+                        content = translate("user.error.link-not-found")
                     }
                 } else if (user.statistics == null) {
                     respond {
-                        content = translate("user.error.noUserStatistics")
+                        content = translate("user.error.no-user-statistics")
                     }
                 } else {
                     respond {
@@ -95,7 +94,7 @@ suspend fun AniListExtension.user() {
                         }
                         components {
                             linkButton {
-                                label = "Follow on AniList"
+                                label = translate("user.link.label")
                                 url = user.siteUrl
                             }
                         }
@@ -106,7 +105,7 @@ suspend fun AniListExtension.user() {
     }
 
     publicUserCommand {
-        name = "Show AniList"
+        name = "command.user.message-command"
         check {
             anyGuild()
         }
@@ -120,7 +119,7 @@ suspend fun AniListExtension.user() {
 
             if (dbUsername == null) {
                 respond {
-                    content = translate("user.error.userNotLinked")
+                    content = translate("user.error.user-not-linked")
                 }
                 return@action
             }
@@ -130,11 +129,11 @@ suspend fun AniListExtension.user() {
             // Linked, but not found
             if (user == null) {
                 respond {
-                    content = translate("user.error.linkNotFound")
+                    content = translate("user.error.link-not-found")
                 }
             } else if (user.statistics == null) {
                 respond {
-                    content = translate("user.error.noUserStatistics")
+                    content = translate("user.error.no-user-statistics")
                 }
             } else {
                 respond {
@@ -143,7 +142,7 @@ suspend fun AniListExtension.user() {
                     }
                     components {
                         linkButton {
-                            label = "Follow on AniList"
+                            label = translate("user.link.label")
                             url = user.siteUrl
                         }
                     }
@@ -154,29 +153,19 @@ suspend fun AniListExtension.user() {
 }
 
 private class UserArgs : KordExKoinComponent, Arguments() {
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
     val aniList by inject<AniList>()
     val username by optionalString {
-        name = "username"
-        description = "AniList username, defaults to your own if linked."
+        name = "command.user.args.username"
+        description = "command.user.args.username.description"
 
         autoComplete {
             suggestString {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
-                val cacheLookup = cache[input]
 
-                if (cacheLookup != null) {
-                    cacheLookup.forEach { choice(it, it) }
-                } else {
-                    aniList.findUserNames(input)
-                        .map { it.abbreviate(80) }
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
-                }
+                aniList.findUserNames(input)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
             }
         }
     }

@@ -13,11 +13,11 @@ import com.kotlindiscord.kord.extensions.types.respond
 
 suspend fun MusicExtension.clear() {
     ephemeralSlashCommand {
-        name = "clear"
-        description = "clear.description"
+        name = "command.clear"
+        description = "command.clear.description"
 
-        group("effect") {
-            description = "clear.effect.description"
+        group("command.clear.effect") {
+            description = "command.clear.effect.description"
 
             filter()
             equalizer()
@@ -29,8 +29,8 @@ suspend fun MusicExtension.clear() {
 
 private suspend fun EphemeralSlashCommand<*>.queue() {
     ephemeralSubCommand {
-        name = "queue"
-        description = "clear.queue.description"
+        name = "command.clear.queue"
+        description = "command.clear.queue.description"
         check {
             anyGuild()
         }
@@ -59,8 +59,8 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
 
 private suspend fun SlashGroup.filter() {
     ephemeralSubCommand {
-        name = "filter"
-        description = "clear.effect.filter.description"
+        name = "command.clear.effect.filter"
+        description = "command.clear.effect.filter.description"
         check {
             anyGuild()
         }
@@ -83,8 +83,8 @@ private suspend fun SlashGroup.filter() {
 
 private suspend fun SlashGroup.equalizer() {
     ephemeralSubCommand {
-        name = "equalizer"
-        description = "clear.effect.equalizer.description"
+        name = "command.clear.effect.equalizer"
+        description = "command.clear.effect.equalizer.description"
         check {
             anyGuild()
         }

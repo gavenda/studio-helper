@@ -113,7 +113,7 @@ class AniRadioExtension : Extension() {
 
         ephemeralSlashCommand {
             name = "disconnect"
-            description = "disconnect.description"
+            description = "command.disconnect.description"
             check {
                 anyGuild()
             }

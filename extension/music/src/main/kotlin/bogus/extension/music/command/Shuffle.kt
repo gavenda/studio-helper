@@ -8,8 +8,8 @@ import com.kotlindiscord.kord.extensions.types.respond
 
 suspend fun MusicExtension.shuffle() {
     ephemeralSlashCommand {
-        name = "shuffle"
-        description = "shuffle.description"
+        name = "command.shuffle"
+        description = "command.shuffle.description"
         check {
             anyGuild()
         }

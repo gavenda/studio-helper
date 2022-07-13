@@ -6,12 +6,10 @@ import bogus.extension.anilist.PAGINATOR_TIMEOUT
 import bogus.extension.anilist.embed.createCharacterEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.paginator.respondingStandardPaginator
-import bogus.util.LRUCache
 import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
@@ -22,15 +20,15 @@ import org.koin.core.component.inject
 
 suspend fun AniListExtension.character() {
     publicSlashCommand(::CharacterArgs) {
-        name = "character"
-        description = "Looks up the name of an anime/manga character."
+        name = "command.character"
+        description = "command.character.description"
         action {
             findCharacter(arguments.query)
         }
     }
 
     publicMessageCommand {
-        name = "Search Character"
+        name = "command.character.message-command"
         action {
             findCharacter(targetMessages.first().content)
         }
@@ -53,12 +51,12 @@ private suspend fun ApplicationCommandContext.findCharacter(query: String) {
 
     if (characters == null || characters.isEmpty()) {
         respond {
-            content = translate("character.error.noMatchingCharacter")
+            content = translate("character.error.no-matching-character")
         }
         return
     }
 
-    val paginator = respondingStandardPaginator(linkLabel = translate("link.label")) {
+    val paginator = respondingStandardPaginator(linkLabel = translate("find.link.label")) {
         timeoutSeconds = PAGINATOR_TIMEOUT
         characters.forEach { character ->
             page {
@@ -71,29 +69,19 @@ private suspend fun ApplicationCommandContext.findCharacter(query: String) {
 }
 
 private class CharacterArgs : KordExKoinComponent, Arguments() {
-    companion object {
-        val cache = LRUCache<String, List<String>>(50)
-    }
-
     val aniList by inject<AniList>()
     val query by coalescingString {
-        name = "query"
-        description = "Name of the anime/manga character."
+        name = "command.character.args.query"
+        description = "command.character.args.query.description"
 
         autoComplete {
             suggestString {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
-                val cacheLookup = cache[input]
 
-                if (cacheLookup != null) {
-                    cacheLookup.forEach { choice(it, it) }
-                } else {
-                    aniList.findCharacterNames(input)
-                        .map { it.abbreviate(80) }
-                        .apply { cache[input] = this }
-                        .forEach { choice(it, it) }
-                }
+                aniList.findCharacterNames(input)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
             }
         }
     }

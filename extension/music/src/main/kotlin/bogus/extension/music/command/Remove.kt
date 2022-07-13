@@ -1,7 +1,6 @@
 package bogus.extension.music.command
 
 import bogus.extension.music.MusicExtension
-import bogus.extension.music.TRANSLATION_BUNDLE
 import bogus.extension.music.player
 import bogus.extension.music.player.MusicTrack
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -17,8 +16,8 @@ import org.koin.core.component.inject
 
 suspend fun MusicExtension.remove() {
     ephemeralSlashCommand(::RemoveArgs) {
-        name = "remove"
-        description = "remove.description"
+        name = "command.remove"
+        description = "command.remove.description"
         check {
             anyGuild()
         }
@@ -57,18 +56,12 @@ private class RemoveArgs : KordExKoinComponent, Arguments() {
     private val tp by inject<TranslationsProvider>()
 
     val from by int {
-        name = "from"
-        description = tp.translate(
-            key = "remove.args.from",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        name = "command.remove.args.from"
+        description = "command.remove.args.from.description"
     }
 
     val to by optionalInt {
-        name = "to"
-        description = tp.translate(
-            key = "remove.args.to",
-            bundleName = TRANSLATION_BUNDLE
-        )
+        name = "command.remove.args.to"
+        description = "command.remove.args.to.description"
     }
 }

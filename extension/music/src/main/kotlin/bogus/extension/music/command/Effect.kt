@@ -10,26 +10,23 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSub
 import com.kotlindiscord.kord.extensions.commands.application.slash.group
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
-import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
-import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
-import org.koin.core.component.inject
 
 suspend fun MusicExtension.effect() {
     ephemeralSlashCommand {
-        name = "effect"
-        description = "effect.description"
+        name = "command.effect"
+        description = "command.effect.description"
 
-        group("filter") {
-            description = "effect.filter.description"
+        group("command.effect.filter") {
+            description = "command.effect.filter.description"
 
             nightcore()
             karaoke()
             vaporwave()
         }
 
-        group("equalizer") {
-            description = "effect.equalizer.description"
+        group("command.effect.equalizer") {
+            description = "command.effect.equalizer.description"
 
             rock()
             pop()
@@ -40,8 +37,8 @@ suspend fun MusicExtension.effect() {
 
 private suspend fun SlashGroup.nightcore() {
     ephemeralSubCommand(::NightcoreArgs) {
-        name = "nightcore"
-        description = "effect.filter.nightcore.description"
+        name = "command.effect.filter.nightcore"
+        description = "command.effect.filter.nightcore.description"
         check {
             anyGuild()
         }
@@ -69,8 +66,8 @@ private suspend fun SlashGroup.nightcore() {
 
 private suspend fun SlashGroup.karaoke() {
     ephemeralSubCommand {
-        name = "karaoke"
-        description = "effect.filter.karaoke.description"
+        name = "command.effect.filter.karaoke"
+        description = "command.effect.filter.karaoke.description"
         check {
             anyGuild()
         }
@@ -95,8 +92,8 @@ private suspend fun SlashGroup.karaoke() {
 
 private suspend fun SlashGroup.vaporwave() {
     ephemeralSubCommand {
-        name = "vaporwave"
-        description = "effect.filter.vaporwave.description"
+        name = "command.effect.filter.vaporwave"
+        description = "command.effect.filter.vaporwave.description"
         check {
             anyGuild()
         }
@@ -121,8 +118,8 @@ private suspend fun SlashGroup.vaporwave() {
 
 private suspend fun SlashGroup.rock() {
     ephemeralSubCommand {
-        name = "rock"
-        description = "effect.equalizer.rock.description"
+        name = "command.effect.equalizer.rock"
+        description = "command.effect.equalizer.rock.description"
         check {
             anyGuild()
         }
@@ -147,8 +144,8 @@ private suspend fun SlashGroup.rock() {
 
 private suspend fun SlashGroup.pop() {
     ephemeralSubCommand {
-        name = "pop"
-        description = "effect.equalizer.pop.description"
+        name = "command.effect.equalizer.pop"
+        description = "command.effect.equalizer.pop.description"
         check {
             anyGuild()
         }
@@ -173,8 +170,8 @@ private suspend fun SlashGroup.pop() {
 
 private suspend fun SlashGroup.trebleBass() {
     ephemeralSubCommand {
-        name = "bass-boost"
-        description = "effect.equalizer.bass-boost.description"
+        name = "command.effect.equalizer.bass-boost"
+        description = "command.effect.equalizer.bass-boost.description"
         check {
             anyGuild()
         }
@@ -191,29 +188,24 @@ private suspend fun SlashGroup.trebleBass() {
             }
 
             respond {
-                content = translate("effect.equalizer.response.treble-bass")
+                content = translate("effect.equalizer.response.bass-boost")
             }
         }
     }
 }
 
-private class NightcoreArgs : KordExKoinComponent, Arguments() {
-    private val tp by inject<TranslationsProvider>()
+private class NightcoreArgs : Arguments() {
     val speed by int {
-        name = "speed"
-        description = tp.translate(
-            key = "effect.args.nightcore.description",
-            bundleName = TRANSLATION_BUNDLE,
-            replacements = arrayOf(NIGHTCORE_MAX, NIGHTCORE_MIN)
-        )
+        name = "command.effect.filter.nightcore.args.speed"
+        description = "command.effect.filter.nightcore.args.speed.description"
 
         validate {
             if (value > NIGHTCORE_MAX) {
-                fail(translate("nightcore.validate.max.fail", TRANSLATION_BUNDLE, arrayOf(NIGHTCORE_MAX)))
+                fail(translate("command.effect.filter.nightcore.args.speed.validate.max.fail", replacements = arrayOf(NIGHTCORE_MAX)))
                 return@validate
             }
             if (value < NIGHTCORE_MIN) {
-                fail(translate("nightcore.validate.min.fail", TRANSLATION_BUNDLE, arrayOf(NIGHTCORE_MIN)))
+                fail(translate("command.effect.filter.nightcore.args.speed.validate.min.fail", replacements = arrayOf(NIGHTCORE_MIN)))
                 return@validate
             }
 

@@ -8,7 +8,6 @@ import bogus.extension.anilist.graphql.AniList
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import org.koin.core.component.inject
@@ -24,10 +23,10 @@ suspend fun AniListExtension.link() {
     val aniList by inject<AniList>()
 
     ephemeralSlashCommand(::LinkArgs) {
-        name = "link"
-        description = "Link your Discord account to your AniList account."
+        name = "command.link"
+        description = "command.link.description"
         check {
-            anyGuild(translate("link.error.serverOnly"))
+            anyGuild(translate("link.error.server-only"))
         }
         action {
             val guild = guild ?: return@action
@@ -38,7 +37,7 @@ suspend fun AniListExtension.link() {
 
             if (existingUser != null) {
                 respond {
-                    content = translate("link.error.alreadyLinked")
+                    content = translate("link.error.already-linked")
                 }
                 return@action
             }
@@ -68,10 +67,10 @@ suspend fun AniListExtension.link() {
     }
 
     ephemeralSlashCommand {
-        name = "unlink"
-        description = "Unlink your AniList account from your Discord account."
+        name = "command.unlink"
+        description = "command.unlink.description"
         check {
-            anyGuild(translate("unlink.error.serverOnly"))
+            anyGuild(translate("unlink.error.server-only"))
         }
         action {
             val guild = guild ?: return@action
@@ -82,7 +81,7 @@ suspend fun AniListExtension.link() {
 
             if (existingUser == null) {
                 respond {
-                    content = translate("unlink.error.notLinked")
+                    content = translate("unlink.error.not-linked")
                 }
                 return@action
             }
@@ -109,7 +108,7 @@ suspend fun AniListExtension.link() {
 
 private class LinkArgs : Arguments() {
     val username by coalescingString {
-        name = "username"
-        description = "AniList username, defaults to your own if linked."
+        name = "command.link.args.username"
+        description = "command.link.args.username.description"
     }
 }

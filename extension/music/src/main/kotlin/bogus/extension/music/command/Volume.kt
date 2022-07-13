@@ -5,16 +5,14 @@ import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
-import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.suggestIntMap
-import org.koin.core.component.inject
 
 suspend fun MusicExtension.volume() {
     ephemeralSlashCommand(::VolumeArgs) {
-        name = "volume"
-        description = "volume.description"
+        name = "command.volume"
+        description = "command.volume.description"
         check {
             anyGuild()
         }
@@ -28,7 +26,6 @@ suspend fun MusicExtension.volume() {
 }
 
 private class VolumeArgs : KordExKoinComponent, Arguments() {
-    private val tp by inject<TranslationsProvider>()
     private val volumeMap = buildMap {
         for (v in 0..100 step 10) {
             put(v.toString(), v)
@@ -36,20 +33,16 @@ private class VolumeArgs : KordExKoinComponent, Arguments() {
     }
 
     val volume by int {
-        name = "volume"
-        description = tp.translate(
-            key = "volume.args.volume.description",
-            bundleName = TRANSLATION_BUNDLE,
-            replacements = arrayOf(VOLUME_MAX, VOLUME_MIN)
-        )
+        name = "command.volume.args.volume"
+        description = "command.volume.args.volume.description"
 
         validate {
             if (value > VOLUME_MAX) {
-                fail(translate("volume.validate.max.fail", TRANSLATION_BUNDLE, arrayOf(VOLUME_MAX)))
+                fail(translate("command.volume.args.volume.validate.max.fail", replacements = arrayOf(VOLUME_MAX)))
                 return@validate
             }
             if (value < VOLUME_MIN) {
-                fail(translate("volume.validate.min.fail", TRANSLATION_BUNDLE, arrayOf(VOLUME_MIN)))
+                fail(translate("command.volume.args.volume.validate.min.fail", replacements = arrayOf(VOLUME_MIN)))
                 return@validate
             }
 

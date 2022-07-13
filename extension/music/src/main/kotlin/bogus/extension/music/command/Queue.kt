@@ -8,8 +8,8 @@ import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 
 suspend fun MusicExtension.queue() {
     ephemeralSlashCommand {
-        name = "queue"
-        description = "queue.description"
+        name = "command.queue"
+        description = "command.queue.description"
         check {
             anyGuild()
         }

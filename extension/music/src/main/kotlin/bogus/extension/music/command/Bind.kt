@@ -22,8 +22,8 @@ suspend fun MusicExtension.unbind() {
     val db by inject<Database>()
 
     ephemeralSlashCommand {
-        name = "unbind"
-        description = "unbind.description"
+        name = "command.unbind"
+        description = "command.unbind.description"
         check {
             anyGuild()
             hasPermission(Permission.Administrator)
@@ -69,8 +69,8 @@ suspend fun MusicExtension.bind() {
     val db by inject<Database>()
 
     ephemeralSlashCommand {
-        name = "bind"
-        description = "bind.description"
+        name = "command.bind"
+        description = "command.bind.description"
         check {
             anyGuild()
             hasPermission(Permission.Administrator)
