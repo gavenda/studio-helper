@@ -1,5 +1,6 @@
 package bogus.extension.music.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.IdentifierParser
 import bogus.extension.music.Jukebox
@@ -22,7 +23,9 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingStri
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.core.behavior.interaction.suggestString
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.CoroutineScope
@@ -31,9 +34,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
-import org.ktorm.entity.add
-import org.ktorm.entity.filter
-import org.ktorm.entity.find
+import org.ktorm.entity.*
 import org.ktorm.support.postgresql.ilike
 
 suspend fun MusicExtension.playlist() {
@@ -303,7 +304,7 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
 
             if (dbPlaylist != null) {
                 val dbPlaylistSong = db.playlistSongs.find {
-                    (it.playlistId eq dbPlaylist.playlistId) and (it.playlistSongId eq arguments.songId.toLong())
+                    (it.playlistId eq dbPlaylist.playlistId) and (it.playlistSongId eq arguments.musicId.toLong())
                 }
 
                 if (dbPlaylistSong != null) {
@@ -319,7 +320,7 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
                     respond {
                         content = translate(
                             key = "playlist.remove.response.no-music",
-                            replacements = arrayOf(arguments.songId)
+                            replacements = arrayOf(arguments.musicId)
                         )
                     }
                 }
@@ -373,31 +374,79 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
     }
 }
 
-private class PlaylistNameArgs : Arguments() {
+private class PlaylistNameArgs : KordExKoinComponent, Arguments() {
+    val db by inject<Database>()
     val name by coalescingString {
-        name = "name"
-        description = "playlist.args.name.description"
+        name = "command.playlist.args.name"
+        description = "command.playlist.args.name.description"
+
+        autoComplete {
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+
+                db.playlists.filter {
+                    (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
+                }
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                    .forEach {
+                        choice(it.name, it.name)
+                    }
+            }
+        }
     }
 }
 
-private class PlaylistRemoveArgs : Arguments() {
+private class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
+    val db by inject<Database>()
     val name by coalescingString {
-        name = "name"
-        description = "playlist.args.name.description"
+        name = "command.playlist.args.name"
+        description = "command.playlist.args.name.description"
+
+        autoComplete {
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+
+                db.playlists.filter {
+                    (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
+                }
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                    .forEach {
+                        choice(it.name, it.name)
+                    }
+            }
+        }
     }
-    val songId by int {
-        name = "id"
-        description = "playlist.args.id.description"
+    val musicId by int {
+        name = "command.playlist.args.music-id"
+        description = "command.playlist.args.music-id.description"
     }
 }
 
-private class PlaylistAddArgs : Arguments() {
+private class PlaylistAddArgs : KordExKoinComponent, Arguments() {
+    val db by inject<Database>()
     val name by coalescingString {
-        name = "name"
-        description = "playlist.args.name.description"
+        name = "command.playlist.args.name"
+        description = "command.playlist.args.name.description"
+
+        autoComplete {
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+
+                db.playlists.filter {
+                    (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
+                }
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                    .forEach {
+                        choice(it.name, it.name)
+                    }
+            }
+        }
     }
     val music by string {
-        name = "music"
-        description = "playlist.args.music.description"
+        name = "command.playlist.args.music"
+        description = "command.playlist.args.music.description"
     }
 }
