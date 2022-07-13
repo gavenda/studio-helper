@@ -15,7 +15,7 @@ suspend fun AdministrationExtension.welcomeMessage() {
             anyGuild()
         }
         action {
-            val guild = guild?.fetchGuild() ?: return@action
+            val guild = guild?.asGuildOrNull() ?: return@action
             val member = member ?: return@action
 
             respond {

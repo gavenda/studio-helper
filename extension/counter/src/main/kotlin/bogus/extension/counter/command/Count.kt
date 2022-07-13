@@ -97,7 +97,7 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
     description = "count.list.description"
 
     action {
-        val guild = guild?.fetchGuildOrNull() ?: return@action
+        val guild = guild?.asGuildOrNull() ?: return@action
         val counters = db.counts.filter {
             it.discordGuildId eq guild.idLong
         }

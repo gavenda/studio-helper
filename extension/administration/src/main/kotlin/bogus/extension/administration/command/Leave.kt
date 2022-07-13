@@ -14,7 +14,7 @@ suspend fun AdministrationExtension.leaveMessage() {
             anyGuild()
         }
         action {
-            val guild = guild?.fetchGuild() ?: return@action
+            val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 content = createLeaveMessage(user, guild)
             }
