@@ -9,6 +9,8 @@ import dev.kord.gateway.PrivilegedIntent
 @OptIn(PrivilegedIntent::class)
 class ModerationExtension : Extension() {
     override val name = EXTENSION_NAME
+    override val bundle = EXTENSION_NAME
+
     override suspend fun setup() {
         configureIntents()
         setupDatabase()

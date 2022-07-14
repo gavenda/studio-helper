@@ -15,6 +15,7 @@ include(
     "extension:announcer",
     "extension:automove",
     "extension:counter",
+    "extension:information",
     "extension:moderation",
     "extension:music",
     "extension:utility",

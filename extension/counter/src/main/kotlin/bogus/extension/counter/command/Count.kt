@@ -15,7 +15,6 @@ import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.PublicSlashCommand
 import com.kotlindiscord.kord.extensions.commands.application.slash.publicSubCommand
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
@@ -34,9 +33,9 @@ import java.time.Instant
 
 suspend fun CounterExtension.count() {
     publicSlashCommand {
-        name = "count"
+        name = "command.count"
         locking = true
-        description = "count.description"
+        description = "command.count.description"
 
         increase()
         list()
@@ -46,8 +45,8 @@ suspend fun CounterExtension.count() {
 private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::CounterArgs) {
     val db by inject<Database>()
 
-    name = "increase"
-    description = "count.increase.description"
+    name = "command.count.increase"
+    description = "command.count.increase.description"
 
     check {
         anyGuild()
@@ -76,13 +75,11 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
             embed {
                 color = Color(EMBED_COLOR)
                 author {
-                    name = "Count Increased"
+                    name = translate("response.count.increase.author.name")
                 }
-                description = """
-                    :chart_with_upwards_trend: **${dbGuildCount.countName}** has been increased to **${dbGuildCount.countAmount}**!
-                """.trimIndent()
+                description = translate("response.count.increase.description", arrayOf(dbGuildCount.countName, dbGuildCount.countAmount))
                 footer {
-                    text = "Note: You can list the current count by executing /count list"
+                    text = translate("response.count.increase.footer.text")
                 }
             }
         }
@@ -92,9 +89,9 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
 private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
     val db by inject<Database>()
 
-    name = "list"
+    name = "command.count.list"
     locking = true
-    description = "count.list.description"
+    description = "command.count.list.description"
 
     action {
         val guild = guild?.asGuildOrNull() ?: return@action
@@ -107,16 +104,12 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
                 embed {
                     color = Color(EMBED_COLOR)
                     author {
-                        name = "Counter Information"
+                        name = translate("response.count.list.author.name")
                         icon = guild.getIconUrl(Image.Format.WEBP)
                     }
-                    description = """
-                        Counter(s) for **${guild.name}**
-                        
-                        __(there is no counter available)__
-                    """.trimIndent()
+                    description = translate("response.count.list.description.empty", arrayOf(guild.name))
                     footer {
-                        text = "Note: Lacking count? Increase it now using /count increase"
+                        text = translate("response.count.list.footer.text")
                     }
                 }
             }
@@ -131,24 +124,20 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
                 page {
                     color = Color(EMBED_COLOR)
                     author {
-                        name = "Counter Information"
+                        name = translate("response.count.list.author.name")
                         icon = guild.getIconUrl(Image.Format.WEBP)
                     }
-                    description = ":chart_with_upwards_trend: List of counters for **${guild.name}**"
+                    description = translate("response.count.list.description", arrayOf(guild.name))
                     sequenceChunked.forEach { counter ->
                         val dateFormatted = DATE_FORMATTER.format(counter.lastTimestamp)
-
+                        val lastUserId = counter.lastUserId.toString()
                         field {
                             name = counter.countName
-                            value = """
-                                - Count: **${counter.countAmount}**
-                                - Last Count: **$dateFormatted**
-                                - By: <@${counter.lastUserId}>
-                            """.trimIndent()
+                            value = translate("response.count.list.field", arrayOf(counter.countAmount, dateFormatted, lastUserId))
                         }
                     }
                     footer {
-                        text = "Note: Lacking count? Increase it now using /count increase"
+                        text = translate("response.count.list.footer.text")
                     }
                 }
             }
@@ -162,8 +151,8 @@ private class CounterArgs : KordExKoinComponent, Arguments() {
     val db by inject<Database>()
 
     val counter by coalescingString {
-        name = "counter"
-        description = "The name of the counter you want to increment."
+        name = "command.count.increase.args.counter"
+        description = "command.count.increase.args.counter.description"
 
         autoComplete {
             suggestString {

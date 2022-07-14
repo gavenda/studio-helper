@@ -14,8 +14,8 @@ import dev.kord.core.entity.channel.GuildMessageChannel
 
 suspend fun AdministrationExtension.broadcast() {
     ephemeralSlashCommand(::BroadcastArgs) {
-        name = "broadcast"
-        description = "broadcast.description"
+        name = "command.broadcast"
+        description = "command.broadcast.description"
         requirePermission(Permission.Administrator)
         action {
             val gmc = arguments.channel.asChannelOf<GuildMessageChannel>()
@@ -33,8 +33,8 @@ suspend fun AdministrationExtension.broadcast() {
 
 private class BroadcastArgs : Arguments() {
     val channel by channel {
-        name = "channel"
-        description = "channel.arguments.channel.description"
+        name = "command.broadcast.args.channel"
+        description = "command.broadcast.args.channel.description"
         requireSameGuild = true
         requireChannelType(ChannelType.GuildText)
         requireChannelType(ChannelType.PublicGuildThread)
@@ -42,7 +42,7 @@ private class BroadcastArgs : Arguments() {
         requireChannelType(ChannelType.PublicNewsThread)
     }
     val message by coalescingString {
-        name = "message"
-        description = "channel.arguments.message.description"
+        name = "command.broadcast.args.message"
+        description = "command.broadcast.args.message.description"
     }
 }

@@ -10,8 +10,8 @@ import com.kotlindiscord.kord.extensions.types.respond
 
 suspend fun UtilityExtension.choose() {
     publicSlashCommand(::ChooseArgs) {
-        name = "choose"
-        description = "Lumi will choose an option for you!"
+        name = "command.choose"
+        description = "command.choose.description"
         check {
             anyGuild()
         }
@@ -23,12 +23,12 @@ suspend fun UtilityExtension.choose() {
 
             if (choices.isEmpty()) {
                 respond {
-                    content = "You did not add any choices!"
+                    content = translate("response.choose.no-choices")
                 }
             } else {
                 val selectedChoice = choices.random()
                 respond {
-                    content = "I choose `$selectedChoice`."
+                    content = translate("response.choose", arrayOf(selectedChoice))
                 }
             }
         }
@@ -37,7 +37,7 @@ suspend fun UtilityExtension.choose() {
 
 private class ChooseArgs : Arguments() {
     val choices by coalescingString {
-        name = "choices"
-        description = "The choices to choose from, separated by '|'."
+        name = "command.choose.args.choices"
+        description = "command.choose.args.choices.description"
     }
 }

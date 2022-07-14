@@ -1,16 +1,17 @@
 package bogus.extension.administration.command
 
 import bogus.extension.administration.AdministrationExtension
-import bogus.extension.administration.event.createLeaveMessage
 import bogus.extension.administration.event.createWelcomeMessage
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.common.entity.Permission
 
 suspend fun AdministrationExtension.welcomeMessage() {
     ephemeralSlashCommand {
-        name = "welcome-message"
-        description = "welcome-message.description"
+        name = "command.welcome-message"
+        description = "command.welcome-message.description"
+        requirePermission(Permission.Administrator)
         check {
             anyGuild()
         }

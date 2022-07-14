@@ -4,7 +4,8 @@ import bogus.extension.utility.command.choose
 import com.kotlindiscord.kord.extensions.extensions.Extension
 
 class UtilityExtension : Extension() {
-    override val name = "utility"
+    override val name = EXTENSION_NAME
+    override val bundle = EXTENSION_NAME
     override suspend fun setup() {
         configureIntents()
         setupCommands()

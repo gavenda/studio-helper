@@ -18,6 +18,7 @@ All the bots above are just extensions woven together, here are the extensions t
 - [announcer](extension/announcer) - Announces a bundled music file whenever someone joins the bot's voice channel
 - [automove](extension/automove) - Auto moves a user whenever they self mute or deafened and vice-versa
 - [counter](extension/counter) - Counter for literally anything, no database, everything is stored in a json file
+- [information](extension/information) - Shows information for emoji, user, etc.
 - [moderation](extension/moderation) - Utilities for server moderation
 - [music](extension/music) - Fully featured music extension, uses lava link to play music
 - [utility](extension/utility) - Simple utilities for server members

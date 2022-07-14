@@ -5,6 +5,7 @@ import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
 import bogus.extension.administration.AdministrationExtension
 import bogus.extension.counter.CounterExtension
+import bogus.extension.information.InformationExtension
 import bogus.extension.moderation.ModerationExtension
 import bogus.extension.utility.UtilityExtension
 import bogus.lib.database.setupDatabase
@@ -32,11 +33,13 @@ suspend fun lumi(
     return ExtensibleBot(token) {
         AboutExtension.EMBED_COLOR = BOT_EMBED_COLOR
         CounterExtension.EMBED_COLOR = BOT_EMBED_COLOR
+        InformationExtension.EMBED_COLOR = BOT_EMBED_COLOR
 
         extensions {
             add(::AboutExtension)
             add(::AdministrationExtension)
             add(::CounterExtension)
+            add(::InformationExtension)
             add(::ModerationExtension)
             add(::UtilityExtension)
 
