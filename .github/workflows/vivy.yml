@@ -24,7 +24,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
-          arguments: "bot:vivy:installDist"
+          arguments: "bot:vivy:installDist --refresh-dependencies"
       - name: Upload Distribution
         uses: actions/upload-artifact@v3
         with:
