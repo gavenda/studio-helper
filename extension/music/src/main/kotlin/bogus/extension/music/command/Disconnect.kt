@@ -25,7 +25,7 @@ suspend fun MusicExtension.disconnect() {
             }
 
             respond {
-                content = translate("disconnect.response")
+                content = translate("response.disconnect")
             }
         }
     }

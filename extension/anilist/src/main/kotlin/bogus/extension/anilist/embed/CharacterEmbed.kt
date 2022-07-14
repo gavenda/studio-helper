@@ -1,5 +1,6 @@
 package bogus.extension.anilist.embed
 
+import bogus.extension.anilist.AniListExtension.EMBED_COLOR
 import bogus.extension.anilist.aniClean
 import bogus.extension.anilist.model.Character
 import bogus.extension.anilist.weirdHtmlClean
@@ -69,7 +70,7 @@ fun createCharacterEmbed(character: Character): EmbedBuilder.() -> Unit = {
     }
 
     url = character.siteUrl
-    color = Color(0xFF0000)
+    color = Color(EMBED_COLOR)
 
     if (animeAppearance.isNotBlank()) {
         field {

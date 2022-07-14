@@ -31,11 +31,11 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel(audioProvider: () -> Audi
     val member = memberFor(event)
 
     if (selfMember == null) {
-        fail(translate("checks.voiceChannel.error", TRANSLATIONS_BUNDLE))
+        fail(translate("checks.voice-channel.error", TRANSLATIONS_BUNDLE))
         return
     }
     if (member == null) {
-        fail(translate("checks.voiceChannel.error", TRANSLATIONS_BUNDLE))
+        fail(translate("checks.voice-channel.error", TRANSLATIONS_BUNDLE))
         return
     }
 
@@ -44,7 +44,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel(audioProvider: () -> Audi
 
     if (theirVoiceChannel == null) {
         log.failed("No voice channel")
-        fail(translate("checks.voiceChannel.notInVoice", TRANSLATIONS_BUNDLE))
+        fail(translate("checks.voice-channel.not-in-voice", TRANSLATIONS_BUNDLE))
         return
     }
 
@@ -55,7 +55,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel(audioProvider: () -> Audi
         )
         if (!canTalk) {
             log.failed("No permission")
-            fail(translate("checks.voiceChannel.noPermission", TRANSLATIONS_BUNDLE))
+            fail(translate("checks.voice-channel.no-permission", TRANSLATIONS_BUNDLE))
             return
         }
 

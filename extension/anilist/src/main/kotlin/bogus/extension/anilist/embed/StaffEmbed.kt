@@ -1,5 +1,6 @@
 package bogus.extension.anilist.embed
 
+import bogus.extension.anilist.AniListExtension.EMBED_COLOR
 import bogus.extension.anilist.aniClean
 import bogus.extension.anilist.model.Staff
 import bogus.extension.anilist.weirdHtmlClean
@@ -78,7 +79,7 @@ fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
         url = staff.image?.large ?: ""
     }
     url = staff.siteUrl
-    color = Color(0xFF0000)
+    color = Color(EMBED_COLOR)
 
     if (charactersVoiced.isNotBlank()) {
         field {

@@ -1,5 +1,6 @@
 package bogus.extension.anilist.embed
 
+import bogus.extension.anilist.AniListExtension.EMBED_COLOR
 import bogus.extension.anilist.EmbedMedia
 import bogus.extension.anilist.htmlToMarkdown
 import bogus.extension.anilist.model.*
@@ -109,7 +110,7 @@ fun createMediaEmbed(
 
     image = media.bannerImage
     url = media.siteUrl
-    color = Color(0xFF0000)
+    color = Color(EMBED_COLOR)
 
     // First row
     field {

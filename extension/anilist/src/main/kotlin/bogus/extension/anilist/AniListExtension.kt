@@ -39,6 +39,8 @@ object AniListExtension : Extension() {
     val db by inject<Database>()
     val log = KotlinLogging.logger { }.asFMTLogger()
 
+    var EMBED_COLOR = 0
+
     private val kronScheduler = buildSchedule {
         minutes {
             from(0) every 30

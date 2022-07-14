@@ -1,5 +1,6 @@
 plugins {
     id("bogus.kotlin-conventions")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 version = "1.0"
