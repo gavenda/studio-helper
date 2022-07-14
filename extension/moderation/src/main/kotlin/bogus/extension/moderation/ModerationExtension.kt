@@ -24,6 +24,10 @@ class ModerationExtension : Extension() {
         clean()
     }
 
+    private suspend fun setupMessageCommands() {
+
+    }
+
     private fun setupDatabase() {
         migrate(
             path = "classpath:db/moderation/migration",

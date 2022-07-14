@@ -1,7 +1,6 @@
 package bogus.extension.anilist.command
 
 import bogus.extension.anilist.AniListExtension
-import bogus.extension.anilist.TRANSLATIONS_BUNDLE
 import bogus.extension.anilist.db.DbAiringAnime
 import bogus.extension.anilist.db.DbGuild
 import bogus.extension.anilist.db.airingAnimes
@@ -16,7 +15,6 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.group
 import com.kotlindiscord.kord.extensions.commands.converters.impl.long
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalChannel
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
-import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.botHasPermissions
@@ -70,7 +68,7 @@ suspend fun AniListExtension.notification() {
                     db.airingAnimes.add(newDbAiringAnime)
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        beginPoll(guild)
+                        scheduleNotify(guild)
                     }
 
                     respond {
@@ -99,7 +97,7 @@ suspend fun AniListExtension.notification() {
                     }
 
                     dbAiringAnime.delete()
-                    removeAnimeFromPolling(guild.id, arguments.mediaId)
+                    removeAnimeSchedule(guild.id, arguments.mediaId)
 
                     respond {
                         content = translate("notification.airing-anime.remove.success")

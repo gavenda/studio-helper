@@ -27,15 +27,9 @@ suspend fun AniListExtension.character() {
         }
     }
 
-    publicMessageCommand {
-        name = "command.character.message-command"
-        action {
-            findCharacter(targetMessages.first().content)
-        }
-    }
 }
 
-private suspend fun ApplicationCommandContext.findCharacter(query: String) {
+suspend fun ApplicationCommandContext.findCharacter(query: String) {
     if (this !is PublicInteractionContext) return
 
     val aniList by inject<AniList>()

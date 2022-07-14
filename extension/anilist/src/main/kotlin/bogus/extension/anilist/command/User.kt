@@ -103,53 +103,6 @@ suspend fun AniListExtension.user() {
             }
         }
     }
-
-    publicUserCommand {
-        name = "command.user.message-command"
-        check {
-            anyGuild()
-        }
-        action {
-            val guild = guild ?: return@action
-            val targetUser = targetUsers.first()
-
-            val dbUsername = db.users.firstOrNull {
-                (it.discordId eq targetUser.idLong) and (it.discordGuildId eq guild.idLong)
-            }?.aniListUsername
-
-            if (dbUsername == null) {
-                respond {
-                    content = translate("user.error.user-not-linked")
-                }
-                return@action
-            }
-
-            val user = aniList.findUserStatisticsByName(dbUsername)
-
-            // Linked, but not found
-            if (user == null) {
-                respond {
-                    content = translate("user.error.link-not-found")
-                }
-            } else if (user.statistics == null) {
-                respond {
-                    content = translate("user.error.no-user-statistics")
-                }
-            } else {
-                respond {
-                    embed {
-                        apply(createUserEmbed(user))
-                    }
-                    components {
-                        linkButton {
-                            label = translate("user.link.label")
-                            url = user.siteUrl
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 private class UserArgs : KordExKoinComponent, Arguments() {

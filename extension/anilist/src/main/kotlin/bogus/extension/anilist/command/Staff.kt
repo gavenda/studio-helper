@@ -26,16 +26,9 @@ suspend fun AniListExtension.staff() {
             findStaff(arguments.query)
         }
     }
-
-    publicMessageCommand {
-        name = "Search Staff"
-        action {
-            findStaff(targetMessages.first().content)
-        }
-    }
 }
 
-private suspend fun ApplicationCommandContext.findStaff(query: String) {
+suspend fun ApplicationCommandContext.findStaff(query: String) {
     if (this !is PublicInteractionContext) return
 
     val aniList by inject<AniList>()

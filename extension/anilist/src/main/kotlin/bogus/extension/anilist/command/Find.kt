@@ -41,16 +41,9 @@ suspend fun AniListExtension.find() {
             findMedia(arguments.query, MediaType.MANGA)
         }
     }
-
-    publicMessageCommand {
-        name = "command.find.message-command"
-        action {
-            findMedia(targetMessages.first().content)
-        }
-    }
 }
 
-private suspend fun ApplicationCommandContext.findMedia(
+suspend fun ApplicationCommandContext.findMedia(
     query: String,
     type: MediaType? = null
 ) {

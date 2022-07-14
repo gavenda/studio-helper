@@ -1,9 +1,12 @@
 package bogus.extension.anilist
 
 import bogus.extension.anilist.command.*
+import bogus.extension.anilist.command.message.characterMessageCommand
+import bogus.extension.anilist.command.message.findMessageCommand
+import bogus.extension.anilist.command.message.staffMessageCommand
+import bogus.extension.anilist.command.message.userMessageCommand
 import bogus.extension.anilist.coroutines.AiringSchedulePoller
 import bogus.extension.anilist.db.airingAnimes
-import bogus.extension.anilist.db.guilds
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.graphql.AniListGraphQL
 import bogus.lib.database.migrate
@@ -11,19 +14,14 @@ import bogus.util.asFMTLogger
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
-import com.kotlindiscord.kord.extensions.utils.botHasPermissions
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import dev.inmo.krontab.builder.buildSchedule
 import dev.inmo.krontab.doInfinity
-import dev.kord.common.Color
-import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.GuildBehavior
-import dev.kord.core.behavior.channel.createEmbed
-import dev.kord.core.behavior.getChannelOf
-import dev.kord.core.entity.channel.GuildMessageChannel
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
+import dev.kord.core.supplier.EntitySupplyStrategy
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import kotlinx.serialization.json.Json
@@ -32,13 +30,13 @@ import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.entity.filter
-import org.ktorm.entity.first
 import org.ktorm.entity.map
 
 object AniListExtension : Extension() {
     override val name = "anilist"
     override val bundle = "anilist"
 
+    val db by inject<Database>()
     val log = KotlinLogging.logger { }.asFMTLogger()
 
     private val kronScheduler = buildSchedule {
@@ -51,49 +49,32 @@ object AniListExtension : Extension() {
     override suspend fun setup() {
         setupEvents()
         setupCommands()
+        setupMessageCommands()
+        setupDatabase()
+        setupGraphQL()
     }
 
     private suspend fun setupEvents() {
         event<ReadyEvent> {
             action {
-                setupDatabase()
-                setupGraphQL()
-                startPoll()
+                scheduleNotify()
             }
         }
         event<GuildCreateEvent> {
             action {
-                beginPoll(event.guild)
+                scheduleNotify(event.guild)
             }
         }
     }
 
-    suspend fun startPoll() = kronScheduler.doInfinity {
-        val db by inject<Database>()
+    private suspend fun scheduleNotify() = kronScheduler.doInfinity {
         pollers.forEach { (guildId, poller) ->
-            val guild = kord.getGuild(guildId) ?: return@forEach
-            val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
-            val airingSchedules = poller.poll()
-
-            airingSchedules.forEach { airingSchedule ->
-                val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
-                val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
-
-                if (channel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
-                    channel.createEmbed {
-                        title = "New Episode Aired!"
-                        description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
-                        color = Color(0xFF0000)
-                        thumbnail {
-                            url = airingSchedule.media.coverImage?.extraLarge ?: ""
-                        }
-                    }
-                }
-            }
+            val guild = kord.getGuild(guildId, EntitySupplyStrategy.cache) ?: return@forEach
+            notify(guild, poller)
         }
     }
 
-    fun removeAnimeFromPolling(guildId: Snowflake, mediaId: Long) {
+    fun removeAnimeSchedule(guildId: Snowflake, mediaId: Long) {
         val poller = pollers[guildId] ?: return
 
         if (poller.mediaIds.isEmpty()) {
@@ -103,28 +84,21 @@ object AniListExtension : Extension() {
         poller.removeMediaId(mediaId)
     }
 
-    fun beginPoll(guild: GuildBehavior) {
-        val db by inject<Database>()
+    fun scheduleNotify(guild: GuildBehavior) {
         val mediaIds = db.airingAnimes
             .filter { it.discordGuildId eq guild.idLong }
             .map { it.mediaId }
-
         if (mediaIds.isNotEmpty()) {
-            val poller = pollers[guild.id]
-
-            if (poller != null) {
-                poller.updateMediaIds(mediaIds)
-                return
-            }
-
             pollers.computeIfAbsent(guild.id) { AiringSchedulePoller(mediaIds) }
-        } else {
-            log.warn {
-                message = "No media id given, will not poll"
-                context = mapOf(
-                    "guildId" to guild.id
-                )
-            }
+                .updateMediaIds(mediaIds)
+            return
+        }
+
+        log.warn {
+            message = "No media id given, will not poll"
+            context = mapOf(
+                "guildId" to guild.id
+            )
         }
     }
 
@@ -161,5 +135,12 @@ object AniListExtension : Extension() {
         ranking()
         staff()
         user()
+    }
+
+    private suspend fun setupMessageCommands() {
+        characterMessageCommand()
+        findMessageCommand()
+        staffMessageCommand()
+        userMessageCommand()
     }
 }
