@@ -82,7 +82,7 @@ class AniRadioExtension : Extension() {
                         if (deltaMillis >= heartBeatMillis) {
                             lastHeartBeat = System.currentTimeMillis()
 
-                            log.info {
+                            log.debug {
                                 message = "Sending heartbeat"
                                 context = mapOf(
                                     "frame" to heartbeat
@@ -98,18 +98,19 @@ class AniRadioExtension : Extension() {
 
                     val frame = receiveDeserialized<ListenFrame>()
 
-                    log.info {
+                    log.debug {
                         message = "Received op code"
                         context = mapOf(
-                            "op" to frame.op
+                            "op" to frame.op,
                         )
                     }
 
-                    if (frame.op == ListenOp.HEARTBEAT) {
+                    if (frame.op == ListenOp.WELCOME) {
                         log.info {
                             message = "Received welcome message"
                             context = mapOf(
-                                "message" to frame.data?.message
+                                "message" to frame.data?.message,
+                                "heartbeat" to frame.data?.heartbeat
                             )
                         }
 
@@ -121,7 +122,7 @@ class AniRadioExtension : Extension() {
                     }
 
                     if (frame.op == ListenOp.PLAYBACK) {
-                        log.info {
+                        log.debug {
                             message = "Playback changed"
                             context = mapOf(
                                 "music" to frame.data?.song?.title

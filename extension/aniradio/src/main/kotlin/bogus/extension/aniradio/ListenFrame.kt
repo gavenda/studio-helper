@@ -9,9 +9,11 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-enum class ListenOp {
-    HEARTBEAT,
-    PLAYBACK
+enum class ListenOp(val value: Int) {
+    WELCOME(0),
+    PLAYBACK(1),
+    HEARTBEAT(9),
+    HEARTBEAT_ACK(10)
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -22,14 +24,16 @@ object ListenOpSerializer : KSerializer<ListenOp> {
 
     override fun deserialize(decoder: Decoder): ListenOp {
         return when(decoder.decodeInt()) {
-            0 -> ListenOp.HEARTBEAT
+            0 -> ListenOp.WELCOME
             1 -> ListenOp.PLAYBACK
+            9 -> ListenOp.HEARTBEAT
+            10 -> ListenOp.HEARTBEAT_ACK
             else -> error("Unknown op code")
         }
     }
 
-    override fun serialize(encoder: Encoder, value: ListenOp) {
-        encoder.encodeInt(value.ordinal)
+    override fun serialize(encoder: Encoder, listenOp: ListenOp) {
+        encoder.encodeInt(listenOp.value)
     }
 }
 
