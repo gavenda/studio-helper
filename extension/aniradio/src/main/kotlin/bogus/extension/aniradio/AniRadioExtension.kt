@@ -76,60 +76,66 @@ class AniRadioExtension : Extension() {
 
             client.wss(ANIME_RADIO_GATEWAY) {
                 while (isActive) {
-                    if (incoming.isEmpty) {
-                        val deltaMillis = System.currentTimeMillis() - lastHeartBeat
+                    try {
+                        if (incoming.isEmpty) {
+                            val deltaMillis = System.currentTimeMillis() - lastHeartBeat
 
-                        if (deltaMillis >= heartBeatMillis) {
-                            lastHeartBeat = System.currentTimeMillis()
+                            if (deltaMillis >= heartBeatMillis) {
+                                lastHeartBeat = System.currentTimeMillis()
 
-                            log.debug {
-                                message = "Sending heartbeat"
+                                log.debug {
+                                    message = "Sending heartbeat"
+                                    context = mapOf(
+                                        "frame" to heartbeat
+                                    )
+                                }
+
+                                sendSerialized(heartbeat)
+                            }
+
+                            delay(1000)
+                            continue
+                        }
+
+                        val frame = receiveDeserialized<ListenFrame>()
+
+                        log.debug {
+                            message = "Received op code"
+                            context = mapOf(
+                                "op" to frame.op,
+                            )
+                        }
+
+                        if (frame.op == ListenOp.WELCOME) {
+                            log.info {
+                                message = "Received welcome message"
                                 context = mapOf(
-                                    "frame" to heartbeat
+                                    "message" to frame.data?.message,
+                                    "heartbeat" to frame.data?.heartbeat
                                 )
                             }
 
-                            sendSerialized(heartbeat)
+                            frame.data?.heartbeat?.let {
+                                heartBeatMillis = it
+                            }
+
+                            lastHeartBeat = System.currentTimeMillis()
                         }
 
-                        delay(1000)
-                        continue
-                    }
-
-                    val frame = receiveDeserialized<ListenFrame>()
-
-                    log.debug {
-                        message = "Received op code"
-                        context = mapOf(
-                            "op" to frame.op,
-                        )
-                    }
-
-                    if (frame.op == ListenOp.WELCOME) {
-                        log.info {
-                            message = "Received welcome message"
-                            context = mapOf(
-                                "message" to frame.data?.message,
-                                "heartbeat" to frame.data?.heartbeat
-                            )
+                        if (frame.op == ListenOp.PLAYBACK) {
+                            log.debug {
+                                message = "Playback changed"
+                                context = mapOf(
+                                    "music" to frame.data?.song?.title
+                                )
+                            }
+                            frame.data?.song?.let {
+                                song = it
+                            }
                         }
-
-                        frame.data?.heartbeat?.let {
-                            heartBeatMillis = it
-                        }
-
-                        lastHeartBeat = System.currentTimeMillis()
-                    }
-
-                    if (frame.op == ListenOp.PLAYBACK) {
-                        log.debug {
-                            message = "Playback changed"
-                            context = mapOf(
-                                "music" to frame.data?.song?.title
-                            )
-                        }
-                        frame.data?.song?.let {
-                            song = it
+                    } catch (ex: Exception) {
+                        log.error(ex) {
+                            message = "An error occured during WebSocket handling, retrying..."
                         }
                     }
                 }
