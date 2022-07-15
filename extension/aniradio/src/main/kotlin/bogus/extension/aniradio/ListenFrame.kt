@@ -79,7 +79,7 @@ data class ListenSong(
     companion object {
         val EMPTY = ListenSong(
             id = 0,
-            title = "",
+            title = "Song empty or unloaded",
             artists = emptyList(),
             albums = emptyList(),
             duration = 0

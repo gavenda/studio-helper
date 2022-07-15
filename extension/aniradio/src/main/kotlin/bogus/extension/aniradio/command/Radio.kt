@@ -1,8 +1,12 @@
 package bogus.extension.aniradio.command
 
 import bogus.extension.aniradio.AniRadioExtension
+import bogus.extension.aniradio.RadioType
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.memberFor
+import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.defaultingEnumChoice
+import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.optionalEnumChoice
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.hasPermissions
@@ -12,7 +16,7 @@ import dev.kord.core.behavior.channel.connect
 
 @OptIn(KordVoice::class)
 suspend fun AniRadioExtension.radio() {
-    ephemeralSlashCommand {
+    ephemeralSlashCommand(::RadioArgs) {
         name = "command.radio"
         description = "command.radio.description"
         check {
@@ -22,6 +26,7 @@ suspend fun AniRadioExtension.radio() {
             val guild = guild ?: return@action
             val selfMember = guild.getMemberOrNull(event.kord.selfId)
             val member = memberFor(event)
+            val radio = radioByGuild(guild.id)
 
             if (selfMember == null) {
                 respond {
@@ -64,9 +69,10 @@ suspend fun AniRadioExtension.radio() {
                     return@action
                 }
 
+
                 // Connect
-                voiceConnection = theirVoiceChannel.connect {
-                    audioProvider { audioProvider() }
+                radio.voiceConnection = theirVoiceChannel.connect {
+                    audioProvider { radio.audioProvider() }
                 }
             }
 
@@ -74,7 +80,16 @@ suspend fun AniRadioExtension.radio() {
                 content = translate("response.radio")
             }
 
-            playAudio()
+            radio.playAudio(arguments.type)
         }
+    }
+}
+
+private class RadioArgs : Arguments() {
+    val type by defaultingEnumChoice<RadioType> {
+        name = "command.radio.args.type"
+        description = "command.radio.args.type.description"
+        defaultValue = RadioType.JPOP
+        typeName = "RadioType"
     }
 }

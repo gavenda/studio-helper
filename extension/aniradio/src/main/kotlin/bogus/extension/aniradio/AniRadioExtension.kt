@@ -6,26 +6,18 @@ import bogus.extension.aniradio.command.radio
 import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import dev.kord.common.annotation.KordVoice
+import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Intent
-import dev.kord.voice.AudioFrame
-import dev.kord.voice.VoiceConnection
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
-import io.ktor.util.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import java.nio.ByteBuffer
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 @OptIn(KordVoice::class)
@@ -42,17 +34,14 @@ class AniRadioExtension : Extension() {
     }
     val webSocketPool = Executors.newSingleThreadExecutor()
     val webSocketScope = CoroutineScope(webSocketPool.asCoroutineDispatcher())
-    val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
-    val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
-    val player: AudioPlayer = playerManager.createPlayer()
     val log = KotlinLogging.logger { }.asFMTLogger()
-    var voiceConnection: VoiceConnection? = null
     val client = HttpClient(CIO) {
         install(WebSockets) {
             contentConverter = AniRadioFrameConverter()
         }
     }
-    var song = ListenSong.EMPTY
+    val radios = ConcurrentHashMap<Snowflake, RadioPlayer>()
+    val songs = ConcurrentHashMap<RadioType, ListenSong>()
 
     override suspend fun setup() {
         // We need guild voice states
@@ -65,106 +54,97 @@ class AniRadioExtension : Extension() {
         setupWebSocket()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun setupWebSocket() {
         log.info { message = "Setting up websockets" }
 
         webSocketScope.launch {
-            var heartBeatMillis = 0L
-            var lastHeartBeat = 0L
-            val heartbeat = ListenFrame(op = ListenOp.HEARTBEAT)
+            client.wss(JPOP_RADIO_GATEWAY) {
+                receivePlayback { songs[RadioType.JPOP] = it }
+            }
+        }
 
-            client.wss(ANIME_RADIO_GATEWAY) {
-                while (isActive) {
-                    try {
-                        if (incoming.isEmpty) {
-                            val deltaMillis = System.currentTimeMillis() - lastHeartBeat
+        webSocketScope.launch {
+            client.wss(KPOP_RADIO_GATEWAY) {
+                receivePlayback { songs[RadioType.KPOP] = it }
+            }
+        }
+    }
 
-                            if (deltaMillis >= heartBeatMillis) {
-                                lastHeartBeat = System.currentTimeMillis()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun DefaultClientWebSocketSession.receivePlayback(playback: (ListenSong) -> Unit) {
+        var heartBeatMillis = 0L
+        var lastHeartBeat = 0L
+        val heartbeat = ListenFrame(op = ListenOp.HEARTBEAT)
 
-                                log.debug {
-                                    message = "Sending heartbeat"
-                                    context = mapOf(
-                                        "frame" to heartbeat
-                                    )
-                                }
+        while (isActive) {
+            try {
+                if (incoming.isEmpty) {
+                    val deltaMillis = System.currentTimeMillis() - lastHeartBeat
 
-                                sendSerialized(heartbeat)
-                            }
-
-                            delay(1000)
-                            continue
-                        }
-
-                        val frame = receiveDeserialized<ListenFrame>()
+                    if (deltaMillis >= heartBeatMillis) {
+                        lastHeartBeat = System.currentTimeMillis()
 
                         log.debug {
-                            message = "Received op code"
+                            message = "Sending heartbeat"
                             context = mapOf(
-                                "op" to frame.op,
+                                "frame" to heartbeat
                             )
                         }
 
-                        if (frame.op == ListenOp.WELCOME) {
-                            log.info {
-                                message = "Received welcome message"
-                                context = mapOf(
-                                    "message" to frame.data?.message,
-                                    "heartbeat" to frame.data?.heartbeat
-                                )
-                            }
-
-                            frame.data?.heartbeat?.let {
-                                heartBeatMillis = it
-                            }
-
-                            lastHeartBeat = System.currentTimeMillis()
-                        }
-
-                        if (frame.op == ListenOp.PLAYBACK) {
-                            log.debug {
-                                message = "Playback changed"
-                                context = mapOf(
-                                    "music" to frame.data?.song?.title
-                                )
-                            }
-                            frame.data?.song?.let {
-                                song = it
-                            }
-                        }
-                    } catch (ex: Exception) {
-                        log.error(ex) {
-                            message = "An error occured during WebSocket handling, retrying..."
-                        }
+                        sendSerialized(heartbeat)
                     }
+
+                    delay(1000)
+                    continue
+                }
+
+                val frame = receiveDeserialized<ListenFrame>()
+
+                log.debug {
+                    message = "Received op code"
+                    context = mapOf(
+                        "op" to frame.op,
+                    )
+                }
+
+                if (frame.op == ListenOp.WELCOME) {
+                    log.info {
+                        message = "Received welcome message"
+                        context = mapOf(
+                            "message" to frame.data?.message,
+                            "heartbeat" to frame.data?.heartbeat
+                        )
+                    }
+
+                    frame.data?.heartbeat?.let {
+                        heartBeatMillis = it
+                    }
+
+                    lastHeartBeat = System.currentTimeMillis()
+                }
+
+                if (frame.op == ListenOp.PLAYBACK) {
+                    log.debug {
+                        message = "Playback changed"
+                        context = mapOf(
+                            "music" to frame.data?.song?.title
+                        )
+                    }
+                    frame.data?.song?.let {
+                        playback(it)
+                    }
+                }
+            } catch (ex: Exception) {
+                log.error(ex) {
+                    message = "An error occured during WebSocket handling, retrying..."
                 }
             }
         }
     }
 
-    fun playAudio() {
-        playerManager.loadItem(ANIME_RADIO_URI, object : AudioLoadResultHandler {
-            override fun trackLoaded(track: AudioTrack) = player.playTrack(track)
-            override fun playlistLoaded(playlist: AudioPlaylist) {}
-            override fun noMatches() {}
-            override fun loadFailed(exception: FriendlyException) {
-                log.error {
-                    message = "Audio file failed to load"
-                    context = mapOf(
-                        "reason" to exception.message
-                    )
-                }
-            }
-        })
-    }
-
-    val audioProvider: () -> AudioFrame? = {
-        val canProvide = player.provide(frame)
-        if (canProvide) {
-            AudioFrame.fromData(buffer.flip().moveToByteArray())
-        } else {
-            AudioFrame.fromData(null)
+    fun radioByGuild(snowflake: Snowflake): RadioPlayer {
+        return radios.computeIfAbsent(snowflake) {
+            RadioPlayer(playerManager)
         }
     }
 }

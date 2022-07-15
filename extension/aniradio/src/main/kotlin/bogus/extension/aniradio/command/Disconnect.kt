@@ -15,9 +15,12 @@ suspend fun AniRadioExtension.disconnect() {
             anyGuild()
         }
         action {
-            voiceConnection?.apply {
+            val guild = guild ?: return@action
+            val radio = radioByGuild(guild.id)
+
+            radio.voiceConnection?.apply {
                 leave()
-                voiceConnection = null
+                radio.voiceConnection = null
                 respond {
                     content = translate("response.disconnect")
                 }
