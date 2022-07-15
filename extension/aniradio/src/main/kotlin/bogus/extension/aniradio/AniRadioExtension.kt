@@ -82,7 +82,7 @@ class AniRadioExtension : Extension() {
                         if (deltaMillis >= heartBeatMillis) {
                             lastHeartBeat = System.currentTimeMillis()
 
-                            log.debug {
+                            log.info {
                                 message = "Sending heartbeat"
                                 context = mapOf(
                                     "frame" to heartbeat
