@@ -1,12 +1,11 @@
-package bogus.extension.aniradio.command
+package bogus.extension.listenmoe.command
 
-import bogus.extension.aniradio.AniRadioExtension
-import bogus.extension.aniradio.AniRadioExtension.Companion.EMBED_COLOR
-import bogus.extension.aniradio.ListenSong
-import bogus.extension.aniradio.RadioType
+import bogus.extension.listenmoe.AniRadioExtension
+import bogus.extension.listenmoe.AniRadioExtension.Companion.EMBED_COLOR
+import bogus.extension.listenmoe.ListenSong
+import bogus.extension.listenmoe.RadioType
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
-import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.defaultingEnumChoice
 import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.optionalEnumChoice
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond

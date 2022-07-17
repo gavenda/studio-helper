@@ -14,11 +14,11 @@ All the bots above are just extensions woven together, here are the extensions t
 - [about](extension/about) - Simple about application command that displays running OS and version
 - [administration](extension/anilist) - Utility for server administration
 - [anilist](extension/anilist) - AniList integration, lookup anime/manga media easily
-- [aniradio](extension/aniradio) - Simply plays a stream from [listen.moe](https://listen.moe)
 - [announcer](extension/announcer) - Announces a bundled music file whenever someone joins the bot's voice channel
 - [automove](extension/automove) - Auto moves a user whenever they self mute or deafened and vice-versa
 - [counter](extension/counter) - Counter for literally anything, no database, everything is stored in a json file
 - [information](extension/information) - Shows information for emoji, user, etc.
+- [listenmoe](extension/listenmoe) - Simply plays a stream from [listen.moe](https://listen.moe)
 - [moderation](extension/moderation) - Utilities for server moderation
 - [music](extension/music) - Fully featured music extension, uses lava link to play music
 - [utility](extension/utility) - Simple utilities for server members

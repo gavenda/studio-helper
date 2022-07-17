@@ -1,6 +1,6 @@
-package bogus.extension.aniradio.command
+package bogus.extension.listenmoe.command
 
-import bogus.extension.aniradio.AniRadioExtension
+import bogus.extension.listenmoe.AniRadioExtension
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond

@@ -1,4 +1,4 @@
-package bogus.extension.aniradio
+package bogus.extension.listenmoe
 
 import io.ktor.serialization.*
 import io.ktor.util.reflect.*

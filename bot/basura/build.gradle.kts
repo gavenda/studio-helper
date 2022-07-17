@@ -14,7 +14,7 @@ dependencies {
     implementation(projects.common)
     implementation(projects.library.database)
     implementation(projects.extension.about)
-    implementation(projects.extension.aniradio)
+    implementation(projects.extension.listenmoe)
     implementation(projects.extension.anilist)
 }
 

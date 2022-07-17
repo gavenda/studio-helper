@@ -1,6 +1,6 @@
 @file:UseSerializers(ListenOpSerializer::class)
 
-package bogus.extension.aniradio
+package bogus.extension.listenmoe
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

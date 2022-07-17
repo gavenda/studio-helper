@@ -1,8 +1,8 @@
-package bogus.extension.aniradio
+package bogus.extension.listenmoe
 
-import bogus.extension.aniradio.command.disconnect
-import bogus.extension.aniradio.command.playing
-import bogus.extension.aniradio.command.radio
+import bogus.extension.listenmoe.command.disconnect
+import bogus.extension.listenmoe.command.playing
+import bogus.extension.listenmoe.command.radio
 import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry

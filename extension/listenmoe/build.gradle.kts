@@ -19,6 +19,6 @@ dependencies {
 
 tasks {
     withType<org.gradle.jvm.tasks.Jar> {
-        archiveBaseName.set("bogus-extension-aniradio")
+        archiveBaseName.set("bogus-extension-listenmoe")
     }
 }

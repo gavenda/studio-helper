@@ -1,4 +1,4 @@
-package bogus.extension.aniradio
+package bogus.extension.listenmoe
 
 import bogus.util.asFMTLogger
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler

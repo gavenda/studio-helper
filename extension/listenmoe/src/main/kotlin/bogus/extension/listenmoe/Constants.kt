@@ -1,4 +1,4 @@
-package bogus.extension.aniradio
+package bogus.extension.listenmoe
 
 import com.kotlindiscord.kord.extensions.commands.application.slash.converters.ChoiceEnum
 
