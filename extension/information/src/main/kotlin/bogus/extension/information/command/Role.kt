@@ -1,5 +1,6 @@
 package bogus.extension.information.command
 
+import bogus.extension.information.DATE_FORMATTER
 import bogus.extension.information.InformationExtension
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -10,6 +11,7 @@ import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.Color
 import dev.kord.rest.Image
 import dev.kord.rest.builder.message.create.embed
+import kotlinx.datetime.toJavaInstant
 
 
 suspend fun EphemeralSlashCommand<*>.role() {
@@ -28,6 +30,16 @@ suspend fun EphemeralSlashCommand<*>.role() {
                         icon = guild.getIconUrl(Image.Format.WEBP)
                     }
                     color = Color(InformationExtension.EMBED_COLOR)
+
+                    field {
+                        name = translate("response.info.field.name")
+                        value = arguments.role.data.name
+                    }
+
+                    field {
+                        name = "Date Created"
+                        value = DATE_FORMATTER.format(channel.id.timestamp.toJavaInstant())
+                    }
                 }
             }
         }
