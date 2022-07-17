@@ -25,6 +25,7 @@ suspend fun AniListExtension.link() {
     ephemeralSlashCommand(::LinkArgs) {
         name = "command.link"
         description = "command.link.description"
+        allowInDms = false
         check {
             anyGuild(translate("link.error.server-only"))
         }
@@ -69,6 +70,7 @@ suspend fun AniListExtension.link() {
     ephemeralSlashCommand {
         name = "command.unlink"
         description = "command.unlink.description"
+        allowInDms = false
         check {
             anyGuild(translate("unlink.error.server-only"))
         }

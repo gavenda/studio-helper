@@ -38,7 +38,7 @@ suspend fun AniListExtension.notification() {
     ephemeralSlashCommand {
         name = "command.notification"
         description = "command.notification.description"
-
+        allowInDms = false
         group("command.notification.airing-anime") {
             description = "command.notification.airing-anime.description"
             ephemeralSubCommand(::AiringAnimeArgs) {
