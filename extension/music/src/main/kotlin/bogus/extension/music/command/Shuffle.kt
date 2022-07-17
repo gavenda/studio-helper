@@ -10,6 +10,8 @@ suspend fun MusicExtension.shuffle() {
     ephemeralSlashCommand {
         name = "command.shuffle"
         description = "command.shuffle.description"
+        allowInDms = false
+
         check {
             anyGuild()
         }

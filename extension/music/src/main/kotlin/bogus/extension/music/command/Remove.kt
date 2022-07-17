@@ -18,6 +18,8 @@ suspend fun MusicExtension.remove() {
     ephemeralSlashCommand(::RemoveArgs) {
         name = "command.remove"
         description = "command.remove.description"
+        allowInDms = false
+
         check {
             anyGuild()
         }

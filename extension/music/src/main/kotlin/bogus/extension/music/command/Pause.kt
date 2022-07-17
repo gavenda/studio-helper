@@ -10,6 +10,8 @@ suspend fun MusicExtension.pause() {
     ephemeralSlashCommand {
         name = "command.pause"
         description = "command.pause.description"
+        allowInDms = false
+
         check {
             anyGuild()
         }

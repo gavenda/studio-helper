@@ -10,6 +10,7 @@ suspend fun MusicExtension.disconnect() {
     ephemeralSlashCommand {
         name = "command.disconnect"
         description = "command.disconnect.description"
+        allowInDms = false
         check {
             anyGuild()
         }

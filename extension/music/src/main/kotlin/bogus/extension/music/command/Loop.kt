@@ -13,6 +13,7 @@ suspend fun MusicExtension.loop() {
     ephemeralSlashCommand {
         name = "command.loop"
         description = "command.loop.description"
+        allowInDms = false
 
         single()
         all()

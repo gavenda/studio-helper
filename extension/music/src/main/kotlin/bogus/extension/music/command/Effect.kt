@@ -16,6 +16,7 @@ suspend fun MusicExtension.effect() {
     ephemeralSlashCommand {
         name = "command.effect"
         description = "command.effect.description"
+        allowInDms = false
 
         group("command.effect.filter") {
             description = "command.effect.filter.description"

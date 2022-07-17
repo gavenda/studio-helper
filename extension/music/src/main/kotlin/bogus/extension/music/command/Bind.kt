@@ -24,6 +24,7 @@ suspend fun MusicExtension.unbind() {
     ephemeralSlashCommand {
         name = "command.unbind"
         description = "command.unbind.description"
+        allowInDms = false
         check {
             anyGuild()
             hasPermission(Permission.Administrator)
@@ -71,6 +72,7 @@ suspend fun MusicExtension.bind() {
     ephemeralSlashCommand {
         name = "command.bind"
         description = "command.bind.description"
+        allowInDms = false
         check {
             anyGuild()
             hasPermission(Permission.Administrator)

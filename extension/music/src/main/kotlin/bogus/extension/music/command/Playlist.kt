@@ -2,13 +2,10 @@ package bogus.extension.music.command
 
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.constants.ITEMS_PER_CHUNK
-import bogus.extension.music.IdentifierParser
-import bogus.extension.music.Jukebox
-import bogus.extension.music.MusicExtension
+import bogus.extension.music.*
 import bogus.extension.music.MusicExtension.log
 import bogus.extension.music.checks.inVoiceChannel
 import bogus.extension.music.db.*
-import bogus.extension.music.player
 import bogus.extension.music.player.MusicTrack
 import bogus.extension.music.player.TrackLoadType
 import bogus.paginator.editingStandardPaginator
@@ -26,6 +23,7 @@ import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
+import dev.kord.core.entity.interaction.AutoCompleteInteraction
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +39,7 @@ suspend fun MusicExtension.playlist() {
     ephemeralSlashCommand {
         name = "command.playlist"
         description = "command.playlist.description"
+        allowInDms = false
 
         list()
         show()
@@ -258,23 +257,34 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                         when (item.loadType) {
                             TrackLoadType.TRACK_LOADED -> {
                                 addTrack(item.track)
+                                respond {
+                                    content = translate(
+                                        key = "playlist.add.response.single",
+                                        replacements = arrayOf(item.track.title, dbPlaylist.name)
+                                    )
+                                }
                             }
                             TrackLoadType.PLAYLIST_LOADED -> {
                                 item.tracks.forEach { addTrack(it) }
+                                respond {
+                                    content = translate(
+                                        key = "playlist.add.response",
+                                        replacements = arrayOf(item.tracks, dbPlaylist.name)
+                                    )
+                                }
                             }
                             TrackLoadType.SEARCH_RESULT -> {
-                                addTrack(item.tracks.first())
+                                respondChoices(item.tracks) { track ->
+                                    addTrack(track)
+                                    translate(
+                                        key = "playlist.add.response.single",
+                                        replacements = arrayOf(track.title, dbPlaylist.name)
+                                    )
+                                }
                             }
                             else -> {}
                         }
                     }
-                }
-
-                respond {
-                    content = translate(
-                        key = "playlist.add.response",
-                        replacements = arrayOf(identifiers.size, dbPlaylist.name)
-                    )
                 }
             } else {
                 respond {
@@ -374,6 +384,29 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
     }
 }
 
+private suspend fun AutoCompleteInteraction.suggestPlaylist(db: Database) {
+    suggestString {
+        val input = focusedOption.value
+        if (input.isNotBlank()) {
+            db.playlists.filter {
+                (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
+            }
+                .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                .forEach {
+                    choice(it.name, it.name)
+                }
+        } else {
+            db.playlists.filter {
+                (it.discordUserId eq user.idLong)
+            }
+                .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                .forEach {
+                    choice(it.name, it.name)
+                }
+        }
+    }
+}
+
 private class PlaylistNameArgs : KordExKoinComponent, Arguments() {
     val db by inject<Database>()
     val name by coalescingString {
@@ -381,18 +414,7 @@ private class PlaylistNameArgs : KordExKoinComponent, Arguments() {
         description = "command.playlist.args.name.description"
 
         autoComplete {
-            suggestString {
-                val input = focusedOption.value
-                if (input.isBlank()) return@suggestString
-
-                db.playlists.filter {
-                    (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
-                }
-                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
-                    .forEach {
-                        choice(it.name, it.name)
-                    }
-            }
+            suggestPlaylist(db)
         }
     }
 }
@@ -404,18 +426,7 @@ private class PlaylistRemoveArgs : KordExKoinComponent, Arguments() {
         description = "command.playlist.args.name.description"
 
         autoComplete {
-            suggestString {
-                val input = focusedOption.value
-                if (input.isBlank()) return@suggestString
-
-                db.playlists.filter {
-                    (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
-                }
-                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
-                    .forEach {
-                        choice(it.name, it.name)
-                    }
-            }
+            suggestPlaylist(db)
         }
     }
     val musicId by int {
@@ -431,18 +442,7 @@ private class PlaylistAddArgs : KordExKoinComponent, Arguments() {
         description = "command.playlist.args.name.description"
 
         autoComplete {
-            suggestString {
-                val input = focusedOption.value
-                if (input.isBlank()) return@suggestString
-
-                db.playlists.filter {
-                    (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
-                }
-                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
-                    .forEach {
-                        choice(it.name, it.name)
-                    }
-            }
+            suggestPlaylist(db)
         }
     }
     val music by string {

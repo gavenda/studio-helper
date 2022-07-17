@@ -10,6 +10,8 @@ suspend fun MusicExtension.skip() {
     ephemeralSlashCommand {
         name = "command.skip"
         description = "command.skip.description"
+        allowInDms = false
+
         check {
             anyGuild()
         }

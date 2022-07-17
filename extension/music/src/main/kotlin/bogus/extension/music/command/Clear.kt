@@ -14,6 +14,7 @@ import com.kotlindiscord.kord.extensions.types.respond
 suspend fun MusicExtension.clear() {
     ephemeralSlashCommand {
         name = "command.clear"
+        allowInDms = false
         description = "command.clear.description"
 
         group("command.clear.effect") {

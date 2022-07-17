@@ -18,6 +18,7 @@ suspend fun MusicExtension.play() {
     ephemeralSlashCommand {
         name = "command.play"
         description = "command.play.description"
+        allowInDms = false
 
         later()
         next()

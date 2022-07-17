@@ -13,6 +13,8 @@ suspend fun MusicExtension.volume() {
     ephemeralSlashCommand(::VolumeArgs) {
         name = "command.volume"
         description = "command.volume.description"
+        allowInDms = false
+
         check {
             anyGuild()
         }
