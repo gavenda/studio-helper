@@ -77,7 +77,10 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
                 author {
                     name = translate("response.count.increase.author.name")
                 }
-                description = translate("response.count.increase.description", arrayOf(dbGuildCount.countName, dbGuildCount.countAmount))
+                description = translate(
+                    "response.count.increase.description",
+                    arrayOf(dbGuildCount.countName, dbGuildCount.countAmount)
+                )
                 footer {
                     text = translate("response.count.increase.footer.text")
                 }
@@ -133,7 +136,10 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
                         val lastUserId = counter.lastUserId.toString()
                         field {
                             name = counter.countName
-                            value = translate("response.count.list.field", arrayOf(counter.countAmount, dateFormatted, lastUserId))
+                            value = translate(
+                                "response.count.list.field",
+                                arrayOf(counter.countAmount, dateFormatted, lastUserId)
+                            )
                         }
                     }
                     footer {
@@ -159,13 +165,23 @@ private class CounterArgs : KordExKoinComponent, Arguments() {
                 val guildIdSnowflake = data.guildId.value ?: return@suggestString
                 val guildIdLong = guildIdSnowflake.value.toLong()
 
-                db.counts.filter {
-                    (it.discordGuildId eq guildIdLong) and (it.countName ilike "${focusedOption.value}%")
-                }
-                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
-                    .forEach {
-                        choice(it.countName, it.countName)
+                if (focusedOption.value.isNotBlank()) {
+                    db.counts.filter {
+                        (it.discordGuildId eq guildIdLong) and (it.countName ilike "${focusedOption.value}%")
                     }
+                        .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                        .forEach {
+                            choice(it.countName, it.countName)
+                        }
+                } else {
+                    db.counts.filter {
+                        (it.discordGuildId eq guildIdLong)
+                    }
+                        .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                        .forEach {
+                            choice(it.countName, it.countName)
+                        }
+                }
             }
         }
     }
