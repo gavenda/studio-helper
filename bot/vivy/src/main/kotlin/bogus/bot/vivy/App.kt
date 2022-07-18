@@ -24,6 +24,9 @@ suspend fun vivy(
     val log = KotlinLogging.logger { }.asFMTLogger()
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
 
+    AboutExtension.EMBED_COLOR = 0x00FFFF
+    MusicExtension.EMBED_COLOR = 0x00FFFF
+
     return ExtensibleBot(token) {
         extensions {
             add { MusicExtension }

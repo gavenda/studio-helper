@@ -2,6 +2,7 @@ package bogus.extension.music.player
 
 import bogus.constants.ITEMS_PER_CHUNK
 import bogus.extension.music.*
+import bogus.extension.music.MusicExtension.EMBED_COLOR
 import bogus.extension.music.db.guilds
 import bogus.extension.music.paginator.MessageQueuePaginator
 import bogus.extension.music.paginator.MutablePages
@@ -424,7 +425,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
                 key = "jukebox.queue-list",
                 bundleName = TRANSLATION_BUNDLE
             )
-            color = Color(0x00FFFF)
+            color = Color(EMBED_COLOR)
             description = embedDescription()
             image = playingTrack?.artworkUri
 

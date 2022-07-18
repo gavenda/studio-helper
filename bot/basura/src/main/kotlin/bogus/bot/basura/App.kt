@@ -25,6 +25,7 @@ suspend fun basura(
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
     val log = KotlinLogging.logger { }.asFMTLogger()
     return ExtensibleBot(token) {
+        AboutExtension.EMBED_COLOR = 0xFF0000
         AniListExtension.EMBED_COLOR = 0xFF0000
         AniRadioExtension.EMBED_COLOR = 0xFF0000
 

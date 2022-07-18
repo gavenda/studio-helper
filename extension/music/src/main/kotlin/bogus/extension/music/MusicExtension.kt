@@ -32,6 +32,8 @@ object MusicExtension : Extension() {
     override val bundle: String = TRANSLATION_BUNDLE
     internal val log = KotlinLogging.logger { }.asFMTLogger()
 
+    var EMBED_COLOR = 0
+
     override suspend fun setup() {
         intents += Intent.GuildVoiceStates
 
