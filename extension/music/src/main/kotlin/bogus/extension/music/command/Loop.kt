@@ -40,11 +40,11 @@ private suspend fun EphemeralSlashCommand<*>.single() {
 
             if (player.looped) {
                 respond {
-                    content = translate("loop.response.single.start")
+                    content = translate("response.loop.single.start")
                 }
             } else {
                 respond {
-                    content = translate("loop.response.single.stop")
+                    content = translate("response.loop.single.stop")
                 }
             }
         }
@@ -69,11 +69,11 @@ private suspend fun EphemeralSlashCommand<*>.all() {
             }
             if (player.loopedAll) {
                 respond {
-                    content = translate("loop.response.all.start")
+                    content = translate("response.loop.all.start")
                 }
             } else {
                 respond {
-                    content = translate("loop.response.all.stop")
+                    content = translate("response.loop.all.stop")
                 }
             }
         }

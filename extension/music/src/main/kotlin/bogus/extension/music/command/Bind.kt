@@ -50,16 +50,16 @@ suspend fun MusicExtension.unbind() {
 
                 if (textChannel != null) {
                     respond {
-                        content = translate("unbind.response.success", arrayOf(channel.mention))
+                        content = translate("response.unbind", arrayOf(channel.mention))
                     }
                 } else {
                     respond {
-                        content = translate("unbind.response.semi")
+                        content = translate("response.unbind.semi")
                     }
                 }
             } else {
                 respond {
-                    content = translate("unbind.response.fail")
+                    content = translate("response.unbind.error")
                 }
             }
         }
@@ -96,7 +96,7 @@ suspend fun MusicExtension.bind() {
             }
 
             respond {
-                content = translate("bind.response", arrayOf(channel.mention))
+                content = translate("response.bind", arrayOf(channel.mention))
             }
         }
     }

@@ -40,7 +40,7 @@ suspend fun MusicExtension.remove() {
                 }
             } else {
                 respond {
-                    content = translate("remove.response.missing-from")
+                    content = translate("response.remove.missing-from")
                 }
             }
         }
@@ -49,9 +49,9 @@ suspend fun MusicExtension.remove() {
 
 private suspend fun EphemeralSlashCommandContext<*>.removedMessage(skipped: List<MusicTrack>): String =
     when (skipped.size) {
-        0 -> translate("remove.response.nothing")
-        1 -> translate("remove.response.single", arrayOf(skipped.first().title))
-        else -> translate("remove.response.multiple", arrayOf(skipped.size))
+        0 -> translate("response.remove.nothing")
+        1 -> translate("response.remove.single", arrayOf(skipped.first().title))
+        else -> translate("response.remove.multiple", arrayOf(skipped.size))
     }
 
 private class RemoveArgs : KordExKoinComponent, Arguments() {

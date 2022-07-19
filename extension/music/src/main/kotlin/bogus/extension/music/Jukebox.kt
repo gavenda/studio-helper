@@ -144,9 +144,9 @@ object Jukebox : KordExKoinComponent {
                 )
             }
 
-            return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
+            return tp.translate("response.jukebox.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
-            return tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE)
+            return tp.translate("response.jukebox.no-cheating", locale, TRANSLATION_BUNDLE)
         }
 
         val identifier = identifiers.first()
@@ -166,7 +166,7 @@ object Jukebox : KordExKoinComponent {
             }
 
             tp.translate(
-                key = "jukebox.response.play-now",
+                key = "response.jukebox.play-now",
                 bundleName = TRANSLATION_BUNDLE,
                 locale,
                 replacements = arrayOf(track.title.escapedBackticks)
@@ -178,7 +178,7 @@ object Jukebox : KordExKoinComponent {
                 respond(trackLoaded(item.track))
             }
             TrackLoadType.PLAYLIST_LOADED -> {
-                respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
+                respond(tp.translate("response.jukebox.no-cheating", locale, TRANSLATION_BUNDLE))
             }
             TrackLoadType.SEARCH_RESULT -> {
                 if (parseResult.spotify) {
@@ -192,7 +192,7 @@ object Jukebox : KordExKoinComponent {
             TrackLoadType.NO_MATCHES -> {
                 respond(
                     tp.translate(
-                        key = "jukebox.response.no-matches",
+                        key = "response.jukebox.no-matches",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
                         replacements = arrayOf(identifier)
@@ -202,7 +202,7 @@ object Jukebox : KordExKoinComponent {
             TrackLoadType.LOAD_FAILED -> {
                 respond(
                     tp.translate(
-                        key = "jukebox.response.error",
+                        key = "response.jukebox.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
                         replacements = arrayOf(item.error ?: "Loading failed")
@@ -241,9 +241,9 @@ object Jukebox : KordExKoinComponent {
                 )
             }
 
-            return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
+            return tp.translate("response.jukebox.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
-            return tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE)
+            return tp.translate("response.jukebox.no-cheating", locale, TRANSLATION_BUNDLE)
         }
 
         val identifier = identifiers.first()
@@ -255,14 +255,14 @@ object Jukebox : KordExKoinComponent {
 
             if (started) {
                 tp.translate(
-                    key = "jukebox.response.play-now",
+                    key = "response.jukebox.play-now",
                     bundleName = TRANSLATION_BUNDLE,
                     locale,
                     replacements = arrayOf(track.title.escapedBackticks)
                 )
             } else {
                 tp.translate(
-                    key = "jukebox.response.play-next",
+                    key = "response.jukebox.play-next",
                     bundleName = TRANSLATION_BUNDLE,
                     locale,
                     replacements = arrayOf(track.title.escapedBackticks)
@@ -275,7 +275,7 @@ object Jukebox : KordExKoinComponent {
                 respond(trackLoaded(item.track))
             }
             TrackLoadType.PLAYLIST_LOADED -> {
-                respond(tp.translate("jukebox.response.no-cheating", locale, TRANSLATION_BUNDLE))
+                respond(tp.translate("response.jukebox.no-cheating", locale, TRANSLATION_BUNDLE))
             }
             TrackLoadType.SEARCH_RESULT -> {
                 if (parseResult.spotify) {
@@ -289,7 +289,7 @@ object Jukebox : KordExKoinComponent {
             TrackLoadType.NO_MATCHES -> {
                 respond(
                     tp.translate(
-                        key = "jukebox.response.no-matches",
+                        key = "response.jukebox.no-matches",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
                         replacements = arrayOf(identifier)
@@ -299,7 +299,7 @@ object Jukebox : KordExKoinComponent {
             TrackLoadType.LOAD_FAILED -> {
                 respond(
                     tp.translate(
-                        key = "jukebox.response.error",
+                        key = "response.jukebox.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
                         replacements = arrayOf(item.error ?: "Loading failed")
@@ -372,7 +372,7 @@ object Jukebox : KordExKoinComponent {
                 )
             }
 
-            return tp.translate("jukebox.response.not-found", locale, TRANSLATION_BUNDLE)
+            return tp.translate("response.jukebox.not-found", locale, TRANSLATION_BUNDLE)
         } else if (identifiers.size > 1) {
             CoroutineScope(Dispatchers.IO).launch {
                 identifiers.forEach { identifier ->
@@ -392,7 +392,7 @@ object Jukebox : KordExKoinComponent {
             guild.player.attemptToPlay()
 
             return tp.translate(
-                key = "jukebox.response.playlist-unknown-later",
+                key = "response.jukebox.playlist-unknown-later",
                 bundleName = TRANSLATION_BUNDLE,
                 locale,
                 replacements = arrayOf(identifiers.size)
@@ -407,14 +407,14 @@ object Jukebox : KordExKoinComponent {
 
             if (started) {
                 tp.translate(
-                    key = "jukebox.response.play-now",
+                    key = "response.jukebox.play-now",
                     bundleName = TRANSLATION_BUNDLE,
                     locale,
                     replacements = arrayOf(track.title.escapedBackticks)
                 )
             } else {
                 tp.translate(
-                    key = "jukebox.response.play-later",
+                    key = "response.jukebox.play-later",
                     bundleName = TRANSLATION_BUNDLE,
                     locale,
                     replacements = arrayOf(track.title.escapedBackticks)
@@ -435,7 +435,7 @@ object Jukebox : KordExKoinComponent {
                 if (started) {
                     respond(
                         tp.translate(
-                            key = "jukebox.response.playlist-now",
+                            key = "response.jukebox.playlist-now",
                             bundleName = TRANSLATION_BUNDLE,
                             locale,
                             replacements = arrayOf(
@@ -447,7 +447,7 @@ object Jukebox : KordExKoinComponent {
                 } else {
                     respond(
                         tp.translate(
-                            key = "jukebox.response.playlist-later",
+                            key = "response.jukebox.playlist-later",
                             bundleName = TRANSLATION_BUNDLE,
                             locale,
                             replacements = arrayOf(
@@ -473,7 +473,7 @@ object Jukebox : KordExKoinComponent {
             TrackLoadType.NO_MATCHES -> {
                 respond(
                     tp.translate(
-                        key = "jukebox.response.no-matches",
+                        key = "response.jukebox.no-matches",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
                         replacements = arrayOf(identifier)
@@ -483,7 +483,7 @@ object Jukebox : KordExKoinComponent {
             TrackLoadType.LOAD_FAILED -> {
                 respond(
                     tp.translate(
-                        key = "jukebox.response.error",
+                        key = "response.jukebox.error",
                         bundleName = TRANSLATION_BUNDLE,
                         locale,
                         replacements = arrayOf(item.error ?: "Loading failed")

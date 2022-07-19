@@ -27,11 +27,11 @@ suspend fun MusicExtension.shuffle() {
                 }
 
                 respond {
-                    content = translate("shuffle.response.success")
+                    content = translate("response.shuffle.success")
                 }
             } else {
                 respond {
-                    content = translate("shuffle.response.failure")
+                    content = translate("response.shuffle.failure")
                 }
             }
         }

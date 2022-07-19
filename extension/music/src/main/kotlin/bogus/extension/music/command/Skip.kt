@@ -27,9 +27,9 @@ suspend fun MusicExtension.skip() {
             }
 
             if (audioTrack != null) {
-                respond { content = translate("skip.response.skipped", arrayOf(audioTrack.title)) }
+                respond { content = translate("response.skip.skipped", arrayOf(audioTrack.title)) }
             } else {
-                respond { content = translate("skip.response.nothing") }
+                respond { content = translate("response.skip.nothing") }
             }
         }
     }

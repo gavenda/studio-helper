@@ -84,7 +84,7 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
     respond {
         components {
             ephemeralSelectMenu {
-                content = translate("jukebox.response.choices")
+                content = translate("response.jukebox.choices")
                 choices.forEachIndexed { idx, track ->
                     option(track.title.abbreviate(80), track.uri) {
                         emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote
@@ -111,7 +111,7 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
     respond {
         components {
             ephemeralSelectMenu {
-                content = translate("jukebox.response.choices")
+                content = translate("response.jukebox.choices")
                 choices.forEachIndexed { idx, track ->
                     option(track.title.abbreviate(80), track.uri) {
                         emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote

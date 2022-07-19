@@ -21,7 +21,7 @@ suspend fun MusicExtension.volume() {
         action {
             respond {
                 player.volumeTo(arguments.volume)
-                content = translate("volume.response", arrayOf(arguments.volume))
+                content = translate("response.volume", arrayOf(arguments.volume))
             }
         }
     }

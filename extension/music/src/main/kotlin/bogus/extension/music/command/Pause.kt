@@ -18,7 +18,7 @@ suspend fun MusicExtension.pause() {
         action {
             if (player.paused) {
                 respond {
-                    content = translate("pause.response.failure")
+                    content = translate("response.pause.failure")
                 }
             } else {
                 player.pause()
@@ -31,7 +31,7 @@ suspend fun MusicExtension.pause() {
                 }
 
                 respond {
-                    content = translate("pause.response.success")
+                    content = translate("response.pause.success")
                 }
             }
         }

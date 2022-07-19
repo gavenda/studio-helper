@@ -59,7 +59,7 @@ private suspend fun SlashGroup.nightcore() {
             }
 
             respond {
-                content = translate("effect.filter.response.nightcore")
+                content = translate("response.effect.filter.nightcore")
             }
         }
     }
@@ -85,7 +85,7 @@ private suspend fun SlashGroup.karaoke() {
             }
 
             respond {
-                content = translate("effect.filter.response.karaoke")
+                content = translate("response.effect.filter.karaoke")
             }
         }
     }
@@ -111,7 +111,7 @@ private suspend fun SlashGroup.vaporwave() {
             }
 
             respond {
-                content = translate("effect.filter.response.vaporwave")
+                content = translate("response.effect.filter.vaporwave")
             }
         }
     }
@@ -137,7 +137,7 @@ private suspend fun SlashGroup.rock() {
             }
 
             respond {
-                content = translate("effect.equalizer.response.rock")
+                content = translate("response.effect.equalizer.rock")
             }
         }
     }
@@ -163,7 +163,7 @@ private suspend fun SlashGroup.pop() {
             }
 
             respond {
-                content = translate("effect.equalizer.response.pop")
+                content = translate("response.effect.equalizer.pop")
             }
         }
     }
@@ -189,7 +189,7 @@ private suspend fun SlashGroup.trebleBass() {
             }
 
             respond {
-                content = translate("effect.equalizer.response.bass-boost")
+                content = translate("response.effect.equalizer.bass-boost")
             }
         }
     }

@@ -76,12 +76,12 @@ private suspend fun EphemeralSlashCommand<*>.list() {
             }
 
             if (songList.isBlank()) {
-                songList = translate("playlist.list.empty")
+                songList = translate("response.playlist.list.empty")
             }
 
             respond {
                 embed {
-                    title = translate("playlist.list.title")
+                    title = translate("response.playlist.list.title")
                     description = songList
                 }
             }
@@ -134,7 +134,7 @@ private suspend fun EphemeralSlashCommand<*>.show() {
             } else {
                 respond {
                     content = translate(
-                        key = "playlist.response.no-playlist",
+                        key = "response.playlist.no-playlist",
                         replacements = arrayOf(arguments.name)
                     )
                 }
@@ -170,7 +170,7 @@ private suspend fun EphemeralSlashCommand<*>.create() {
 
             respond {
                 content = translate(
-                    key = "playlist.create.response",
+                    key = "response.playlist.create",
                     replacements = arrayOf(arguments.name)
                 )
             }
@@ -205,14 +205,14 @@ private suspend fun EphemeralSlashCommand<*>.delete() {
 
                 respond {
                     content = translate(
-                        key = "playlist.delete.response",
+                        key = "response.playlist.delete",
                         replacements = arrayOf(dbPlaylist.name)
                     )
                 }
             } else {
                 respond {
                     content = translate(
-                        key = "playlist.response.no-playlist",
+                        key = "response.playlist.no-playlist",
                         replacements = arrayOf(arguments.name)
                     )
                 }
@@ -259,7 +259,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                                 addTrack(item.track)
                                 respond {
                                     content = translate(
-                                        key = "playlist.add.response.single",
+                                        key = "response.playlist.add.single",
                                         replacements = arrayOf(item.track.title, dbPlaylist.name)
                                     )
                                 }
@@ -268,7 +268,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                                 item.tracks.forEach { addTrack(it) }
                                 respond {
                                     content = translate(
-                                        key = "playlist.add.response",
+                                        key = "response.playlist.add",
                                         replacements = arrayOf(item.tracks, dbPlaylist.name)
                                     )
                                 }
@@ -277,7 +277,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                                 respondChoices(item.tracks) { track ->
                                     addTrack(track)
                                     translate(
-                                        key = "playlist.add.response.single",
+                                        key = "response.playlist.add.single",
                                         replacements = arrayOf(track.title, dbPlaylist.name)
                                     )
                                 }
@@ -289,7 +289,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
             } else {
                 respond {
                     content = translate(
-                        key = "playlist.response.no-playlist",
+                        key = "response.playlist.no-playlist",
                         replacements = arrayOf(arguments.name)
                     )
                 }
@@ -322,14 +322,14 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
 
                     respond {
                         content = translate(
-                            key = "playlist.remove.response.success",
+                            key = "response.playlist.remove",
                             replacements = arrayOf(dbPlaylistSong.title, dbPlaylist.name)
                         )
                     }
                 } else {
                     respond {
                         content = translate(
-                            key = "playlist.remove.response.no-music",
+                            key = "response.playlist.remove.no-music",
                             replacements = arrayOf(arguments.musicId)
                         )
                     }
@@ -337,7 +337,7 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
             } else {
                 respond {
                     content = translate(
-                        key = "playlist.response.no-playlist",
+                        key = "response.playlist.no-playlist",
                         replacements = arrayOf(arguments.name)
                     )
                 }

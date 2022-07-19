@@ -38,7 +38,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
         action {
             if (player.tracks.isEmpty()) {
                 respond {
-                    content = translate("clear.queue.response.empty")
+                    content = translate("response.clear.queue.empty")
                 }
             } else {
                 player.clear()
@@ -51,7 +51,7 @@ private suspend fun EphemeralSlashCommand<*>.queue() {
                 }
 
                 respond {
-                    content = translate("clear.queue.response.cleared")
+                    content = translate("response.clear.queue")
                 }
             }
         }
@@ -76,7 +76,7 @@ private suspend fun SlashGroup.filter() {
             }
 
             respond {
-                content = translate("clear.filter.response")
+                content = translate("response.clear.filter")
             }
         }
     }
@@ -100,7 +100,7 @@ private suspend fun SlashGroup.equalizer() {
             }
 
             respond {
-                content = translate("clear.equalizer.response")
+                content = translate("response.clear.equalizer")
             }
         }
     }

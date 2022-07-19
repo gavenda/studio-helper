@@ -388,10 +388,18 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
                     val trackDuration = request.length.humanReadableTime
 
                     if (request.source != SOURCE_LOCAL) {
-                        append("`$trackNo.` [$trackTitle]($trackUri) `$trackDuration` <@!${request.userId}>\n")
+                        append(tp.translate(
+                            key = "player.queue.track",
+                            bundleName = TRANSLATION_BUNDLE,
+                            replacements = arrayOf(trackNo, trackTitle, trackUri, trackDuration, request.userId)
+                        ))
                     } else {
                         val fileExt = trackUri.split(".").last().uppercase()
-                        append("`$trackNo.` $trackTitle [Local/$fileExt] `$trackDuration` <@!${request.userId}>\n")
+                        append(tp.translate(
+                            key = "player.queue.track.local",
+                            bundleName = TRANSLATION_BUNDLE,
+                            replacements = arrayOf(trackNo, trackTitle, fileExt, trackDuration, request.userId)
+                        ))
                     }
                     trackNo++
                 }
@@ -412,17 +420,25 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
 
             if (playingTrackTitle != null) {
                 if (playingTrackUri?.isUrl == true) {
-                    "[$playingTrackTitle]($playingTrackUri) `$playingTrackDuration`"
+                    tp.translate(
+                        key = "player.queue.playing-track",
+                        bundleName = TRANSLATION_BUNDLE,
+                        replacements = arrayOf(playingTrackTitle, playingTrackUri, playingTrackDuration)
+                    )
                 } else {
                     val fileExt = playingTrackUri?.split(".")?.last()?.uppercase()
-                    "$playingTrackTitle [Local/$fileExt] `$playingTrackDuration`"
+                    tp.translate(
+                        key = "player.queue.playing-track.local",
+                        bundleName = TRANSLATION_BUNDLE,
+                        replacements = arrayOf(playingTrackTitle, fileExt, playingTrackDuration)
+                    )
                 }
             } else "-"
         }
 
         return {
             title = tp.translate(
-                key = "jukebox.queue-list",
+                key = "response.jukebox.queue-list",
                 bundleName = TRANSLATION_BUNDLE
             )
             color = Color(EMBED_COLOR)

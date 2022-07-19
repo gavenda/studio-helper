@@ -29,11 +29,11 @@ suspend fun MusicExtension.stop() {
             }
 
             if (skipped > 0) {
-                respond { content = translate("stop.response.multiple", arrayOf(skipped)) }
+                respond { content = translate("response.stop.multiple", arrayOf(skipped)) }
             } else if (player.playing) {
-                respond { content = translate("stop.response.success") }
+                respond { content = translate("response.stop.success") }
             } else {
-                respond { content = translate("stop.response.failure") }
+                respond { content = translate("response.stop.failure") }
             }
         }
     }
