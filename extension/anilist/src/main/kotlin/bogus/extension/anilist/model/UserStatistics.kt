@@ -11,9 +11,10 @@ data class UserStatistics(
     val episodesWatched: Int = 0,
     val chaptersRead: Int = 0,
     val volumesRead: Int = 0,
-    val formats: List<bogus.extension.anilist.model.UserFormatStatistic> = listOf(),
-    val statuses: List<bogus.extension.anilist.model.UserStatusStatistic> = listOf(),
-    val releaseYears: List<bogus.extension.anilist.model.UserReleaseYearStatistic> = listOf(),
-    val startYears: List<bogus.extension.anilist.model.UserStartYearStatistic> = listOf(),
-    val genres: List<bogus.extension.anilist.model.UserGenreStatistic> = listOf()
+    val formats: List<UserFormatStatistic> = listOf(),
+    val statuses: List<UserStatusStatistic> = listOf(),
+    val releaseYears: List<UserReleaseYearStatistic> = listOf(),
+    val startYears: List<UserStartYearStatistic> = listOf(),
+    val genres: List<UserGenreStatistic> = listOf(),
+    val tags: List<UserTagStatistic> = listOf()
 )

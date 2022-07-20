@@ -6,25 +6,25 @@ import bogus.extension.anilist.model.User
 import bogus.extension.anilist.toHexColor
 import bogus.util.abbreviate
 import dev.kord.rest.builder.message.EmbedBuilder
-import java.time.Duration
 import java.util.*
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun createUserEmbed(user: User): EmbedBuilder.() -> Unit = {
     val statistics = user.statistics ?: error("User statistics is null")
-    val d = Duration.ofMinutes((statistics.anime.minutesWatched).toLong())
-    val apostrophe = if (user.name.lowercase(Locale.getDefault()).endsWith("s")) "'" else "'s"
+    val d = statistics.anime.minutesWatched.minutes
+    val apostrophe = if (user.name.lowercase().endsWith("s")) "'" else "'s"
 
-    val genres = listOf(
-        *statistics.manga.genres.toTypedArray(),
-        *statistics.anime.genres.toTypedArray()
-    )
+    val genres = (statistics.manga.genres + statistics.anime.genres)
         .sortedByDescending { it.count }
         .distinctBy { it.genre }
 
-    val releaseYears = listOf(
-        *statistics.manga.releaseYears.toTypedArray(),
-        *statistics.anime.releaseYears.toTypedArray()
-    )
+    val tags = (statistics.anime.tags + statistics.manga.tags)
+        .sortedByDescending { it.count }
+        .distinctBy { it.tag.id }
+
+    val releaseYears = (statistics.manga.releaseYears + statistics.anime.releaseYears)
         .sortedByDescending { it.count }
         .distinctBy { it.releaseYear }
 
@@ -34,10 +34,7 @@ fun createUserEmbed(user: User): EmbedBuilder.() -> Unit = {
     val mangaStartYears = statistics.manga.startYears
         .sortedByDescending { it.count }
 
-    val statuses = listOf(
-        *statistics.manga.statuses.toTypedArray(),
-        *statistics.anime.statuses.toTypedArray()
-    )
+    val statuses = (statistics.manga.statuses + statistics.anime.statuses)
         .sortedByDescending { it.count }
         .distinctBy { it.status }
 
@@ -58,7 +55,7 @@ fun createUserEmbed(user: User): EmbedBuilder.() -> Unit = {
         val mangaMinutes = statistics.manga
             .genres.maxByOrNull { it.chaptersRead }
 
-        weabTendencies.append("- Is a **${genres[0].genre}**/**${genres[1].genre}**/**${genres[2].genre}** normie.\n")
+        weabTendencies.append("- Is a **${genresByMeanScore[0].genre}**/**${genresByMeanScore[1].genre}**/**${genresByMeanScore[2].genre}** normie.\n")
         weabTendencies.append("- Seems to hate **${worseGenre.genre}** based on mean score.\n")
 
         if (animeMinutes != null && animeMinutes.minutesWatched > 0) {
@@ -66,6 +63,30 @@ fun createUserEmbed(user: User): EmbedBuilder.() -> Unit = {
         }
         if (mangaMinutes != null && mangaMinutes.minutesWatched > 0) {
             weabTendencies.append("- Wasted **${mangaMinutes.chaptersRead}** chapters on **${mangaMinutes.genre}**.\n")
+        }
+    }
+
+    if (tags.size >= 3) {
+        val tagsByMeanScore = tags
+            .sortedByDescending { it.meanScore }
+        val worseTag = tags.last()
+
+        // they could have watched zero anime, assume null
+        val animeMinutes = statistics.anime
+            .tags.maxByOrNull { it.minutesWatched }
+        // same with this, didn't read a single shit, assume null
+        val mangaMinutes = statistics.manga
+            .tags.maxByOrNull { it.chaptersRead }
+
+
+        weabTendencies.append("- Loves **${tagsByMeanScore[0].tag.name}**/**${tagsByMeanScore[1].tag.name}**/**${tagsByMeanScore[2].tag.name}** media.\n")
+        weabTendencies.append("- Seems to hate **${worseTag.tag.name}** based on mean score.\n")
+
+        if (animeMinutes != null && animeMinutes.minutesWatched > 0) {
+            weabTendencies.append("- Wasted **${animeMinutes.minutesWatched}** minutes on **${animeMinutes.tag.name}**.\n")
+        }
+        if (mangaMinutes != null && mangaMinutes.minutesWatched > 0) {
+            weabTendencies.append("- Wasted **${mangaMinutes.chaptersRead}** chapters on **${mangaMinutes.tag.name}**.\n")
         }
     }
 
@@ -120,7 +141,7 @@ fun createUserEmbed(user: User): EmbedBuilder.() -> Unit = {
             [**Anime List**](${user.siteUrl}/animelist)
             Total Entries: ${statistics.anime.count}
             Episodes Watched: ${statistics.anime.episodesWatched}
-            Time Watched: ${d.toDaysPart()} Days - ${d.toHoursPart()} Hours - ${d.toMinutesPart()} Minutes
+            Time Watched: ${d.inWholeDays} Days - ${d.inWholeHours} Hours - ${d.inWholeMinutes} Minutes
             Mean Score: ${statistics.anime.count}
             
             [**Manga List**](${user.siteUrl}"/mangalist")

@@ -12,6 +12,7 @@ interface DbAiringAnime : Entity<DbAiringAnime> {
 
     val id: Long
     var discordGuildId: Long
+    var userId: Long
     var mediaId: Long
 }
 
@@ -21,6 +22,7 @@ object DbAiringAnimes : Table<DbAiringAnime>(
 ) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }
+    val userId = long("discord_user_id").bindTo { it.userId }
     val mediaId = long("media_id").bindTo { it.mediaId }
 }
 

@@ -1,20 +1,20 @@
 package bogus.extension.anilist.command
 
 import bogus.extension.anilist.AniListExtension
-import bogus.extension.anilist.AniListExtension.log
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaType
 import bogus.extension.anilist.sendMediaResult
 import bogus.util.abbreviate
+import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
-import com.kotlindiscord.kord.extensions.extensions.publicMessageCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.PublicInteractionContext
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.behavior.interaction.suggestString
+import mu.KotlinLogging
 import org.koin.core.component.inject
 
 suspend fun AniListExtension.find() {
@@ -50,6 +50,7 @@ suspend fun ApplicationCommandContext.findMedia(
     if (this !is PublicInteractionContext) return
 
     val aniList by inject<AniList>()
+    val log = KotlinLogging.logger { }.asFMTLogger()
 
     log.info {
         message = "Looking up media"

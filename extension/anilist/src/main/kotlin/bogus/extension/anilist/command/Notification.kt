@@ -33,8 +33,6 @@ import org.ktorm.entity.firstOrNull
 import java.util.*
 
 suspend fun AniListExtension.notification() {
-    val db by inject<Database>()
-
     ephemeralSlashCommand {
         name = "command.notification"
         description = "command.notification.description"
@@ -68,7 +66,7 @@ suspend fun AniListExtension.notification() {
                     db.airingAnimes.add(newDbAiringAnime)
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        scheduleNotify(guild)
+                        notifier.schedule(guild)
                     }
 
                     respond {
@@ -97,7 +95,7 @@ suspend fun AniListExtension.notification() {
                     }
 
                     dbAiringAnime.delete()
-                    removeAnimeSchedule(guild.id, arguments.mediaId)
+                    notifier.remove(guild.id, arguments.mediaId)
 
                     respond {
                         content = translate("notification.airing-anime.remove.success")
