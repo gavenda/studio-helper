@@ -32,8 +32,8 @@ object ListenOpSerializer : KSerializer<ListenOp> {
         }
     }
 
-    override fun serialize(encoder: Encoder, listenOp: ListenOp) {
-        encoder.encodeInt(listenOp.op)
+    override fun serialize(encoder: Encoder, value: ListenOp) {
+        encoder.encodeInt(value.op)
     }
 }
 
