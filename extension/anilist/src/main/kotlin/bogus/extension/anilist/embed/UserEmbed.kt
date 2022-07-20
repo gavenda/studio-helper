@@ -41,7 +41,7 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
         .sortedByDescending { it.count }
 
     field {
-        name = "Anime List"
+        name = "Anime"
         value = """
             - Total: **${statistics.anime.count}**
             - Episodes: **${statistics.anime.episodesWatched}**
@@ -51,7 +51,7 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     }
 
     field {
-        name = "Manga List"
+        name = "Manga"
         value = """
             - Total: **${statistics.manga.count}**
             - Volumes: **${statistics.manga.volumesRead}**
@@ -101,7 +101,7 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
                     append("- Has **never** dropped an anime/manga!\n")
                 }
 
-                append("- Ends up completing $completedRatioStr%\n")
+                append("- Ends up completing **$completedRatioStr%**.\n")
 
                 if (statuses.first().status == MediaListStatus.PLANNING) {
                     append("- Apparently thinks PLANNING > WATCHING...\n")
@@ -115,7 +115,14 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
             .sortedByDescending { it.meanScore }
             .distinctBy { it.genre }
         val (g1, g2, g3) = genresByMean
-        val worseGenre = genresByMean.last()
+        val worseAnimeGenre = statistics.anime.genres
+            .sortedByDescending { it.meanScore }
+            .take(30)
+            .last()
+        val worseMangaGenre = statistics.manga.genres
+            .sortedByDescending { it.meanScore }
+            .take(30)
+            .last()
 
         field {
             name = "Top Genres"
@@ -127,8 +134,11 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
         }
 
         field {
-            name = "Most Hated Genre"
-            value = "- ${worseGenre.genre} (${worseGenre.meanScore.toStars()})"
+            name = "Most Hated Genres"
+            value = """
+                - ${worseAnimeGenre.genre} (${worseAnimeGenre.meanScore.toStars()})
+                - ${worseMangaGenre.genre} (${worseMangaGenre.meanScore.toStars()})
+            """.trimIndent()
         }
 
         val genreStats = buildString {
@@ -155,7 +165,14 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
             .sortedByDescending { it.meanScore }
             .distinctBy { it.tag.name }
         val (t1, t2, t3) = tagsByMean
-        val worseTag = tagsByMean.last()
+        val worseAnimeTag = statistics.anime.tags
+            .sortedByDescending { it.meanScore }
+            .take(30)
+            .last()
+        val worseMangaTag = statistics.manga.tags
+            .sortedByDescending { it.meanScore }
+            .take(30)
+            .last()
 
         field {
             name = "Top Tags"
@@ -167,8 +184,11 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
         }
 
         field {
-            name = "Most Hated Tag"
-            value = "- ${worseTag.tag.name} (${worseTag.meanScore.toStars()})"
+            name = "Most Hated Tags"
+            value = """
+                - ${worseAnimeTag.tag.name} (${worseAnimeTag.meanScore.toStars()})
+                - ${worseMangaTag.tag.name} (${worseMangaTag.meanScore.toStars()})
+            """.trimIndent()
         }
 
         val tagStats = buildString {
