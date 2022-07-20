@@ -61,6 +61,7 @@ suspend fun AniListExtension.notification() {
                     val newDbAiringAnime = DbAiringAnime {
                         discordGuildId = guild.idLong
                         mediaId = arguments.mediaId
+                        userId = user.idLong
                     }
 
                     db.airingAnimes.add(newDbAiringAnime)
