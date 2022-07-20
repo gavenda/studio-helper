@@ -5,6 +5,7 @@ import bogus.extension.anilist.model.MediaFormat
 import bogus.extension.anilist.model.MediaListStatus
 import bogus.extension.anilist.model.User
 import bogus.extension.anilist.toHexColor
+import bogus.extension.anilist.toStars
 import bogus.util.abbreviate
 import dev.kord.rest.builder.message.EmbedBuilder
 import kotlin.time.Duration.Companion.days
@@ -39,121 +40,158 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     val formats = (statistics.anime.formats + statistics.manga.formats)
         .sortedByDescending { it.count }
 
-    val weabTendencies = buildString {
-        if (genres.size >= 3) {
-            val genresByMean = genres
-                .sortedByDescending { it.meanScore }
-                .distinctBy { it.genre }
-            val (g1, g2, g3) = genresByMean
+    field {
+        name = "Anime List"
+        value = """
+            - Total: **${statistics.anime.count}**
+            - Episodes: **${statistics.anime.episodesWatched}**
+            - Time: **$daysWatched** days, **$hoursWatched hours**, **$minutesWatched** minutes
+            - Mean Score: **${statistics.anime.count}**
+        """.trimIndent()
+    }
 
-            append("- Likes genres that are **${g1.genre}**/**${g2.genre}**/**${g3.genre}**.\n")
-            append("- Seems to really hate **${genresByMean.last().genre}**.\n")
+    field {
+        name = "Manga List"
+        value = """
+            - Total: **${statistics.manga.count}**
+            - Volumes: **${statistics.manga.volumesRead}**
+            - Chapters: **${statistics.manga.chaptersRead}**
+            - Mean Score: **${statistics.manga.meanScore}**
+        """.trimIndent()
+    }
 
-            statistics.anime
-                .genres.maxByOrNull { it.minutesWatched }
-                ?.let {
-                    append("- Wasted **${it.minutesWatched}** minutes on **${it.genre}**.\n")
+    field {
+        name = "Weab Tendencies"
+        value = buildString {
+            if (releaseYears.isNotEmpty()) {
+                append("- Loves **${releaseYears[0].releaseYear}** media.\n")
+            }
+
+            if (animeStartYears.isNotEmpty()) {
+                append("- Started consuming weabness in **${animeStartYears[0].startYear}**.\n")
+            }
+
+            if (mangaStartYears.isNotEmpty()) {
+                append("- Started consuming trash in **${mangaStartYears[0].startYear}**.\n")
+            }
+
+            if (formats.isNotEmpty() && formats[0].format != MediaFormat.TV) {
+                append("- Addicted to the **${formats[0].format}** format.\n")
+            }
+
+            if (statuses.isNotEmpty()) {
+                val total = statuses
+                    .filter { it.status != MediaListStatus.PLANNING }
+                    .sumOf { it.count }
+                    .toDouble()
+
+                val completed = statuses
+                    .filter { it.status == MediaListStatus.COMPLETED || it.status == MediaListStatus.REPEATING }
+                    .sumOf { it.count }
+                    .toDouble()
+
+                val dropped = statuses
+                    .filter { it.status == MediaListStatus.DROPPED }
+                    .sumOf { it.count }
+
+                val completedRatio = completed / total * 100
+                val completedRatioStr = "%.2f".format(completedRatio)
+
+                if (dropped == 0) {
+                    append("- Has **never** dropped an anime/manga!\n")
                 }
 
+                append("- Ends up completing $completedRatioStr%\n")
+
+                if (statuses.first().status == MediaListStatus.PLANNING) {
+                    append("- Apparently thinks PLANNING > WATCHING...\n")
+                }
+            }
+        }
+    }
+
+    if (genres.size >= 3) {
+        val genresByMean = genres
+            .sortedByDescending { it.meanScore }
+            .distinctBy { it.genre }
+        val (g1, g2, g3) = genresByMean
+        val worseGenre = genresByMean.last()
+
+        field {
+            name = "Top Genres"
+            value = """
+                - ${g1.genre} (${g1.meanScore.toStars()})
+                - ${g2.genre} (${g2.meanScore.toStars()})
+                - ${g3.genre} (${g3.meanScore.toStars()})
+            """.trimIndent()
+        }
+
+        field {
+            name = "Most Hated Genre"
+            value = "- ${worseGenre.genre} (${worseGenre.meanScore.toStars()})"
+        }
+
+        val genreStats = buildString {
+            statistics.anime
+                .genres.maxByOrNull { it.minutesWatched }
+                ?.let { append("- Wasted **${it.minutesWatched}** minutes on **${it.genre}**.\n") }
             statistics.manga
                 .genres.maxByOrNull { it.chaptersRead }
                 ?.let {
                     append("- Wasted **${it.chaptersRead}** chapters on **${it.genre}**.\n")
                 }
+        }.dropLast(1)
+
+        if (genreStats.isNotBlank()) {
+            field {
+                name = "Genre Stats"
+                value = genreStats
+            }
+        }
+    }
+
+    if (tags.size >= 3) {
+        val tagsByMean = tags
+            .sortedByDescending { it.meanScore }
+            .distinctBy { it.tag.name }
+        val (t1, t2, t3) = tagsByMean
+        val worseTag = tagsByMean.last()
+
+        field {
+            name = "Top Tags"
+            value = """
+                - ${t1.tag.name} (${t1.meanScore.toStars()})
+                - ${t2.tag.name} (${t2.meanScore.toStars()})
+                - ${t3.tag.name} (${t3.meanScore.toStars()})
+            """.trimIndent()
         }
 
-        if (tags.size >= 3) {
-            val tagsByMean = tags
-                .sortedByDescending { it.meanScore }
-                .distinctBy { it.tag.name }
-            val (t1, t2, t3) = tagsByMean
+        field {
+            name = "Most Hated Tag"
+            value = "- ${worseTag.tag.name} (${worseTag.meanScore.toStars()})"
+        }
 
-            append("- Loves **${t1.tag.name}**/**${t2.tag.name}**/**${t3.tag.name}**.\n")
-            append("- Absolutely hates **${tagsByMean.last().tag.name}**\n")
-
+        val tagStats = buildString {
             statistics.anime
                 .tags.maxByOrNull { it.minutesWatched }
-                ?.let {
-                    append("- Wasted **${it.minutesWatched}** minutes on **${it.tag.name}**.\n")
-                }
-
+                ?.let { append("- Wasted **${it.minutesWatched}** minutes on **${it.tag.name}**.\n") }
             statistics.manga
                 .tags.maxByOrNull { it.chaptersRead }
                 ?.let {
                     append("- Wasted **${it.chaptersRead}** chapters on **${it.tag.name}**.\n")
                 }
-        }
+        }.dropLast(1)
 
-        if (releaseYears.isNotEmpty()) {
-            append("- Loves **${releaseYears[0].releaseYear}** media.\n")
-        }
-
-        if (animeStartYears.isNotEmpty()) {
-            append("- Started consuming weabness in **${animeStartYears[0].startYear}**.\n")
-        }
-
-        if (mangaStartYears.isNotEmpty()) {
-            append("- Started consuming trash in **${mangaStartYears[0].startYear}**.\n")
-        }
-
-        if (formats.isNotEmpty() && formats[0].format != MediaFormat.TV) {
-            append("- Addicted to the **${formats[0].format}** format.\n")
-        }
-
-        if (statuses.isNotEmpty()) {
-            val total = statuses
-                .filter { it.status != MediaListStatus.PLANNING }
-                .sumOf { it.count }
-                .toDouble()
-
-            val completed = statuses
-                .filter { it.status == MediaListStatus.COMPLETED || it.status == MediaListStatus.REPEATING }
-                .sumOf { it.count }
-                .toDouble()
-
-            val dropped = statuses
-                .filter { it.status == MediaListStatus.DROPPED }
-                .sumOf { it.count }
-
-            val completedRatio = completed / total * 100
-            val completedRatioStr = "%.2f".format(completedRatio)
-
-            if (dropped == 0) {
-                append("- Has **never** dropped an anime/manga!\n")
-            }
-
-            append("- Ends up completing $completedRatioStr%\n")
-
-            if (statuses.first().status == MediaListStatus.PLANNING) {
-                append("- Apparently thinks PLANNING > WATCHING...\n")
+        if (tagStats.isNotBlank()) {
+            field {
+                name = "Tag Stats"
+                value = tagStats
             }
         }
     }
 
-    val userDescription = """
-            ${about.aniClean().trim()}
-            
-            [**Anime List**](${siteUrl}/animelist)
-            Total Entries: ${statistics.anime.count}
-            Episodes Watched: ${statistics.anime.episodesWatched}
-            Time Watched: $daysWatched Days - $hoursWatched Hours - $minutesWatched Minutes
-            Mean Score: ${statistics.anime.count}
-            
-            [**Manga List**](${siteUrl}"/mangalist")
-            Total Entries: ${statistics.manga.count}
-            Volumes Read: ${statistics.manga.volumesRead}
-            Chapters Read: ${statistics.manga.chaptersRead}
-            Mean Score: ${statistics.manga.meanScore}
-            
-            [**Weab Tendencies**](${siteUrl}/stats/anime/overview)
-            $weabTendencies
-        """
-        .trim()
-        .trimIndent()
-        .abbreviate(EmbedBuilder.Limits.description)
-
     title = "${name}${apostrophe} Statistics"
-    description = userDescription.abbreviate(EmbedBuilder.Limits.description)
+    description = about.aniClean().trim().abbreviate(EmbedBuilder.Limits.description)
     color = options?.profileColor?.toHexColor()
     image = bannerImage
     thumbnail {

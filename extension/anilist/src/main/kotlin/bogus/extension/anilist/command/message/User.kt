@@ -53,8 +53,20 @@ suspend fun AniListExtension.userMessageCommand() {
                     }
                     components {
                         linkButton {
-                            label = translate("user.link.label")
+                            label = translate("user.link.profile")
                             url = user.siteUrl
+                        }
+                        linkButton {
+                            label = translate("user.link.anime-list")
+                            url = "${user.siteUrl}/animelist"
+                        }
+                        linkButton {
+                            label = translate("user.link.manga-list")
+                            url = "${user.siteUrl}/mangalist"
+                        }
+                        linkButton {
+                            label = translate("user.link.stats")
+                            url = "${user.siteUrl}/stats/anime/overview"
                         }
                     }
                 }
