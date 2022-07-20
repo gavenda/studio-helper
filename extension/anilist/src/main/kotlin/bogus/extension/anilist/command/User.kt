@@ -16,8 +16,6 @@ import dev.kord.rest.builder.message.create.embed
 import org.koin.core.component.inject
 
 suspend fun AniListExtension.user() {
-    val aniList by inject<AniList>()
-
     publicSlashCommand(::UserArgs) {
         name = "command.user"
         description = "command.user.description"

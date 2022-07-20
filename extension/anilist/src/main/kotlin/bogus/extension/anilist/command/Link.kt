@@ -1,17 +1,14 @@
 package bogus.extension.anilist.command
 
 import bogus.extension.anilist.AniListExtension
-import bogus.extension.anilist.check.anyGuild
 import bogus.extension.anilist.db.DbUser
 import bogus.extension.anilist.db.users
-import bogus.extension.anilist.graphql.AniList
 import bogus.util.idLong
+import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import org.koin.core.component.inject
-import org.ktorm.database.Database
 import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
 import org.ktorm.entity.add
@@ -19,15 +16,12 @@ import org.ktorm.entity.firstOrNull
 import org.ktorm.entity.removeIf
 
 suspend fun AniListExtension.link() {
-    val db by inject<Database>()
-    val aniList by inject<AniList>()
-
     ephemeralSlashCommand(::LinkArgs) {
         name = "command.link"
         description = "command.link.description"
         allowInDms = false
         check {
-            anyGuild(translate("link.error.server-only"))
+            anyGuild()
         }
         action {
             val guild = guild ?: return@action
@@ -72,7 +66,7 @@ suspend fun AniListExtension.link() {
         description = "command.unlink.description"
         allowInDms = false
         check {
-            anyGuild(translate("unlink.error.server-only"))
+            anyGuild()
         }
         action {
             val guild = guild ?: return@action

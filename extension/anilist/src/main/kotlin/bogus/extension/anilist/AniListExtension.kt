@@ -26,6 +26,7 @@ class AniListExtension : Extension() {
     override val bundle = "anilist"
 
     val db by inject<Database>()
+    val aniList by inject<AniList>()
     val notifier by inject<NotifyScheduler>()
     val log = KotlinLogging.logger { }.asFMTLogger()
 

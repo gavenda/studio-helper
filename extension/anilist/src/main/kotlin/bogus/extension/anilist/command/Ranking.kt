@@ -1,7 +1,6 @@
 package bogus.extension.anilist.command
 
 import bogus.extension.anilist.AniListExtension
-import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaFormat
 import bogus.extension.anilist.model.MediaSeason
 import bogus.extension.anilist.sendMediaResult
@@ -12,11 +11,8 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalInt
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import org.koin.core.component.inject
 
 suspend fun AniListExtension.ranking() {
-    val aniList by inject<AniList>()
-
     publicSlashCommand(::RankingArgs) {
         name = "command.ranking"
         description = "command.ranking.description"

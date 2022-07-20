@@ -1,5 +1,7 @@
 package bogus.extension.anilist
 
+import bogus.extension.anilist.AniListExtension.Companion.EMBED_COLOR
+import bogus.extension.anilist.coroutines.AiringScheduleMedia
 import bogus.extension.anilist.coroutines.AiringSchedulePoller
 import bogus.extension.anilist.db.airingAnimes
 import bogus.extension.anilist.db.guilds
@@ -45,12 +47,23 @@ class NotifyScheduler(val kord: Kord) : KordExKoinComponent {
             airingSchedules.forEach { airingSchedule ->
                 val channel = guild.getChannelOf<GuildMessageChannel>(Snowflake(dbGuild.notificationChannelId))
                 val mediaTitle = airingSchedule.media.title?.english ?: airingSchedule.media.title?.romaji
+                val userId = poller.requestingUserId(airingSchedule.mediaId)
 
                 if (channel.botHasPermissions(Permission.SendMessages, Permission.ViewChannel)) {
                     channel.createEmbed {
-                        title = "New Episode Aired!"
-                        description = "Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
-                        color = Color(0xFF0000)
+                        author {
+                            name = "New Episode Aired"
+                        }
+                        description = ":bell: Episode **${airingSchedule.episode}** of **$mediaTitle** has aired."
+
+                        if (userId > 0) {
+                            field {
+                                name = "Requested By"
+                                value = "<@${userId}>"
+                            }
+                        }
+
+                        color = Color(EMBED_COLOR)
                         thumbnail {
                             url = airingSchedule.media.coverImage?.extraLarge ?: ""
                         }
@@ -63,7 +76,7 @@ class NotifyScheduler(val kord: Kord) : KordExKoinComponent {
     fun remove(guildId: Snowflake, mediaId: Long) {
         val poller = pollers[guildId] ?: return
 
-        if (poller.mediaIds.isEmpty()) {
+        if (poller.isEmpty()) {
             pollers.remove(guildId)
         }
 
@@ -71,12 +84,12 @@ class NotifyScheduler(val kord: Kord) : KordExKoinComponent {
     }
 
     fun schedule(guild: GuildBehavior) {
-        val mediaIds = db.airingAnimes
+        val medias = db.airingAnimes
             .filter { it.discordGuildId eq guild.idLong }
-            .map { it.mediaId }
-        if (mediaIds.isNotEmpty()) {
-            pollers.computeIfAbsent(guild.id) { AiringSchedulePoller(mediaIds) }
-                .updateMediaIds(mediaIds)
+            .map { AiringScheduleMedia(it.mediaId, it.userId) }
+        if (medias.isNotEmpty()) {
+            pollers.computeIfAbsent(guild.id) { AiringSchedulePoller(medias) }
+                .updateMediaIds(medias.map { it.mediaId })
             return
         }
 

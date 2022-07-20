@@ -8,27 +8,38 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.koin.core.component.inject
 
+data class AiringScheduleMedia(
+    val mediaId: Long,
+    val userId: Long
+)
+
 class AiringSchedulePoller(
-    private val mediaIdList: List<Long>
+    private val medias: List<AiringScheduleMedia>
 ) : KordExKoinComponent {
     val log = KotlinLogging.logger { }.asFMTLogger()
 
     // Empty, gets populated at first run
     private val mediaIdEpisode = mutableMapOf<Long, Int>()
     val aniList by inject<AniList>()
-    val mediaIds get() = mediaIdEpisode.keys.toList()
+    val mediaIds get() = medias.map { it.mediaId }
 
     init {
         runBlocking {
-            aniList.findAiringMedia(mediaIdList)?.forEach {
+            aniList.findAiringMedia(mediaIds)?.forEach {
                 updateMediaEpisode(it.mediaId, it.episode)
             }
-            log.debug { message ="Initialized media list" }
+            log.debug { message = "Initialized media list" }
         }
     }
 
+    fun isEmpty(): Boolean = mediaIdEpisode.keys.isEmpty()
+
+    fun requestingUserId(mediaId: Long): Long {
+        return medias.first { it.mediaId == mediaId }.userId
+    }
+
     suspend fun poll(): List<AiringSchedule> {
-        val airingSchedules = aniList.findAiringMedia(mediaIdList)
+        val airingSchedules = aniList.findAiringMedia(mediaIds)
         return airingSchedules?.filter { updateMediaEpisode(it.mediaId, it.episode) } ?: emptyList()
     }
 
