@@ -13,6 +13,7 @@ query ($type: MediaType, $query: String, $genreNotIn: [String]) {
         romaji
         english
       }
+      synonyms
     }
   }
 }

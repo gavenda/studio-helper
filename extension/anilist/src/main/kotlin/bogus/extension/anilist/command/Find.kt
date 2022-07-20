@@ -1,5 +1,6 @@
 package bogus.extension.anilist.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaType
@@ -83,6 +84,7 @@ private class FindArgs : KordExKoinComponent, Arguments() {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
                 aniList.findMediaTitlesAsString(input)
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
                     .map { it.abbreviate(80) }
                     .forEach { choice(it, it) }
             }
@@ -102,6 +104,7 @@ private class FindAnimeArgs : KordExKoinComponent, Arguments() {
                 if (input.isBlank()) return@suggestString
 
                 aniList.findMediaTitlesAsString(input, MediaType.ANIME)
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
                     .map { it.abbreviate(80) }
                     .forEach { choice(it, it) }
             }
@@ -120,6 +123,7 @@ private class FindMangaArgs : KordExKoinComponent, Arguments() {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestString
                 aniList.findMediaTitlesAsString(input, MediaType.MANGA)
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
                     .map { it.abbreviate(80) }
                     .forEach { choice(it, it) }
             }

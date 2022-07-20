@@ -1,5 +1,6 @@
 package bogus.extension.anilist.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.db.DbAiringAnime
 import bogus.extension.anilist.db.DbGuild
@@ -154,7 +155,9 @@ private class AiringAnimeArgs : KordExKoinComponent, Arguments() {
                 val input = focusedOption.value
                 if (input.isBlank()) return@suggestInt
 
-                aniList.findMediaTitles(input, MediaType.ANIME)?.forEach { media ->
+                aniList.findMediaTitles(input, MediaType.ANIME)
+                    ?.take(AUTOCOMPLETE_ITEMS_LIMIT)
+                    ?.forEach { media ->
                     val mediaTitle = media.title?.english ?: media.title?.romaji
                     if (mediaTitle != null) {
                         choice(mediaTitle, media.id)

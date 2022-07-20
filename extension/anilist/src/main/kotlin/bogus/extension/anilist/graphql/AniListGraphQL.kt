@@ -64,6 +64,8 @@ class AniListGraphQL : AniList {
             findMediaTitles(query, type)?.forEach {
                 it.title?.native?.let { title -> add(title) }
                 it.title?.romaji?.let { title -> add(title) }
+                it.title?.english?.let { title -> add(title) }
+                addAll(it.synonyms)
             }
         }.distinct()
     }

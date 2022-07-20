@@ -1,5 +1,6 @@
 package bogus.extension.anilist.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.PAGINATOR_TIMEOUT
 import bogus.extension.anilist.embed.createEmbed
@@ -72,6 +73,7 @@ private class StaffArgs : KordExKoinComponent, Arguments() {
                 if (input.isBlank()) return@suggestString
 
                 aniList.findStaffNames(input)
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
                     .map { it.abbreviate(80) }
                     .forEach { choice(it, it) }
             }

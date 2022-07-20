@@ -47,6 +47,7 @@ query(
       duration
       chapters
       volumes
+      synonyms
       coverImage {
         extraLarge
       }

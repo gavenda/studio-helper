@@ -5,7 +5,6 @@ import bogus.extension.anilist.model.MediaFormat
 import bogus.extension.anilist.model.MediaListStatus
 import bogus.extension.anilist.model.User
 import bogus.extension.anilist.toHexColor
-import bogus.extension.anilist.toStars
 import bogus.util.abbreviate
 import dev.kord.rest.builder.message.EmbedBuilder
 import kotlin.math.ceil

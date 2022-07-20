@@ -1,14 +1,20 @@
 package bogus.extension.anilist.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.db.DbUser
 import bogus.extension.anilist.db.users
+import bogus.extension.anilist.graphql.AniList
+import bogus.util.abbreviate
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
+import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.core.behavior.interaction.suggestString
+import org.koin.core.component.inject
 import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
 import org.ktorm.entity.add
@@ -102,9 +108,22 @@ suspend fun AniListExtension.link() {
     }
 }
 
-private class LinkArgs : Arguments() {
+private class LinkArgs : KordExKoinComponent, Arguments() {
+    val aniList by inject<AniList>()
     val username by coalescingString {
         name = "command.link.args.username"
         description = "command.link.args.username.description"
+
+        autoComplete {
+            suggestString {
+                val input = focusedOption.value
+                if (input.isBlank()) return@suggestString
+
+                aniList.findUserNames(input)
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
+                    .map { it.abbreviate(80) }
+                    .forEach { choice(it, it) }
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ query($page: Int, $perPage: Int, $query: String, $type: MediaType, $genreNotIn: 
       duration
       chapters
       volumes
+      synonyms
       coverImage {
         extraLarge
       }

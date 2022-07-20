@@ -94,6 +94,10 @@ fun createMediaEmbed(
             append("_(Native: ${media.title.native})_\n")
         }
 
+        media.synonyms.forEach { title ->
+            append("_(Synonym: $title)_\n")
+        }
+
         val actualDescription = media.description
             .htmlToMarkdown()
             .abbreviate(EmbedBuilder.Limits.description)

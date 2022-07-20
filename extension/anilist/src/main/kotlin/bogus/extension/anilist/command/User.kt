@@ -1,5 +1,6 @@
 package bogus.extension.anilist.command
 
+import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.embed.createEmbed
 import bogus.extension.anilist.graphql.AniList
@@ -71,6 +72,7 @@ private class UserArgs : KordExKoinComponent, Arguments() {
                 if (input.isBlank()) return@suggestString
 
                 aniList.findUserNames(input)
+                    .take(AUTOCOMPLETE_ITEMS_LIMIT)
                     .map { it.abbreviate(80) }
                     .forEach { choice(it, it) }
             }
