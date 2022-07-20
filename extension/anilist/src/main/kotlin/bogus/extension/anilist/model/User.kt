@@ -22,11 +22,11 @@ data class User(
     /**
      * The user's avatar images
      */
-    val avatar: bogus.extension.anilist.model.UserAvatar? = null,
+    val avatar: UserAvatar? = null,
     /**
      * The user's general options
      */
-    val options: bogus.extension.anilist.model.UserOptions? = null,
+    val options: UserOptions? = null,
     /**
      * The url for the user page on the AniList website
      */
@@ -38,7 +38,7 @@ data class User(
     /**
      * The users anime & manga list statistics
      */
-    val statistics: bogus.extension.anilist.model.UserStatisticTypes? = null,
+    val statistics: UserStatisticTypes? = null,
     /**
      * When the user's data was last updated
      */

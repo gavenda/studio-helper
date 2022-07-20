@@ -14,7 +14,7 @@ data class Staff(
     /**
      * The names of the staff member
      */
-    val name: bogus.extension.anilist.model.StaffName? = null,
+    val name: StaffName? = null,
     /**
      * The primary language of the staff member. Current values: Japanese, English, Korean, Italian,
      * Spanish, Portuguese, French, German, Hebrew, Hungarian, Chinese, Arabic, Filipino, Catalan
@@ -23,7 +23,7 @@ data class Staff(
     /**
      * The staff images
      */
-    val image: bogus.extension.anilist.model.StaffImage? = null,
+    val image: StaffImage? = null,
     /**
      * A general description of the staff member
      */
@@ -35,11 +35,11 @@ data class Staff(
     /**
      * Media where the staff member has a production role
      */
-    val staffMedia: bogus.extension.anilist.model.MediaConnection? = null,
+    val staffMedia: MediaConnection? = null,
     /**
      * Characters voiced by the actor
      */
-    val characters: bogus.extension.anilist.model.CharacterConnection? = null,
+    val characters: CharacterConnection? = null,
     /**
      * The amount of user's who have favourited the staff member
      */

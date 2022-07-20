@@ -6,7 +6,7 @@ on:
       - 'common/**'
       - 'bot/basura/**'
       - 'extension/about/**'
-      - 'extension/aniradio/**'
+      - 'extension/listenmoe/**'
       - 'extension/anilist/**'
   workflow_dispatch:
 jobs:

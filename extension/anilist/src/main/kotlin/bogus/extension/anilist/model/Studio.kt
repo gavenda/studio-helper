@@ -22,7 +22,7 @@ data class Studio(
     /**
      * The media the studio has worked on
      */
-    val media: bogus.extension.anilist.model.MediaConnection?,
+    val media: MediaConnection?,
     /**
      * The url for the studio page on the AniList website
      */

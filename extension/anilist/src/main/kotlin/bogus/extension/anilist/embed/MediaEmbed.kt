@@ -1,6 +1,6 @@
 package bogus.extension.anilist.embed
 
-import bogus.extension.anilist.AniListExtension.EMBED_COLOR
+import bogus.extension.anilist.AniListExtension.Companion.EMBED_COLOR
 import bogus.extension.anilist.EmbedMedia
 import bogus.extension.anilist.htmlToMarkdown
 import bogus.extension.anilist.model.*

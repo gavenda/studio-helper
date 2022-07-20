@@ -1,6 +1,6 @@
 package bogus.extension.anilist.embed
 
-import bogus.extension.anilist.AniListExtension.EMBED_COLOR
+import bogus.extension.anilist.AniListExtension.Companion.EMBED_COLOR
 import bogus.extension.anilist.aniClean
 import bogus.extension.anilist.model.Staff
 import bogus.extension.anilist.weirdHtmlClean
@@ -9,11 +9,11 @@ import bogus.util.appendIfNotMax
 import dev.kord.common.Color
 import dev.kord.rest.builder.message.EmbedBuilder
 
-fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
-    val characterNodes = staff.characters?.nodes
-    val characterEdges = staff.characters?.edges
-    val staffMediaNodes = staff.staffMedia?.nodes
-    val staffMediaEdges = staff.staffMedia?.edges
+fun Staff.createEmbed(): EmbedBuilder.() -> Unit = {
+    val characterNodes = characters?.nodes
+    val characterEdges = characters?.edges
+    val staffMediaNodes = staffMedia?.nodes
+    val staffMediaEdges = staffMedia?.edges
 
     val charactersVoiced = buildString {
         if (characterNodes != null && characterEdges != null) {
@@ -47,7 +47,7 @@ fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
 
     val aliases = buildString {
         // Weirdly enough, duplicate names exists.
-        staff.name?.alternative
+        name?.alternative
             ?.filterNotNull()
             ?.filter { it.isNotEmpty() }
             ?.distinctBy { it }
@@ -57,7 +57,7 @@ fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
     }
 
     // Remove spoilers, fix new lines, clean up html bullshit
-    val resultDescription = staff.description
+    val resultDescription = this@createEmbed.description
         .replace(Regex("(?s)~!.*?!~"), "")
         .replace("\n\n\n", "\n")
         .aniClean()
@@ -67,8 +67,8 @@ fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
 
     // Staff title
     title = buildString {
-        val native = staff.name?.native
-        append(staff.name?.full)
+        val native = name?.native
+        append(name?.full)
         if (native != null) {
             append(" (${native})")
         }
@@ -76,9 +76,9 @@ fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
 
     description = resultDescription
     thumbnail {
-        url = staff.image?.large ?: ""
+        url = this@createEmbed.image?.large ?: ""
     }
-    url = staff.siteUrl
+    url = siteUrl
     color = Color(EMBED_COLOR)
 
     if (charactersVoiced.isNotBlank()) {
@@ -112,7 +112,7 @@ fun createStaffEmbed(staff: Staff): EmbedBuilder.() -> Unit = {
 
     field {
         name = "Favorites"
-        value = staff.favourites.toString()
+        value = favourites.toString()
         inline = true
     }
 }

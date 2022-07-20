@@ -2,7 +2,7 @@ package bogus.extension.anilist.command.message
 
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.db.users
-import bogus.extension.anilist.embed.createUserEmbed
+import bogus.extension.anilist.embed.createEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -54,7 +54,7 @@ suspend fun AniListExtension.userMessageCommand() {
             } else {
                 respond {
                     embed {
-                        apply(createUserEmbed(user))
+                        apply(user.createEmbed())
                     }
                     components {
                         linkButton {

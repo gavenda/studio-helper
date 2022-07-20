@@ -14,11 +14,11 @@ data class Character(
     /**
      * The names of the character
      */
-    val name: bogus.extension.anilist.model.CharacterName? = null,
+    val name: CharacterName? = null,
     /**
      * Character images
      */
-    val image: bogus.extension.anilist.model.CharacterImage? = null,
+    val image: CharacterImage? = null,
     /**
      * A general description of the character
      */

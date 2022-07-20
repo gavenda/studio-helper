@@ -2,7 +2,7 @@ package bogus.extension.anilist.command
 
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.anilist.PAGINATOR_TIMEOUT
-import bogus.extension.anilist.embed.createStaffEmbed
+import bogus.extension.anilist.embed.createEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.paginator.respondingStandardPaginator
 import bogus.util.abbreviate
@@ -53,7 +53,7 @@ suspend fun ApplicationCommandContext.findStaff(query: String) {
         timeoutSeconds = PAGINATOR_TIMEOUT
         staffs.forEach { staff ->
             page {
-                apply(createStaffEmbed(staff))
+                apply(staff.createEmbed())
             }
         }
     }

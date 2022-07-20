@@ -31,7 +31,7 @@ suspend fun basura(
 
         extensions {
             add(::AboutExtension)
-            add { AniListExtension }
+            add(::AniListExtension)
             add(::AniRadioExtension)
 
             help {

@@ -1,6 +1,6 @@
 package bogus.extension.anilist.embed
 
-import bogus.extension.anilist.AniListExtension.EMBED_COLOR
+import bogus.extension.anilist.AniListExtension.Companion.EMBED_COLOR
 import bogus.extension.anilist.aniClean
 import bogus.extension.anilist.model.Character
 import bogus.extension.anilist.weirdHtmlClean
@@ -9,12 +9,12 @@ import bogus.util.appendIfNotMax
 import dev.kord.common.Color
 import dev.kord.rest.builder.message.EmbedBuilder
 
-fun createCharacterEmbed(character: Character): EmbedBuilder.() -> Unit = {
+fun Character.createEmbed(): EmbedBuilder.() -> Unit = {
     val animeAppearance = StringBuilder()
     val mangaAppearance = StringBuilder()
 
-    val mediaNodes = character.media?.nodes
-    val mediaEdges = character.media?.edges
+    val mediaNodes = media?.nodes
+    val mediaEdges = media?.edges
 
     if (mediaNodes != null && mediaEdges != null) {
         mediaNodes.zip(mediaEdges).forEach { pair ->
@@ -40,7 +40,7 @@ fun createCharacterEmbed(character: Character): EmbedBuilder.() -> Unit = {
 
     // Weirdly enough, duplicate names exists.
     val aliases = buildString {
-        character.name?.alternative
+        name?.alternative
             ?.filterNotNull()
             ?.filter { it.isNotEmpty() }
             ?.distinctBy { it }
@@ -50,14 +50,14 @@ fun createCharacterEmbed(character: Character): EmbedBuilder.() -> Unit = {
     }
 
     title = buildString {
-        val native = character.name?.native
-        append(character.name?.full)
+        val native = name?.native
+        append(name?.full)
         if (native != null) {
             append(" (${native})")
         }
     }
     // Remove spoilers, fix new lines, clean up html bullshit
-    description = character.description
+    description = this@createEmbed.description
         .replace(Regex("(?s)~!.*?!~"), "")
         .replace("\n\n\n", "\n")
         .aniClean()
@@ -66,10 +66,10 @@ fun createCharacterEmbed(character: Character): EmbedBuilder.() -> Unit = {
         .dropLastWhile { it != '\n' }
 
     thumbnail {
-        url = character.image?.large ?: ""
+        url = this@createEmbed.image?.large ?: ""
     }
 
-    url = character.siteUrl
+    url = siteUrl
     color = Color(EMBED_COLOR)
 
     if (animeAppearance.isNotBlank()) {
@@ -105,7 +105,7 @@ fun createCharacterEmbed(character: Character): EmbedBuilder.() -> Unit = {
 
     field {
         name = "Favorites"
-        value = character.favourites.toString()
+        value = favourites.toString()
         inline = true
     }
 }

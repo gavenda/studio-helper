@@ -9,7 +9,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-enum class ListenOp(val value: Int) {
+enum class ListenOp(val op: Int) {
     WELCOME(0),
     PLAYBACK(1),
     HEARTBEAT(9),
@@ -33,7 +33,7 @@ object ListenOpSerializer : KSerializer<ListenOp> {
     }
 
     override fun serialize(encoder: Encoder, listenOp: ListenOp) {
-        encoder.encodeInt(listenOp.value)
+        encoder.encodeInt(listenOp.op)
     }
 }
 

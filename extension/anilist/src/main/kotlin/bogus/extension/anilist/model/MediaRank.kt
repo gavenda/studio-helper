@@ -18,11 +18,11 @@ data class MediaRank(
     /**
      * The type of ranking
      */
-    val type: bogus.extension.anilist.model.MediaRankType = bogus.extension.anilist.model.MediaRankType.UNKNOWN,
+    val type: MediaRankType = MediaRankType.UNKNOWN,
     /**
      * The format the media is ranked within
      */
-    val format: bogus.extension.anilist.model.MediaFormat = bogus.extension.anilist.model.MediaFormat.UNKNOWN,
+    val format: MediaFormat = MediaFormat.UNKNOWN,
     /**
      * The year the media is ranked within
      */
@@ -30,7 +30,7 @@ data class MediaRank(
     /**
      * The season the media is ranked within
      */
-    val season: bogus.extension.anilist.model.MediaSeason = bogus.extension.anilist.model.MediaSeason.UNKNOWN,
+    val season: MediaSeason = MediaSeason.UNKNOWN,
     /**
      * If the ranking is based on all time instead of a season/year
      */

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MediaConnection(
-    val nodes: List<bogus.extension.anilist.model.Media?>? = null,
-    val edges: List<bogus.extension.anilist.model.MediaEdge?>? = null,
-    val pageInfo: bogus.extension.anilist.model.PageInfo? = null
+    val nodes: List<Media?>? = null,
+    val edges: List<MediaEdge?>? = null,
+    val pageInfo: PageInfo? = null
 )

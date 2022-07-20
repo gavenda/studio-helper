@@ -10,5 +10,5 @@ data class CharacterEdge(
     /**
      * The characters role in the media
      */
-    val role: bogus.extension.anilist.model.CharacterRole? = null
+    val role: CharacterRole? = null
 )

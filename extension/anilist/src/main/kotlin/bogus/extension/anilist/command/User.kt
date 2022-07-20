@@ -1,7 +1,7 @@
 package bogus.extension.anilist.command
 
 import bogus.extension.anilist.AniListExtension
-import bogus.extension.anilist.embed.createUserEmbed
+import bogus.extension.anilist.embed.createEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.util.abbreviate
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -35,7 +35,7 @@ suspend fun AniListExtension.user() {
             } else {
                 respond {
                     embed {
-                        apply(createUserEmbed(user))
+                        apply(user.createEmbed())
                     }
                     components {
                         linkButton {
