@@ -8,9 +8,16 @@ import bogus.extension.anilist.toHexColor
 import bogus.extension.anilist.toStars
 import bogus.util.abbreviate
 import dev.kord.rest.builder.message.EmbedBuilder
+import kotlin.math.ceil
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+
+data class TopStats(
+    val name: String,
+    val count: Int,
+    val meanScore: Float
+)
 
 fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     val statistics = statistics ?: error("User statistics is null")
@@ -22,6 +29,41 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
 
     val genres = (statistics.manga.genres + statistics.anime.genres)
     val tags = (statistics.anime.tags + statistics.manga.tags)
+
+    // Combined medians
+    val genresByMean = genres.distinctBy { it.genre }
+        .map { stats ->
+            val anime = statistics.anime.genres.firstOrNull { it.genre == stats.genre }
+            val manga = statistics.manga.genres.firstOrNull { it.genre == stats.genre }
+
+            if (anime != null && manga != null) {
+                // Calculate mean score of both groups
+                val count = (anime.count + manga.count)
+                val meanScore = ((anime.meanScore * anime.count) + (manga.meanScore * manga.count)) / count
+                return@map TopStats(anime.genre, count, ceil(meanScore))
+            } else {
+                val animeOrManga = anime ?: manga ?: error("Both anime and manga are null, data error from AniList?")
+                return@map TopStats(animeOrManga.genre, animeOrManga.count, animeOrManga.meanScore)
+            }
+        }
+        .sortedByDescending { it.meanScore }
+
+    val tagsByMean = tags.distinctBy { it.tag.name }
+        .map { stats ->
+            val anime = statistics.anime.tags.firstOrNull { it.tag.name == stats.tag.name }
+            val manga = statistics.manga.tags.firstOrNull { it.tag.name == stats.tag.name }
+
+            if (anime != null && manga != null) {
+                // Calculate mean score of both groups
+                val count = (anime.count + manga.count)
+                val meanScore = ((anime.meanScore * anime.count) + (manga.meanScore * manga.count)) / count
+                return@map TopStats(anime.tag.name, count, ceil(meanScore))
+            } else {
+                val animeOrManga = anime ?: manga ?: error("Both anime and manga are null, data error from AniList?")
+                return@map TopStats(animeOrManga.tag.name, animeOrManga.count, animeOrManga.meanScore)
+            }
+        }
+        .sortedByDescending { it.meanScore }
 
     val releaseYears = (statistics.manga.releaseYears + statistics.anime.releaseYears)
         .sortedByDescending { it.count }
@@ -111,33 +153,24 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     }
 
     if (genres.size >= 3) {
-        val genresByMean = genres
-            .sortedByDescending { it.meanScore }
-            .distinctBy { it.genre }
-        val (g1, g2, g3) = genresByMean
-        val worseAnimeGenre = statistics.anime.genres
-            .sortedByDescending { it.meanScore }
-            .take(30)
-            .last()
-        val worseMangaGenre = statistics.manga.genres
-            .sortedByDescending { it.meanScore }
-            .take(30)
-            .last()
+        val (s1, s2, s3) = genresByMean
+        val worseGenre = genresByMean
+            .filter { it.meanScore > 0 }
+            .minBy { it.meanScore }
 
         field {
             name = "Top Genres"
             value = """
-                - ${g1.genre} (${g1.meanScore.toStars()})
-                - ${g2.genre} (${g2.meanScore.toStars()})
-                - ${g3.genre} (${g3.meanScore.toStars()})
+                - ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})
+                - ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})
+                - ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})
             """.trimIndent()
         }
 
         field {
-            name = "Most Hated Genres"
+            name = "Most Hated Genre"
             value = """
-                - ${worseAnimeGenre.genre} (${worseAnimeGenre.meanScore.toStars()})
-                - ${worseMangaGenre.genre} (${worseMangaGenre.meanScore.toStars()})
+                - ${worseGenre.name} (Score: ${worseGenre.meanScore}, Count: ${worseGenre.count})
             """.trimIndent()
         }
 
@@ -161,33 +194,24 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     }
 
     if (tags.size >= 3) {
-        val tagsByMean = tags
-            .sortedByDescending { it.meanScore }
-            .distinctBy { it.tag.name }
-        val (t1, t2, t3) = tagsByMean
-        val worseAnimeTag = statistics.anime.tags
-            .sortedByDescending { it.meanScore }
-            .take(30)
-            .last()
-        val worseMangaTag = statistics.manga.tags
-            .sortedByDescending { it.meanScore }
-            .take(30)
-            .last()
+        val (s1, s2, s3) = tagsByMean
+        val worseTag = tagsByMean
+            .filter { it.meanScore > 0 }
+            .minBy { it.meanScore }
 
         field {
             name = "Top Tags"
             value = """
-                - ${t1.tag.name} (${t1.meanScore.toStars()})
-                - ${t2.tag.name} (${t2.meanScore.toStars()})
-                - ${t3.tag.name} (${t3.meanScore.toStars()})
+                - ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})
+                - ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})
+                - ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})
             """.trimIndent()
         }
 
         field {
-            name = "Most Hated Tags"
+            name = "Most Hated Tag"
             value = """
-                - ${worseAnimeTag.tag.name} (${worseAnimeTag.meanScore.toStars()})
-                - ${worseMangaTag.tag.name} (${worseMangaTag.meanScore.toStars()})
+                - ${worseTag.name} (Score: ${worseTag.meanScore}, Count: ${worseTag.count})
             """.trimIndent()
         }
 
