@@ -53,7 +53,7 @@ class PublicFollowUpStandardPaginator(
         } else {
             updateButtons()
 
-            embedInteraction!!.edit {
+            embedInteraction?.edit {
                 embed { applyPage() }
 
                 with(this@PublicFollowUpStandardPaginator.components) {

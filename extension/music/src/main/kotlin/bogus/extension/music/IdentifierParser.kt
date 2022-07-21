@@ -77,7 +77,7 @@ object IdentifierParser : KordExKoinComponent {
                 val result = spotifyWebApi.findTrack(spotifyUri.id)
                 val artist = result.artists.first().name
                 return IdentifierParseResult(
-                    identifiers = listOf("ytsearch:${result.name} - $artist"),
+                    identifiers = listOf("ytsearch:${result.name} $artist"),
                     spotify = true
                 )
             }
@@ -86,7 +86,7 @@ object IdentifierParser : KordExKoinComponent {
                 return IdentifierParseResult(
                     identifiers = tracks.map {
                         val artist = it.artists.first().name
-                        return@map "ytsearch:${it.name} - $artist"
+                        return@map "ytsearch:${it.name} $artist"
                     },
                     spotify = true
                 )
@@ -98,7 +98,7 @@ object IdentifierParser : KordExKoinComponent {
                         val track = it.track as de.sonallux.spotify.api.models.Track
                         val artist = track.artists.first().name
 
-                        return@map "ytsearch:${track.name} - $artist"
+                        return@map "ytsearch:${track.name} $artist"
                     },
                     spotify = true
                 )

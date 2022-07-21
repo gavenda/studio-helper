@@ -12,13 +12,15 @@ object YT {
      * https://regex101.com/r/Jg94Ag/1
      */
     private val responsePattern = Regex("""\["(.+?(?="))".+?(?=]])]]""")
-    private val youtubeEndpoint = Url("https://suggestqueries-clients6.youtube.com/complete/search?client=youtube")
+    private val youtubeEndpoint = Url("https://suggestqueries-clients6.youtube.com/complete/search")
     private val client = HttpClient()
     private val logger = KotlinLogging.logger { }.asFMTLogger()
 
     suspend fun query(query: String): List<String> {
         val response = client.get(youtubeEndpoint) {
             url {
+                parameter("client", "youtube")
+                parameter("ds", "yt")
                 parameter("q", query)
                 parameter("cp", 10) // search in music category
             }

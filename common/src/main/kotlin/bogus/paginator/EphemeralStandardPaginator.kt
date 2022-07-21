@@ -6,10 +6,12 @@ import com.kotlindiscord.kord.extensions.pagination.builders.PaginatorBuilder
 import com.kotlindiscord.kord.extensions.pagination.pages.Pages
 import com.kotlindiscord.kord.extensions.types.EphemeralInteractionContext
 import dev.kord.core.behavior.UserBehavior
+import dev.kord.core.behavior.interaction.followup.edit
 import dev.kord.core.behavior.interaction.response.EphemeralMessageInteractionResponseBehavior
 import dev.kord.core.behavior.interaction.response.createEphemeralFollowup
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.entity.ReactionEmoji
+import dev.kord.core.entity.interaction.followup.EphemeralFollowupMessage
 import dev.kord.rest.builder.message.create.embed
 import dev.kord.rest.builder.message.modify.embed
 import java.util.*
@@ -29,22 +31,28 @@ class EphemeralResponseStandardPaginator(
     val interaction: EphemeralMessageInteractionResponseBehavior,
 ) : StandardPaginator(pages, owner, timeoutSeconds, true, switchEmoji, bundle, locale) {
     /** Whether this paginator has been set up for the first time. **/
-    var isSetup: Boolean = false
+    var embedFollowupMessage: EphemeralFollowupMessage? = null
 
     override suspend fun send() {
-        if (!isSetup) {
-            isSetup = true
-
+        if (embedFollowupMessage == null) {
             setup()
+
+            embedFollowupMessage = interaction.createEphemeralFollowup {
+                embed { applyPage() }
+
+                with(this@EphemeralResponseStandardPaginator.components) {
+                    this@createEphemeralFollowup.applyToMessage()
+                }
+            }
         } else {
             updateButtons()
-        }
 
-        interaction.createEphemeralFollowup {
-            embed { applyPage() }
+            embedFollowupMessage?.edit {
+                embed { applyPage() }
 
-            with(this@EphemeralResponseStandardPaginator.components) {
-                this@createEphemeralFollowup.applyToMessage()
+                with(this@EphemeralResponseStandardPaginator.components) {
+                    this@edit.applyToMessage()
+                }
             }
         }
     }

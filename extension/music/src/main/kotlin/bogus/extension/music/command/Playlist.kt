@@ -274,12 +274,22 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                                 }
                             }
                             TrackLoadType.SEARCH_RESULT -> {
-                                respondChoices(item.tracks) { track ->
-                                    addTrack(track)
-                                    translate(
-                                        key = "response.playlist.add.single",
-                                        replacements = arrayOf(track.title, dbPlaylist.name)
-                                    )
+                                if (parseResult.spotify) {
+                                    addTrack(item.track)
+                                    respond {
+                                        content = translate(
+                                            key = "response.playlist.add.single",
+                                            replacements = arrayOf(item.track.title, dbPlaylist.name)
+                                        )
+                                    }
+                                } else {
+                                    respondChoices(item.tracks) { track ->
+                                        addTrack(track)
+                                        translate(
+                                            key = "response.playlist.add.single",
+                                            replacements = arrayOf(track.title, dbPlaylist.name)
+                                        )
+                                    }
                                 }
                             }
                             else -> {}
