@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import org.koin.core.component.inject
 import org.ktorm.database.Database
@@ -46,6 +47,11 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
             key = "player.queue.message", bundleName = TRANSLATION_BUNDLE
         )
     }
+
+    /**
+     * The mutex that belongs to this player.
+     */
+    val mutex = Mutex()
 
     /**
      * Last played song in milliseconds.
@@ -463,6 +469,11 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
             field {
                 name = "Remaining"
                 value = remainingDuration.humanReadableTime
+                inline = true
+            }
+            field {
+                name = "Requester"
+                value = playingTrack?.mention.toString()
                 inline = true
             }
             field {

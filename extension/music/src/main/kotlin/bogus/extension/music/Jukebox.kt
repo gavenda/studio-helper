@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap
 object Jukebox : KordExKoinComponent {
     private val log = KotlinLogging.logger {}.asFMTLogger()
     private val players = ConcurrentHashMap<Snowflake, MusicPlayer>()
-    private val mutex = Mutex()
     private val tp by inject<TranslationsProvider>()
     private val db by inject<Database>()
 
@@ -39,22 +38,20 @@ object Jukebox : KordExKoinComponent {
      * Register a guild to this [Jukebox].
      * @param guildId the guild snowflake to register
      */
-    suspend fun register(guildId: Snowflake) {
-        mutex.withLock {
-            players.computeIfAbsent(guildId) {
-                val musicPlayer = if (LAVAKORD_ENABLED) {
-                    LinkMusicPlayer(guildId)
-                } else {
-                    LavaMusicPlayer(guildId)
-                }
-                log.debug {
-                    message = "Music player created"
-                    context = mapOf(
-                        "guildId" to guildId
-                    )
-                }
-                return@computeIfAbsent musicPlayer
+    fun register(guildId: Snowflake) {
+        players.computeIfAbsent(guildId) {
+            val musicPlayer = if (LAVAKORD_ENABLED) {
+                LinkMusicPlayer(guildId)
+            } else {
+                LavaMusicPlayer(guildId)
             }
+            log.debug {
+                message = "Music player created"
+                context = mapOf(
+                    "guildId" to guildId
+                )
+            }
+            return@computeIfAbsent musicPlayer
         }
     }
 
@@ -64,6 +61,10 @@ object Jukebox : KordExKoinComponent {
      */
     fun playerFor(guildId: Snowflake): MusicPlayer {
         return players[guildId] ?: error("Guild not registered")
+    }
+
+    private fun mutexFor(request: PlayRequest): Mutex {
+        return playerFor(request.guild.id).mutex
     }
 
     suspend fun bind(guild: Guild) {
@@ -130,7 +131,7 @@ object Jukebox : KordExKoinComponent {
      * Plays a play request immediately.
      * @return response, empty string if successful.
      */
-    suspend fun playNow(request: PlayRequest): String = mutex.withLock {
+    suspend fun playNow(request: PlayRequest): String = mutexFor(request).withLock {
         val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
         val identifiers = parseResult.identifiers
 
@@ -227,7 +228,7 @@ object Jukebox : KordExKoinComponent {
      * Plays a play request next in the queue.
      * @return response, empty string if successful.
      */
-    suspend fun playNext(request: PlayRequest): String = mutex.withLock {
+    suspend fun playNext(request: PlayRequest): String = mutexFor(request).withLock {
         val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
         val identifiers = parseResult.identifiers
 
@@ -358,7 +359,7 @@ object Jukebox : KordExKoinComponent {
      * Plays a play request later in the queue.
      * @return response, empty string if successful.
      */
-    suspend fun playLater(request: PlayRequest): String = mutex.withLock {
+    suspend fun playLater(request: PlayRequest): String = mutexFor(request).withLock {
         val (respond, respondMultiple, parseResult, guild, mention, userId, locale) = request
         val identifiers = parseResult.identifiers
 
@@ -377,7 +378,7 @@ object Jukebox : KordExKoinComponent {
             CoroutineScope(Dispatchers.IO).launch {
                 identifiers.forEach { identifier ->
                     // Maintain order
-                    mutex.withLock {
+                    mutexFor(request).withLock {
                         playLaterSilently(
                             identifier = identifier,
                             guild = guild,
