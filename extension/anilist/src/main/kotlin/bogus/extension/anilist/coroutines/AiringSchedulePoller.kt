@@ -39,7 +39,12 @@ class AiringSchedulePoller(
     }
 
     suspend fun poll(): List<AiringSchedule> {
-        val airingSchedules = aniList.findAiringMedia(mediaIds)
+        val airingSchedules = try {
+            aniList.findAiringMedia(mediaIds)
+        } catch (e: Exception) {
+            log.warn { message = "Error retrieving airing medias" }
+            emptyList()
+        }
         return airingSchedules?.filter { updateMediaEpisode(it.mediaId, it.episode) } ?: emptyList()
     }
 
