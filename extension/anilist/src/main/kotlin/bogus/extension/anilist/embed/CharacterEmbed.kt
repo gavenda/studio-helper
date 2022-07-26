@@ -69,6 +69,10 @@ fun Character.createEmbed(): EmbedBuilder.() -> Unit = {
         url = this@createEmbed.image?.large ?: ""
     }
 
+    author {
+        name = "ID#$id"
+    }
+
     url = siteUrl
     color = Color(EMBED_COLOR)
 

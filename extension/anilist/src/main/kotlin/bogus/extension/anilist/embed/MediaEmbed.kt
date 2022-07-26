@@ -248,6 +248,8 @@ fun createMediaEmbed(
 
     author {
         name = buildString {
+            append("ID#${media.id}")
+
             val mediaRankAscending = media.rankings
                 .sortedBy { it.rank }
 
@@ -261,6 +263,7 @@ fun createMediaEmbed(
                 }
 
             if (allTimeRank != null) {
+                append(" ${Typography.bullet} ")
                 append("Rank #${allTimeRank.rank} (${media.format.displayName})")
             }
             if (seasonRank != null) {

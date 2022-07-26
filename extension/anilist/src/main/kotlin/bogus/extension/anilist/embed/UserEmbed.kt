@@ -233,7 +233,10 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
         }
     }
 
-    title = "${name}${apostrophe} Statistics"
+    author {
+        name = "ID#$id"
+    }
+    title = name
     description = about.aniClean().trim().abbreviate(EmbedBuilder.Limits.description)
     color = options?.profileColor?.toHexColor()
     image = bannerImage
@@ -243,6 +246,6 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     url = siteUrl
 
     footer {
-        text = "NOTE: Weab tendencies could be wrong since they are based on user data."
+        text = "Note: These are merely statistics based on user data."
     }
 }

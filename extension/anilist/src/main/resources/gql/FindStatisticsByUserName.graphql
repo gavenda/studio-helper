@@ -1,5 +1,6 @@
 query ($name: String) {
   User(name: $name) {
+    id,
     name
     about
     avatar {

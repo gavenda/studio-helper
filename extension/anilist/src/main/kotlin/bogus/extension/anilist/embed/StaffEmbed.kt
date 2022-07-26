@@ -74,6 +74,10 @@ fun Staff.createEmbed(): EmbedBuilder.() -> Unit = {
         }
     }
 
+    author {
+        name = "ID#$id"
+    }
+
     description = resultDescription
     thumbnail {
         url = this@createEmbed.image?.large ?: ""
