@@ -25,10 +25,7 @@ suspend fun EphemeralSlashCommand<*>.emoji() {
             val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
-                    author {
-                        name = "Emoji Information"
-                        icon = guild.getIconUrl(Image.Format.WEBP)
-                    }
+                    title = "Emoji Information"
                     color = Color(InformationExtension.EMBED_COLOR)
 
                     thumbnail {

@@ -87,12 +87,12 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     val remainingDuration: Long
         get() {
             var duration = 0L
-            val playingTrack = findPlayingTrack()
-            if (playingTrack != null) {
-                if (playing && playingTrack.seekable) {
-                    val delta = playingTrack.length.inWholeMilliseconds - playingTrack.position.inWholeMilliseconds
+            val currentPlayingTrack = playingTrack
+            if (currentPlayingTrack != null) {
+                if (playing && currentPlayingTrack.seekable) {
+                    val delta = currentPlayingTrack.length.inWholeMilliseconds - currentPlayingTrack.position.inWholeMilliseconds
                     if (delta < 0) {
-                        duration = playingTrack.length.inWholeMilliseconds
+                        duration = currentPlayingTrack.length.inWholeMilliseconds
                     } else {
                         duration = delta
                     }
@@ -117,6 +117,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
             return duration + queue.duration
         }
 
+    private var _playingTrack: MusicTrack? = null
     private var _looped = false
     private var _loopedAll = false
 
@@ -129,6 +130,11 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
      * If this player is looping all the songs. This will make the player add newly played tracks back to the queue.
      */
     val loopedAll get() = _loopedAll
+
+    /**
+     * Returns the currently playing track.
+     */
+    val playingTrack: MusicTrack? get() = _playingTrack ?: findPlayingTrack()
 
     init {
         queueUpdates
@@ -163,6 +169,20 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     fun toggleLoopAll() {
         _loopedAll = !_loopedAll
         updateBoundQueue()
+    }
+
+    /**
+     * Sets the currently playing track.
+     */
+    fun playingTrackTo(track: MusicTrack) {
+        _playingTrack = track
+    }
+
+    /**
+     * Clears the currently playing track.
+     */
+    fun clearPlayingTrack() {
+        _playingTrack = null;
     }
 
     /**
@@ -227,7 +247,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
      * @return the skipped song, or null if nothing to skip
      */
     suspend fun skip(): MusicTrack? {
-        return findPlayingTrack()?.apply {
+        return playingTrack?.apply {
             stopTrack()
         }
     }
@@ -321,10 +341,14 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     /**
      * Stop the currently playing track.
      */
-    abstract suspend fun stop()
+    suspend fun stop() {
+        queue.clear()
+        stopTrack()
+        updateBoundQueue()
+    }
 
     /**
-     * Returns the currently playing track.
+     * Returns the currently playing track of the underlying player implementation.
      */
     abstract fun findPlayingTrack(): MusicTrack?
 
@@ -418,7 +442,6 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     }
 
     private fun paginatedEmbed(embedDescription: () -> String): EmbedBuilder.() -> Unit {
-        val playingTrack = findPlayingTrack()
         val nowPlaying = {
             val playingTrackTitle = playingTrack?.title?.abbreviate(EmbedBuilder.Limits.title)
             val playingTrackUri = playingTrack?.uri

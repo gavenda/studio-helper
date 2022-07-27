@@ -24,10 +24,7 @@ suspend fun EphemeralSlashCommand<*>.server() {
             val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
-                    author {
-                        name = "Server Information"
-                        icon = guild.getIconUrl(Image.Format.WEBP)
-                    }
+                    title = "Server Information"
                     color = Color(InformationExtension.EMBED_COLOR)
 
                     thumbnail {

@@ -98,21 +98,17 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
         updateBoundQueue()
     }
 
-    override suspend fun stop() {
-        queue.clear()
-        player.stopTrack()
-        updateBoundQueue()
-    }
-
     override fun findPlayingTrack(): MusicTrack? {
         return player.playingTrack?.asMusicTrack()
     }
 
     override suspend fun playTrack(track: MusicTrack) {
         player.playTrack(track.track as Track)
+        playingTrackTo(track)
     }
 
     override suspend fun stopTrack() {
         player.stopTrack()
+        clearPlayingTrack()
     }
 }

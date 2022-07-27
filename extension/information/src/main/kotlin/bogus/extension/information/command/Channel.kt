@@ -30,10 +30,7 @@ suspend fun EphemeralSlashCommand<*>.channel() {
             val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
-                    author {
-                        name = "Channel Information"
-                        icon = guild.getIconUrl(Image.Format.WEBP)
-                    }
+                    title = "Channel Information"
                     color = Color(EMBED_COLOR)
 
                     arguments.channel.data.name.value?.let {

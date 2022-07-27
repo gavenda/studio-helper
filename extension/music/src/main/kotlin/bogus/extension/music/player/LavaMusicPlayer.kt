@@ -63,21 +63,18 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
         updateBoundQueue()
     }
 
-    override suspend fun stop() {
-        queue.clear()
-        player.stopTrack()
-    }
-
     override fun findPlayingTrack(): MusicTrack? {
         return player.playingTrack?.asMusicTrack()
     }
 
     override suspend fun playTrack(track: MusicTrack) {
         player.playTrack((track.track as AudioTrack).makeClone())
+        playingTrackTo(track)
     }
 
     override suspend fun stopTrack() {
         player.stopTrack()
+        clearPlayingTrack()
     }
 
     override fun onEvent(event: AudioEvent) = runBlocking {

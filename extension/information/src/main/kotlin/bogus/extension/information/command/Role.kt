@@ -25,10 +25,7 @@ suspend fun EphemeralSlashCommand<*>.role() {
             val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
-                    author {
-                        name = "Role Information"
-                        icon = guild.getIconUrl(Image.Format.WEBP)
-                    }
+                    title = "Role Information"
                     color = Color(InformationExtension.EMBED_COLOR)
 
                     field {
