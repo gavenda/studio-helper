@@ -24,7 +24,6 @@ fun User.createEmbed(): EmbedBuilder.() -> Unit = {
     val daysWatched = watchDuration.inWholeDays
     val hoursWatched = watchDuration.inWholeHours % 1.days.inWholeHours
     val minutesWatched = watchDuration.inWholeMinutes % 1.hours.inWholeMinutes
-    val apostrophe = if (name.lowercase().endsWith("s")) "'" else "'s"
 
     val genres = (statistics.manga.genres + statistics.anime.genres)
     val tags = (statistics.anime.tags + statistics.manga.tags)
