@@ -21,7 +21,6 @@ import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.capitalizeWords
 import dev.kord.common.Color
 import dev.kord.core.behavior.interaction.suggestString
-import dev.kord.rest.Image
 import dev.kord.rest.builder.message.create.embed
 import org.koin.core.component.inject
 import org.ktorm.database.Database
@@ -74,9 +73,7 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
         respond {
             embed {
                 color = Color(EMBED_COLOR)
-                author {
-                    name = translate("response.count.increase.author.name")
-                }
+                title = translate("response.count.increase.author.name")
                 description = translate(
                     "response.count.increase.description",
                     arrayOf(dbGuildCount.countName, dbGuildCount.countAmount)
@@ -106,10 +103,7 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
             respond {
                 embed {
                     color = Color(EMBED_COLOR)
-                    author {
-                        name = translate("response.count.list.author.name")
-                        icon = guild.getIconUrl(Image.Format.WEBP)
-                    }
+                    title = translate("response.count.list.author.name")
                     description = translate("response.count.list.description.empty", arrayOf(guild.name))
                     footer {
                         text = translate("response.count.list.footer.text")
@@ -126,10 +120,7 @@ private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
             chunked.forEach { sequenceChunked ->
                 page {
                     color = Color(EMBED_COLOR)
-                    author {
-                        name = translate("response.count.list.author.name")
-                        icon = guild.getIconUrl(Image.Format.WEBP)
-                    }
+                    title = translate("response.count.list.author.name")
                     description = translate("response.count.list.description", arrayOf(guild.name))
                     sequenceChunked.forEach { counter ->
                         val dateFormatted = DATE_FORMATTER.format(counter.lastTimestamp)
