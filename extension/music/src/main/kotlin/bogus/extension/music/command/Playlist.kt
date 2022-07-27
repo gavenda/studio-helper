@@ -240,6 +240,8 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                 val parseResult = IdentifierParser.toIdentifiers(arguments.music)
                 val identifiers = parseResult.identifiers
                 CoroutineScope(Dispatchers.IO).launch {
+                    val addedTracks = mutableListOf<MusicTrack>()
+
                     identifiers.forEach { parsedIdentifier ->
                         val addTrack: suspend (MusicTrack) -> Unit = { track ->
                             val dbPlaylistSong = DbPlaylistSong {
@@ -257,31 +259,18 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                         when (item.loadType) {
                             TrackLoadType.TRACK_LOADED -> {
                                 addTrack(item.track)
-                                respond {
-                                    content = translate(
-                                        key = "response.playlist.add.single",
-                                        replacements = arrayOf(item.track.title, dbPlaylist.name)
-                                    )
-                                }
+                                addedTracks.add(item.track)
                             }
                             TrackLoadType.PLAYLIST_LOADED -> {
-                                item.tracks.forEach { addTrack(it) }
-                                respond {
-                                    content = translate(
-                                        key = "response.playlist.add",
-                                        replacements = arrayOf(item.tracks, dbPlaylist.name)
-                                    )
+                                item.tracks.forEach {
+                                    addTrack(it)
+                                    addedTracks.add(item.track)
                                 }
                             }
                             TrackLoadType.SEARCH_RESULT -> {
                                 if (parseResult.spotify) {
-                                    addTrack(item.track)
-                                    respond {
-                                        content = translate(
-                                            key = "response.playlist.add.single",
-                                            replacements = arrayOf(item.track.title, dbPlaylist.name)
-                                        )
-                                    }
+                                    addTrack(item.tracks.first())
+                                    addedTracks.add(item.tracks.first())
                                 } else {
                                     respondChoices(item.tracks) { track ->
                                         addTrack(track)
@@ -293,6 +282,22 @@ private suspend fun EphemeralSlashCommand<*>.add() {
                                 }
                             }
                             else -> {}
+                        }
+                    }
+
+                    if (addedTracks.size == 1) {
+                        respond {
+                            content = translate(
+                                key = "response.playlist.add.single",
+                                replacements = arrayOf(addedTracks.first().title, dbPlaylist.name)
+                            )
+                        }
+                    } else if (addedTracks.size > 1) {
+                        respond {
+                            content = translate(
+                                key = "response.playlist.add",
+                                replacements = arrayOf(addedTracks.size, dbPlaylist.name)
+                            )
                         }
                     }
                 }

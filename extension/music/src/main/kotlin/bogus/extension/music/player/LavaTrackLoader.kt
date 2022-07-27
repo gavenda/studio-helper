@@ -12,7 +12,6 @@ class LavaTrackLoader(private val playerManager: AudioPlayerManager) : TrackLoad
     override suspend fun loadItem(identifier: String): TrackLoadResponse {
         val trackLoadResponse = TrackLoadResponse(
             loadType = TrackLoadType.LOAD_FAILED,
-            track = MusicTrack.EMPTY,
             tracks = listOf(),
             playlistInfo = TrackPlaylistInfo(""),
             error = null
@@ -24,7 +23,7 @@ class LavaTrackLoader(private val playerManager: AudioPlayerManager) : TrackLoad
                     continuation.resume(
                         trackLoadResponse.copy(
                             loadType = TrackLoadType.TRACK_LOADED,
-                            track = track.asMusicTrack()
+                            tracks = listOf(track.asMusicTrack())
                         )
                     )
                 }

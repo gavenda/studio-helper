@@ -11,7 +11,6 @@ class LinkTrackLoader(private val link: Link) : TrackLoader {
         val item = link.loadItem(identifier)
         return TrackLoadResponse(
             loadType = toLoadType(item.loadType),
-            track = item.tracks.first().toTrack().asMusicTrack(),
             tracks = item.tracks.mapToTrack().map { it.asMusicTrack() },
             error = item.exception?.message,
             playlistInfo = TrackPlaylistInfo(item.playlistInfo.name ?: "")
