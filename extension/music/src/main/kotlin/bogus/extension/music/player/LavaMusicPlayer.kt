@@ -103,6 +103,8 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     }
 
     private suspend fun onTrackEnd(track: AudioTrack, endReason: AudioTrackEndReason) {
+        clearPlayingTrack()
+
         val musicTrack = track.asMusicTrack()
 
         if (looped) {

@@ -42,6 +42,8 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
         }
 
         on<TrackEndEvent>(CoroutineScope(Dispatchers.IO)) {
+            clearPlayingTrack()
+
             if (looped) {
                 queue.offerFirst(track.asMusicTrack())
             }
