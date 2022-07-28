@@ -1,5 +1,6 @@
 package bogus.extension.announcer
 
+import bogus.collection.RollingList
 import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -7,8 +8,7 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.event
-import com.kotlindiscord.kord.extensions.i18n.TranslationsProvider
-import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.FilterStrategy
 import com.kotlindiscord.kord.extensions.utils.suggestStringMap
@@ -21,6 +21,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
+import dev.kord.common.Color
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.connect
@@ -29,6 +30,7 @@ import dev.kord.core.entity.channel.VoiceChannel
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.user.VoiceStateUpdateEvent
 import dev.kord.gateway.Intent
+import dev.kord.rest.builder.message.create.embed
 import dev.kord.voice.AudioFrame
 import io.ktor.util.*
 import kotlinx.coroutines.delay
@@ -36,10 +38,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import org.koin.core.component.inject
 import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Instant
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -53,6 +55,10 @@ class AnnouncerExtension(
     override val name = EXTENSION_NAME
     override val bundle = TRANSLATIONS_BUNDLE
 
+    companion object {
+        var EMBED_COLOR = 0
+    }
+
     private val playerManager: AudioPlayerManager = DefaultAudioPlayerManager().apply {
         AudioSourceManagers.registerLocalSource(this)
     }
@@ -60,37 +66,72 @@ class AnnouncerExtension(
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
     private val log = KotlinLogging.logger { }.asFMTLogger()
+    private val announceList = RollingList<AnnounceLog>()
 
     override suspend fun setup() {
         // We need guild voice states
         intents += Intent.GuildVoiceStates
 
         ephemeralSlashCommand {
-            name = "join"
-            description = "join.description"
+            name = "command.join"
+            description = "command.join.description"
             check {
                 anyGuild()
                 inVoiceChannel(audioProvider)
             }
             action {
                 respond {
-                    content = translate("join.response")
+                    content = translate("response.join")
                 }
             }
         }
 
         ephemeralSlashCommand(::AnnounceArgs) {
-            name = "announce"
-            description = "announce.description"
+            name = "command.announce"
+            description = "command.announce.description"
             check {
                 anyGuild()
                 inVoiceChannel(audioProvider)
             }
             action {
                 respond {
-                    content = translate("announce.response")
+                    content = translate("response.announce")
                 }
-                filePaths[arguments.name]?.let { playAudio(it) }
+                filePaths[arguments.name]?.let {
+                    announceList.add(AnnounceLog(user.mention, arguments.name, Instant.now()))
+                    playAudio(it)
+                }
+            }
+        }
+
+        publicSlashCommand {
+            name = "command.announce-logs"
+            description = "command.announce-logs.description"
+            check {
+                anyGuild()
+            }
+            action {
+                respond {
+                    embed {
+                        color = Color(EMBED_COLOR)
+                        title = translate("response.announce-logs.title")
+                        description = translate("response.announce-logs.description")
+
+                        announceList.forEach { log ->
+                            val dateFormatted = DATE_FORMATTER.format(log.timestamp)
+                            field {
+                                name = log.announced
+                                value = translate(
+                                    "response.announce-logs.field",
+                                    replacements = arrayOf(dateFormatted, log.mention)
+                                )
+                            }
+                        }
+                        footer {
+                            text = translate("response.announce-logs.footer.text")
+                        }
+                    }
+                }
             }
         }
 
@@ -184,11 +225,10 @@ class AnnouncerExtension(
         }
     }
 
-    inner class AnnounceArgs : KordExKoinComponent, Arguments() {
-        val tp by inject<TranslationsProvider>()
+    inner class AnnounceArgs : Arguments() {
         val name by string {
-            name = "name"
-            description = "announce.args.description"
+            name = "command.announce.args.name"
+            description = "command.announce.args.name.description"
 
             autoComplete {
                 val fileMap = mapOf(*filePaths.keys.map { it to it }.toTypedArray())
