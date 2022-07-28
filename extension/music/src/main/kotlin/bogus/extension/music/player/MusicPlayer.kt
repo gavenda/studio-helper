@@ -90,7 +90,8 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
             val currentPlayingTrack = playingTrack
             if (currentPlayingTrack != null) {
                 if (playing && currentPlayingTrack.seekable) {
-                    val delta = currentPlayingTrack.length.inWholeMilliseconds - currentPlayingTrack.position.inWholeMilliseconds
+                    val delta =
+                        currentPlayingTrack.length.inWholeMilliseconds - currentPlayingTrack.position.inWholeMilliseconds
                     if (delta < 0) {
                         duration = currentPlayingTrack.length.inWholeMilliseconds
                     } else {
@@ -411,59 +412,58 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
         }
 
         tracksChunked.forEachIndexed { _, requests ->
-            val description = buildString {
-                requests.forEach { request ->
-                    val trackTitle = request.title.abbreviate(EmbedBuilder.Limits.title).escapedBrackets
-                    val trackUri = request.uri
-                    val trackDuration = request.length.humanReadableTime
+            messages.add(paginatedEmbed {
+                buildString {
+                    requests.forEach { request ->
+                        val trackTitle = request.title.abbreviate(EmbedBuilder.Limits.title).escapedBrackets
+                        val trackUri = request.uri
+                        val trackDuration = request.length.humanReadableTime
 
-                    if (request.source != SOURCE_LOCAL) {
-                        append(tp.translate(
-                            key = "player.queue.track",
-                            bundleName = TRANSLATION_BUNDLE,
-                            replacements = arrayOf(trackNo, trackTitle, trackUri, trackDuration, request.userId)
-                        ))
-                    } else {
-                        val fileExt = trackUri.split(".").last().uppercase()
-                        append(tp.translate(
-                            key = "player.queue.track.local",
-                            bundleName = TRANSLATION_BUNDLE,
-                            replacements = arrayOf(trackNo, trackTitle, fileExt, trackDuration, request.userId)
-                        ))
+                        if (request.source != SOURCE_LOCAL) {
+                            append(
+                                tp.translate(
+                                    key = "player.queue.track",
+                                    bundleName = TRANSLATION_BUNDLE,
+                                    replacements = arrayOf(trackNo, trackTitle, trackUri, trackDuration, request.userId)
+                                )
+                            )
+                        } else {
+                            val fileExt = trackUri.split(".").last().uppercase()
+                            append(
+                                tp.translate(
+                                    key = "player.queue.track.local",
+                                    bundleName = TRANSLATION_BUNDLE,
+                                    replacements = arrayOf(trackNo, trackTitle, fileExt, trackDuration, request.userId)
+                                )
+                            )
+                        }
+                        trackNo++
                     }
-                    trackNo++
                 }
-            }
-
-            messages.add(paginatedEmbed { description })
+            })
         }
 
         return messages.toList()
     }
 
     private fun paginatedEmbed(embedDescription: () -> String): EmbedBuilder.() -> Unit {
-        val nowPlaying = {
-            val playingTrackTitle = playingTrack?.title?.abbreviate(EmbedBuilder.Limits.title)
-            val playingTrackUri = playingTrack?.uri
-            val playingTrackDuration = playingTrack?.length?.humanReadableTime
-
-            if (playingTrackTitle != null) {
-                if (playingTrackUri?.isUrl == true) {
-                    tp.translate(
-                        key = "player.queue.playing-track",
-                        bundleName = TRANSLATION_BUNDLE,
-                        replacements = arrayOf(playingTrackTitle, playingTrackUri, playingTrackDuration)
-                    )
-                } else {
-                    val fileExt = playingTrackUri?.split(".")?.last()?.uppercase()
-                    tp.translate(
-                        key = "player.queue.playing-track.local",
-                        bundleName = TRANSLATION_BUNDLE,
-                        replacements = arrayOf(playingTrackTitle, fileExt, playingTrackDuration)
-                    )
-                }
-            } else "-"
-        }
+        val nowPlaying = playingTrack?.let { track ->
+            val playingTrackTitle = track.title.abbreviate(EmbedBuilder.Limits.title)
+            if (track.uri.isUrl) {
+                tp.translate(
+                    key = "player.queue.playing-track",
+                    bundleName = TRANSLATION_BUNDLE,
+                    replacements = arrayOf(playingTrackTitle, track.uri, track.length.humanReadableTime)
+                )
+            } else {
+                val fileExt = track.uri.split(".").last().uppercase()
+                tp.translate(
+                    key = "player.queue.playing-track.local",
+                    bundleName = TRANSLATION_BUNDLE,
+                    replacements = arrayOf(playingTrackTitle, fileExt, track.length.humanReadableTime)
+                )
+            }
+        } ?: "-"
 
         return {
             title = tp.translate(
@@ -476,7 +476,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
 
             field {
                 name = "Now Playing"
-                value = nowPlaying()
+                value = nowPlaying
                 inline = false
             }
             field {
