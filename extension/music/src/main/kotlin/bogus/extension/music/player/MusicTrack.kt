@@ -23,20 +23,6 @@ data class MusicTrack(
     val source: String = "",
     val artworkUri: String = ""
 ) {
-    companion object {
-        val EMPTY = MusicTrack(
-            track = false,
-            title = "",
-            author = "",
-            length = 0.milliseconds,
-            identifier = "",
-            streamable = false,
-            seekable = false,
-            uri = "",
-            position = 0.milliseconds,
-        )
-    }
-
     fun makeClone(): MusicTrack {
         if (track is AudioTrack) {
             return copy(track = track.makeClone())

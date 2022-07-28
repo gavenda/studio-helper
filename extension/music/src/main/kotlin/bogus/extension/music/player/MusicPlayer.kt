@@ -496,7 +496,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
             }
             field {
                 name = "Requester"
-                value = playingTrack?.mention ?: "-"
+                value = playingTrack?.let { it.mention.ifBlank { "-" } } ?: "-"
                 inline = true
             }
             field {
