@@ -61,7 +61,13 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
                         )
                     }
 
-                    val retried = retryTrack(track.asMusicTrack())
+                    val musicTrack = track.asMusicTrack()
+                    val currentTrack = this@LinkMusicPlayer.playingTrack
+                    val trackToRetry = if (currentTrack != null && musicTrack.uri == currentTrack.uri) {
+                        currentTrack
+                    } else musicTrack
+
+                    val retried = retryTrack(trackToRetry)
                     if (retried.not()) {
                         playFromQueue()
                     }

@@ -106,6 +106,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
         clearPlayingTrack()
 
         val musicTrack = track.asMusicTrack()
+        val currentTrack = playingTrack
 
         if (looped) {
             queue.offerFirst(track.asMusicTrack(true))
@@ -123,7 +124,11 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
                     )
                 }
 
-                val retried = retryTrack(musicTrack)
+                val trackToRetry = if (currentTrack != null && musicTrack.uri == currentTrack.uri) {
+                    currentTrack
+                } else musicTrack
+
+                val retried = retryTrack(trackToRetry)
                 if (retried.not()) {
                     playFromQueue()
                 }

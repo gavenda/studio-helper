@@ -156,7 +156,7 @@ object Jukebox : KordExKoinComponent {
         val trackLoaded: suspend (MusicTrack) -> String = {
             val track = it.copy(userId = userId, mention = mention)
             if (guild.player.playing) {
-                val currentTrack = guild.player.findPlayingTrack()
+                val currentTrack = guild.player.playingTrack
                 if (currentTrack != null) {
                     guild.player.addFirst(currentTrack.makeClone())
                 }

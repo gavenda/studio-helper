@@ -68,7 +68,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
      * Returns true if the player is currently playing something regardless if it is paused.
      */
     val playing: Boolean
-        get() = findPlayingTrack() != null
+        get() = playingTrack != null
 
     /**
      * Returns true if the player is bound to a text channel.
@@ -109,10 +109,10 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     val totalDuration: Long
         get() {
             var duration = 0L
-            val playingTrack = findPlayingTrack()
-            if (playingTrack != null) {
-                if (playing && playingTrack.seekable) {
-                    duration = playingTrack.length.inWholeMilliseconds
+            val track = playingTrack
+            if (track != null) {
+                if (playing && track.seekable) {
+                    duration = track.length.inWholeMilliseconds
                 }
             }
             return duration + queue.duration
