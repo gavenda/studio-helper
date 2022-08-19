@@ -3,8 +3,10 @@ on:
   push:
     branches: [ main ]
     paths:
+      - 'gradle/libs.versions.toml'
       - 'common/**'
       - 'bot/vivy/**'
+      - 'library/database/**'
       - 'extension/about/**'
       - 'extension/music/**'
   workflow_dispatch:
