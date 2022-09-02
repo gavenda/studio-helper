@@ -88,6 +88,7 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
                 choices.forEachIndexed { idx, track ->
                     option(track.title.abbreviate(80), track.uri) {
                         emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote
+                        description = track.author.abbreviate(80)
                     }
                 }
                 action {
@@ -115,6 +116,7 @@ suspend fun EphemeralMessageCommandContext.respondChoices(
                 choices.forEachIndexed { idx, track ->
                     option(track.title.abbreviate(80), track.uri) {
                         emoji = if (idx == 0) EmojiPreferred else EmojiMusicNote
+                        description = track.author.abbreviate(80)
                     }
                 }
                 action {

@@ -13,6 +13,7 @@ lavakord = "3.6.3"
 spotify = "2.4.0"
 krontab = "0.7.2"
 copy-down = "1.0"
+graal-vm = "0.9.13"
 
 [libraries]
 kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -37,6 +38,7 @@ copy-down = { group = "io.github.furstenheim", name = "copy_down", version.ref =
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+graal-vm = { id = "org.graalvm.buildtools.native", version.ref = "graal-vm" }
 
 [bundles]
 log4j2 = ["log4j2-api", "log4j2-core", "log4j2-sl4j-impl"]

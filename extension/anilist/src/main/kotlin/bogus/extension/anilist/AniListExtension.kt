@@ -16,10 +16,14 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.koin.core.component.inject
 import org.ktorm.database.Database
+import java.util.concurrent.Executors
 
 class AniListExtension : Extension() {
     override val name = "anilist"
@@ -29,6 +33,7 @@ class AniListExtension : Extension() {
     val aniList by inject<AniList>()
     val notifier by inject<NotifyScheduler>()
     val log = KotlinLogging.logger { }.asFMTLogger()
+    val notifierContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     companion object {
         var EMBED_COLOR = 0
@@ -46,7 +51,9 @@ class AniListExtension : Extension() {
     private suspend fun setupEvents() {
         event<ReadyEvent> {
             action {
-                notifier.start()
+                CoroutineScope(notifierContext).launch {
+                    notifier.start()
+                }
             }
         }
         event<GuildCreateEvent> {

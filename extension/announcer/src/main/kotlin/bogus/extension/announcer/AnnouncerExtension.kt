@@ -21,6 +21,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
+import dev.inmo.krontab.doInfinityTz
 import dev.kord.common.Color
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
@@ -33,8 +34,7 @@ import dev.kord.gateway.Intent
 import dev.kord.rest.builder.message.create.embed
 import dev.kord.voice.AudioFrame
 import io.ktor.util.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -42,6 +42,7 @@ import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
+import java.util.concurrent.Executors
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -67,6 +68,8 @@ class AnnouncerExtension(
     private val player: AudioPlayer = playerManager.createPlayer()
     private val log = KotlinLogging.logger { }.asFMTLogger()
     private val announceList = RollingList<AnnounceLog>()
+    private val kronJobs = mutableListOf<Job>()
+    private val kronContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     override suspend fun setup() {
         // We need guild voice states
@@ -82,6 +85,20 @@ class AnnouncerExtension(
             action {
                 respond {
                     content = translate("response.join")
+                }
+            }
+        }
+
+        ephemeralSlashCommand {
+            name = "command.refresh"
+            description = "command.refresh.description"
+            check {
+                anyGuild()
+            }
+            action {
+                setupKron()
+                respond {
+                    content = "response.refresh"
                 }
             }
         }
@@ -165,6 +182,7 @@ class AnnouncerExtension(
                 voiceChannel.connect {
                     audioProvider { audioProvider() }
                 }
+                setupKron()
             }
         }
     }
@@ -194,6 +212,20 @@ class AnnouncerExtension(
                 it.name to Path.of("").resolve(it.filePath)
             }
         }
+
+    private fun setupKron() {
+        kronJobs.forEach { it.cancel() }
+
+        config.kronMapping.forEach {
+            val path = Path.of("").resolve(it.filePath)
+            val job = CoroutineScope(kronContext).launch {
+                doInfinityTz(it.kron) {
+                    playAudio(path, delayMillis)
+                }
+            }
+            kronJobs.add(job)
+        }
+    }
 
     private fun playAudio(path: Path, delay: Duration = 0.milliseconds) {
         val filePathStr = path.toAbsolutePath().toString()

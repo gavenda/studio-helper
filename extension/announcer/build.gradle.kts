@@ -15,6 +15,7 @@ dependencies {
     }
     implementation(LAVAPLAYER_NATIVE_EXTRAS)
     implementation(libs.lavaplayer.fork)
+    implementation(libs.krontab)
 }
 
 tasks {

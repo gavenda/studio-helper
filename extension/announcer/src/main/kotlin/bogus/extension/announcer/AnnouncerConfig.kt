@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class AnnouncerConfig(
     val delay: Long,
     val fileMapping: List<AudioFileMap>,
-    val userMapping: Map<Long, List<String>>
+    val userMapping: Map<Long, List<String>>,
+    val kronMapping: List<AudioKronMap>
 )
