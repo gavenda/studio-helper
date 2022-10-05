@@ -145,7 +145,7 @@ class AniListGraphQL : AniList {
 
     override suspend fun findAiringMedia(mediaIds: List<Long>): List<AiringSchedule>? {
         val gqlQuery = findResourceAsText("/gql/FindAiringMedia.graphql")
-        val variables = FindAiringMedia(mediaIds, page = 1, perPage = 100)
+        val variables = FindAiringMedia(mediaIds, page = 1, perPage = 50)
         val result = GQL.query<FindAiringMedia, PageResult>(graphUri, gqlQuery, variables)
         return result.Page?.airingSchedules
     }

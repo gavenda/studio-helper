@@ -42,7 +42,12 @@ class AiringSchedulePoller(
         val airingSchedules = try {
             aniList.findAiringMedia(mediaIds)
         } catch (e: Exception) {
-            log.warn { message = "Error retrieving airing medias" }
+            log.error(e) {
+                message = "Error retrieving airing medias"
+                context = mapOf(
+                    "error" to e.message
+                )
+            }
             emptyList()
         }
         return airingSchedules?.filter { updateMediaEpisode(it.mediaId, it.episode) } ?: emptyList()

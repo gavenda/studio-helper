@@ -12,8 +12,6 @@ import dev.kord.core.entity.channel.VoiceChannel
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.user.VoiceStateUpdateEvent
 import dev.kord.gateway.Intent
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import mu.KotlinLogging
 
 class AutoMoveExtension(
@@ -39,14 +37,14 @@ class AutoMoveExtension(
                 val voiceChannel = kord.getChannelOf<VoiceChannel>(defaultChannel) ?: return@action
                 val deafChannel = kord.getChannelOf<VoiceChannel>(deafChannel) ?: return@action
 
-                voiceChannel.voiceStates.onEach {
-                    val member = it.getMemberOrNull() ?: return@onEach
+                voiceChannel.voiceStates.collect {
+                    val member = it.getMemberOrNull() ?: return@collect
                     autoMove(it, member)
-                }.collect()
-                deafChannel.voiceStates.onEach {
-                    val member = it.getMemberOrNull() ?: return@onEach
+                }
+                deafChannel.voiceStates.collect {
+                    val member = it.getMemberOrNull() ?: return@collect
                     autoMove(it, member)
-                }.collect()
+                }
             }
         }
     }

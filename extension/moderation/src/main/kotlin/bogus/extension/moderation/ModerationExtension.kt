@@ -1,6 +1,6 @@
 package bogus.extension.moderation
 
-import bogus.extension.moderation.command.clean
+import bogus.extension.moderation.command.*
 import bogus.lib.database.migrate
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import dev.kord.gateway.Intent
@@ -24,6 +24,7 @@ class ModerationExtension : Extension() {
 
     private suspend fun setupCommands() {
         clean()
+        move()
     }
 
     private suspend fun setupMessageCommands() {

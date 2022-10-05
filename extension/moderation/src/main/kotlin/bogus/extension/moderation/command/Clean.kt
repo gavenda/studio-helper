@@ -6,6 +6,7 @@ import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.hasPermission
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
+import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalBoolean
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
@@ -47,11 +48,12 @@ suspend fun ModerationExtension.clean() {
                 )
             }
 
+            val deleteOlder = arguments.older ?: false
             val messages = channel.getMessagesBefore(lastMessageId, limit)
                 .map { it.id }
                 .toList()
 
-            channel.asChannelOf<GuildMessageChannel>().bulkDelete(messages, arguments.reason)
+            channel.asChannelOf<GuildMessageChannel>().bulkDelete(messages, deleteOlder, arguments.reason)
 
             respond {
                 content = "Cleaned ${arguments.amount} message(s)."
@@ -69,5 +71,9 @@ private class CleanArgs : Arguments() {
     val reason by optionalString {
         name = "reason"
         description = "Reason for deletion."
+    }
+    val older by optionalBoolean {
+        name = "older"
+        description = "Deletes messages older than 14 days."
     }
 }
