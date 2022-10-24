@@ -5,22 +5,26 @@ import bogus.extension.listenmoe.command.playing
 import bogus.extension.listenmoe.command.radio
 import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager
-import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Intent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.util.Identity.decode
+import io.ktor.websocket.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(KordVoice::class)
 class AniRadioExtension : Extension() {
     override val name = EXTENSION_NAME
     override val bundle = EXTENSION_NAME
@@ -32,7 +36,8 @@ class AniRadioExtension : Extension() {
     val playerManager: AudioPlayerManager = DefaultAudioPlayerManager().apply {
         registerSourceManager(HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY))
     }
-    val webSocketPool = Executors.newSingleThreadExecutor()
+    val scheduler = Scheduler()
+    val webSocketPool: ExecutorService = Executors.newSingleThreadExecutor()
     val webSocketScope = CoroutineScope(webSocketPool.asCoroutineDispatcher())
     val log = KotlinLogging.logger { }.asFMTLogger()
     val client = HttpClient(CIO) {
@@ -54,90 +59,99 @@ class AniRadioExtension : Extension() {
         setupWebSocket()
     }
 
-    suspend fun setupWebSocket() {
-        log.info { message = "Setting up websockets" }
-
+    suspend fun setupJpopGateway() {
         webSocketScope.launch {
             client.wss(JPOP_RADIO_GATEWAY) {
-                receivePlayback { songs[RadioType.JPOP] = it }
-            }
-        }
-
-        webSocketScope.launch {
-            client.wss(KPOP_RADIO_GATEWAY) {
-                receivePlayback { songs[RadioType.KPOP] = it }
+                try {
+                    while(isActive) {
+                        receivePlayback {
+                            songs[RadioType.JPOP] = it
+                        }
+                    }
+                } catch (ex: Throwable) {
+                    setupKpopGateway()
+                    val closeReason = closeReason.await()
+                    log.error(ex) {
+                        message = ex.message
+                        context = mapOf("reason" to closeReason)
+                    }
+                }
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun DefaultClientWebSocketSession.receivePlayback(playback: (ListenSong) -> Unit) {
-        var heartBeatMillis = 0L
-        var lastHeartBeat = 0L
-        val heartbeat = ListenFrame(op = ListenOp.HEARTBEAT)
-
-        while (isActive) {
-            try {
-                if (incoming.isEmpty) {
-                    val deltaMillis = System.currentTimeMillis() - lastHeartBeat
-
-                    if (deltaMillis >= heartBeatMillis) {
-                        lastHeartBeat = System.currentTimeMillis()
-
-                        log.debug {
-                            message = "Sending heartbeat"
-                            context = mapOf(
-                                "frame" to heartbeat
-                            )
+    suspend fun setupKpopGateway() {
+        webSocketScope.launch {
+            client.wss(KPOP_RADIO_GATEWAY) {
+                try {
+                    while(isActive) {
+                        receivePlayback {
+                            songs[RadioType.KPOP] = it
                         }
-
-                        sendSerialized(heartbeat)
                     }
-
-                    delay(1000)
-                    continue
+                } catch (ex: Throwable) {
+                    setupKpopGateway()
+                    val closeReason = closeReason.await()
+                    log.error(ex) {
+                        message = ex.message
+                        context = mapOf("reason" to closeReason)
+                    }
                 }
+            }
+        }
+    }
 
-                val frame = receiveDeserialized<ListenFrame>()
+    suspend fun setupWebSocket() {
+        log.info { message = "Setting up websockets" }
 
-                log.debug {
-                    message = "Received op code"
-                    context = mapOf(
-                        "op" to frame.op,
-                    )
-                }
+        setupJpopGateway()
+        setupKpopGateway()
+    }
 
-                if (frame.op == ListenOp.WELCOME) {
+    suspend fun DefaultClientWebSocketSession.receivePlayback(playback: (ListenSong) -> Unit) {
+        val frame = receiveDeserialized<ListenFrame>()
+
+        log.debug {
+            message = "Received op code"
+            context = mapOf(
+                "op" to frame.op,
+            )
+        }
+
+        if (frame.op == ListenOp.WELCOME) {
+            log.info {
+                message = "Received welcome message"
+                context = mapOf(
+                    "message" to frame.data?.message,
+                    "heartbeat" to frame.data?.heartbeat
+                )
+            }
+
+            if (frame.data?.heartbeat != null) {
+                val duration = frame.data.heartbeat.milliseconds
+
+                scheduler.schedule(duration, repeat = true) {
                     log.info {
-                        message = "Received welcome message"
-                        context = mapOf(
-                            "message" to frame.data?.message,
-                            "heartbeat" to frame.data?.heartbeat
-                        )
+                        message = "Sent heartbeat"
                     }
-
-                    frame.data?.heartbeat?.let {
-                        heartBeatMillis = it
-                    }
-
-                    lastHeartBeat = System.currentTimeMillis()
+                    sendSerialized(ListenFrame(op = ListenOp.HEARTBEAT))
                 }
+            } else {
+                log.warn {
+                    message = "Heartbeat data is null"
+                }
+            }
+        }
 
-                if (frame.op == ListenOp.PLAYBACK) {
-                    log.debug {
-                        message = "Playback changed"
-                        context = mapOf(
-                            "music" to frame.data?.song?.title
-                        )
-                    }
-                    frame.data?.song?.let {
-                        playback(it)
-                    }
-                }
-            } catch (ex: Exception) {
-                log.error(ex) {
-                    message = "An error occured during WebSocket handling, retrying..."
-                }
+        if (frame.op == ListenOp.PLAYBACK) {
+            log.debug {
+                message = "Playback changed"
+                context = mapOf(
+                    "music" to frame.data?.song?.title
+                )
+            }
+            frame.data?.song?.let {
+                playback(it)
             }
         }
     }
