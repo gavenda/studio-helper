@@ -90,10 +90,16 @@ class AniListExtension : Extension() {
     }
 
     private fun setupDatabase() {
-        migrate(
-            path = "classpath:db/anilist/migration",
-            schema = EXTENSION_NAME
-        )
+        try {
+            migrate(
+                path = "classpath:db/anilist/migration",
+                schema = EXTENSION_NAME
+            )
+        } catch (ex: Exception) {
+            log.error(ex) {
+                message = "Error setting up database"
+            }
+        }
     }
 
     private suspend fun setupCommands() {
