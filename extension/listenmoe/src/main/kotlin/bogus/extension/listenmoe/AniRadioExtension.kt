@@ -131,7 +131,7 @@ class AniRadioExtension : Extension() {
                 val duration = frame.data.heartbeat.milliseconds
 
                 scheduler.schedule(duration, repeat = true) {
-                    log.info {
+                    log.debug {
                         message = "Sent heartbeat"
                     }
                     sendSerialized(ListenFrame(op = ListenOp.HEARTBEAT))
