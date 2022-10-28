@@ -40,12 +40,12 @@ class AniListExtension : Extension() {
     }
 
     override suspend fun setup() {
-        setupEvents()
-        setupCommands()
-        setupMessageCommands()
         setupDatabase()
         setupNotifier()
         setupGraphQL()
+        setupEvents()
+        setupCommands()
+        setupMessageCommands()
     }
 
     private suspend fun setupEvents() {
