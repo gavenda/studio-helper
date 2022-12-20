@@ -15,7 +15,6 @@ import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.MessageChannelBehavior
 import dev.kord.rest.builder.message.EmbedBuilder
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -56,7 +55,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     /**
      * Last played song in milliseconds.
      */
-    val lastPlayMillis = atomic(System.currentTimeMillis())
+    var lastPlayMillis = System.currentTimeMillis()
 
     /**
      * The track request list of this player.
@@ -289,7 +288,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     protected fun updateLastPlayMillis(trackDuration: Long) {
         val disconnectAllowance = DISCONNECT_DURATION.seconds.inWholeMilliseconds
         val newDuration = System.currentTimeMillis() + trackDuration + disconnectAllowance
-        lastPlayMillis.lazySet(newDuration)
+        lastPlayMillis = newDuration
     }
 
     /**

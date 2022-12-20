@@ -176,7 +176,7 @@ class AnnouncerExtension(
         event<ReadyEvent> {
             action {
                 // Auto join channel
-                val guild = kord.getGuild(defaultGuildId) ?: return@action
+                val guild = kord.getGuildOrNull(defaultGuildId) ?: return@action
                 val voiceChannel = guild.getChannelOfOrNull<VoiceChannel>(defaultVoiceChannelId) ?: return@action
 
                 voiceChannel.connect {

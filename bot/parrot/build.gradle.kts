@@ -1,7 +1,6 @@
 plugins {
     id("bogus.kotlin-conventions")
     id("bogus.bot-application")
-    alias(libs.plugins.graal.vm)
 }
 
 version = "1.0"

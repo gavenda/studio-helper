@@ -41,7 +41,7 @@ suspend fun CounterExtension.count() {
     }
 }
 
-private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::CounterArgs) {
+private suspend fun PublicSlashCommand<*, *>.increase() = publicSubCommand(::CounterArgs) {
     val db by inject<Database>()
 
     name = "command.count.increase"
@@ -86,7 +86,7 @@ private suspend fun PublicSlashCommand<*>.increase() = publicSubCommand(::Counte
     }
 }
 
-private suspend fun PublicSlashCommand<*>.list() = publicSubCommand {
+private suspend fun PublicSlashCommand<*, *>.list() = publicSubCommand {
     val db by inject<Database>()
 
     name = "command.count.list"

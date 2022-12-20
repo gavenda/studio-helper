@@ -7,7 +7,7 @@
     </properties>
     <appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+<!--            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>-->
             <PatternLayout>
                 <pattern>${pattern}</pattern>
                 <disableAnsi>false</disableAnsi>
@@ -35,6 +35,7 @@
             <appender-ref ref="console"/>
         </logger>
         <root level="debug">
+            <appender-ref ref="console"/>
             <appender-ref ref="rolling"/>
         </root>
     </loggers>

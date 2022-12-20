@@ -47,7 +47,7 @@ suspend fun MusicExtension.remove() {
     }
 }
 
-private suspend fun EphemeralSlashCommandContext<*>.removedMessage(skipped: List<MusicTrack>): String =
+private suspend fun EphemeralSlashCommandContext<*, *>.removedMessage(skipped: List<MusicTrack>): String =
     when (skipped.size) {
         0 -> translate("response.remove.nothing")
         1 -> translate("response.remove.single", arrayOf(skipped.first().title))

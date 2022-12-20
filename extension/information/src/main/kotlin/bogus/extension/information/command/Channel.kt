@@ -19,7 +19,7 @@ import dev.kord.rest.Image
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.toJavaInstant
 
-suspend fun EphemeralSlashCommand<*>.channel() {
+suspend fun EphemeralSlashCommand<*, *>.channel() {
     ephemeralSubCommand(::ChannelArgs) {
         name = "command.channel"
         description = "command.channel.description"
@@ -27,7 +27,6 @@ suspend fun EphemeralSlashCommand<*>.channel() {
             anyGuild()
         }
         action {
-            val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
                     title = "Channel Information"

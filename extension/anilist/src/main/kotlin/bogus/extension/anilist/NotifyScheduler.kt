@@ -40,7 +40,7 @@ class NotifyScheduler(val kord: Kord) : KordExKoinComponent {
 
     suspend fun start() = kronScheduler.doInfinity {
         pollers.forEach { (guildId, poller) ->
-            val guild = kord.getGuild(guildId, EntitySupplyStrategy.cache) ?: return@forEach
+            val guild = kord.getGuildOrNull(guildId, EntitySupplyStrategy.cache) ?: return@forEach
             val dbGuild = db.guilds.first { it.discordGuildId eq guild.idLong }
             val airingSchedules = poller.poll()
 

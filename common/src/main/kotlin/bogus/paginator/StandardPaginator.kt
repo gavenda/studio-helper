@@ -46,10 +46,10 @@ abstract class StandardPaginator(
     }
 
     /** Button builder representing the button that switches to the previous page. **/
-    open var backButton: PublicInteractionButton? = null
+    open var backButton: PublicInteractionButton<*>? = null
 
     /** Button builder representing the button that switches to the next page. **/
-    open var nextButton: PublicInteractionButton? = null
+    open var nextButton: PublicInteractionButton<*>? = null
 
     /** Button builder representing the button that switches to the next page. **/
     open var linkButton: LinkInteractionButton? = null

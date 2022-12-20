@@ -14,7 +14,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.toJavaInstant
 
 
-suspend fun EphemeralSlashCommand<*>.role() {
+suspend fun EphemeralSlashCommand<*, *>.role() {
     ephemeralSubCommand(::RoleArgs) {
         name = "command.role"
         description = "command.role.description"
@@ -22,7 +22,6 @@ suspend fun EphemeralSlashCommand<*>.role() {
             anyGuild()
         }
         action {
-            val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
                     title = "Role Information"

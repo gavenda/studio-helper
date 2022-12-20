@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.count
 import kotlinx.datetime.toJavaInstant
 
 
-suspend fun EphemeralSlashCommand<*>.server() {
+suspend fun EphemeralSlashCommand<*, *>.server() {
     ephemeralSubCommand {
         name = "command.server"
         description = "command.server.description"

@@ -20,7 +20,7 @@ suspend fun MusicExtension.loop() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.single() {
+private suspend fun EphemeralSlashCommand<*, *>.single() {
     ephemeralSubCommand {
         name = "command.loop.single"
         description = "command.loop.single.description"
@@ -51,7 +51,7 @@ private suspend fun EphemeralSlashCommand<*>.single() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.all() {
+private suspend fun EphemeralSlashCommand<*, *>.all() {
     ephemeralSubCommand {
         name = "command.loop.all"
         description = "command.loop.all.description"

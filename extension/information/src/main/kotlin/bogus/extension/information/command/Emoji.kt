@@ -14,7 +14,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.toJavaInstant
 
 
-suspend fun EphemeralSlashCommand<*>.emoji() {
+suspend fun EphemeralSlashCommand<*, *>.emoji() {
     ephemeralSubCommand(::EmojiArgs) {
         name = "command.emoji"
         description = "command.emoji.description"
@@ -22,7 +22,6 @@ suspend fun EphemeralSlashCommand<*>.emoji() {
             anyGuild()
         }
         action {
-            val guild = guild?.asGuildOrNull() ?: return@action
             respond {
                 embed {
                     title = "Emoji Information"

@@ -46,20 +46,20 @@ abstract class QueuePaginator(
 
     val numberOfPages get() = pages.groups[currentGroup]?.size?.minus(1) ?: 0
 
-    open var playPauseButton: PublicInteractionButton? = null
-    open var skipButton: PublicInteractionButton? = null
-    open var shuffleButton: PublicInteractionButton? = null
-    open var volumeUpButton: PublicInteractionButton? = null
-    open var volumeDownButton: PublicInteractionButton? = null
-    open var repeatSingleButton: PublicInteractionButton? = null
-    open var repeatAllButton: PublicInteractionButton? = null
-    open var stopButton: PublicInteractionButton? = null
+    open var playPauseButton: PublicInteractionButton<*>? = null
+    open var skipButton: PublicInteractionButton<*>? = null
+    open var shuffleButton: PublicInteractionButton<*>? = null
+    open var volumeUpButton: PublicInteractionButton<*>? = null
+    open var volumeDownButton: PublicInteractionButton<*>? = null
+    open var repeatSingleButton: PublicInteractionButton<*>? = null
+    open var repeatAllButton: PublicInteractionButton<*>? = null
+    open var stopButton: PublicInteractionButton<*>? = null
 
     /** Button builder representing the button that switches to the previous page. **/
-    open var backButton: PublicInteractionButton? = null
+    open var backButton: PublicInteractionButton<*>? = null
 
     /** Button builder representing the button that switches to the next page. **/
-    open var nextButton: PublicInteractionButton? = null
+    open var nextButton: PublicInteractionButton<*>? = null
 
     override suspend fun destroy() {
         runTimeoutCallbacks()

@@ -26,7 +26,7 @@ suspend fun MusicExtension.play() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.later() {
+private suspend fun EphemeralSlashCommand<*, *>.later() {
     ephemeralSubCommand(::PlayArgs) {
         name = "command.play.later"
         description = "command.play.later.description"
@@ -57,7 +57,7 @@ private suspend fun EphemeralSlashCommand<*>.later() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.next() {
+private suspend fun EphemeralSlashCommand<*, *>.next() {
     ephemeralSubCommand(::PlayArgs) {
         name = "command.play.next"
         description = "command.play.next.description"
@@ -89,7 +89,7 @@ private suspend fun EphemeralSlashCommand<*>.next() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.now() {
+private suspend fun EphemeralSlashCommand<*, *>.now() {
     ephemeralSubCommand(::PlayArgs) {
         name = "command.play.now"
         description = "command.play.now.description"

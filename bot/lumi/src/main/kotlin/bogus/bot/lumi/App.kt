@@ -42,6 +42,7 @@ suspend fun lumi(
             add(::InformationExtension)
             add(::ModerationExtension)
             add(::UtilityExtension)
+            add(::NeilBogoExtension)
 
             help {
                 enableBundledExtension = false

@@ -18,7 +18,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.toJavaInstant
 
 
-suspend fun EphemeralSlashCommand<*>.user() {
+suspend fun EphemeralSlashCommand<*, *>.user() {
     ephemeralSubCommand(::UserArgs) {
         name = "command.user"
         description = "command.user.description"

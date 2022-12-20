@@ -51,7 +51,7 @@ suspend fun MusicExtension.playlist() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.list() {
+private suspend fun EphemeralSlashCommand<*, *>.list() {
     val db by inject<Database>()
 
     ephemeralSubCommand {
@@ -89,7 +89,7 @@ private suspend fun EphemeralSlashCommand<*>.list() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.show() {
+private suspend fun EphemeralSlashCommand<*, *>.show() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
@@ -143,7 +143,7 @@ private suspend fun EphemeralSlashCommand<*>.show() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.create() {
+private suspend fun EphemeralSlashCommand<*, *>.create() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
@@ -178,7 +178,7 @@ private suspend fun EphemeralSlashCommand<*>.create() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.delete() {
+private suspend fun EphemeralSlashCommand<*, *>.delete() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {
@@ -221,7 +221,7 @@ private suspend fun EphemeralSlashCommand<*>.delete() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.add() {
+private suspend fun EphemeralSlashCommand<*, *>.add() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistAddArgs) {
@@ -313,7 +313,7 @@ private suspend fun EphemeralSlashCommand<*>.add() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.remove() {
+private suspend fun EphemeralSlashCommand<*, *>.remove() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistRemoveArgs) {
@@ -361,7 +361,7 @@ private suspend fun EphemeralSlashCommand<*>.remove() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.queue() {
+private suspend fun EphemeralSlashCommand<*, *>.queue() {
     val db by inject<Database>()
 
     ephemeralSubCommand(::PlaylistNameArgs) {

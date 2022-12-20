@@ -22,6 +22,7 @@ import com.kotlindiscord.kord.extensions.utils.botHasPermissions
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Permission
 import dev.kord.core.behavior.interaction.suggestInt
+import dev.kord.core.behavior.interaction.suggestInteger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -152,9 +153,9 @@ private class AiringAnimeArgs : KordExKoinComponent, Arguments() {
         name = "command.notification.airing-anime.add.args.media-id"
         description = "command.notification.airing-anime.add.args.media-id.description"
         autoComplete {
-            suggestInt {
+            suggestInteger {
                 val input = focusedOption.value
-                if (input.isBlank()) return@suggestInt
+                if (input.isBlank()) return@suggestInteger
 
                 aniList.findMediaTitles(input, MediaType.ANIME)
                     ?.take(AUTOCOMPLETE_ITEMS_LIMIT)

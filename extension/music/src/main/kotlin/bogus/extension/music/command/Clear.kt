@@ -28,7 +28,7 @@ suspend fun MusicExtension.clear() {
     }
 }
 
-private suspend fun EphemeralSlashCommand<*>.queue() {
+private suspend fun EphemeralSlashCommand<*, *>.queue() {
     ephemeralSubCommand {
         name = "command.clear.queue"
         description = "command.clear.queue.description"

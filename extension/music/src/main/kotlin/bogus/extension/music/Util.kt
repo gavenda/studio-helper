@@ -77,7 +77,7 @@ val Long.humanReadableTime: String
         }
     }
 
-suspend fun EphemeralSlashCommandContext<*>.respondChoices(
+suspend fun EphemeralSlashCommandContext<*, *>.respondChoices(
     choices: List<MusicTrack>,
     select: suspend (MusicTrack) -> String
 ) {
@@ -105,7 +105,7 @@ suspend fun EphemeralSlashCommandContext<*>.respondChoices(
     }
 }
 
-suspend fun EphemeralMessageCommandContext.respondChoices(
+suspend fun EphemeralMessageCommandContext<*>.respondChoices(
     choices: List<MusicTrack>,
     select: suspend (MusicTrack) -> String
 ) {

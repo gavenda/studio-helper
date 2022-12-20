@@ -99,7 +99,7 @@ object Jukebox : KordExKoinComponent {
 
     suspend fun tryToDisconnect() {
         players.values.forEach { player ->
-            val lastPlayMillis = player.lastPlayMillis.value
+            val lastPlayMillis = player.lastPlayMillis
             if (!player.playing && System.currentTimeMillis() > lastPlayMillis) {
                 player.disconnect()
             }
