@@ -70,7 +70,7 @@ jobs:
         uses: yeshan333/rsync-deploy-action@v1.0.0
         with:
           source_path: ./vivy
-          destination_path: /home
+          destination_path: /var/lib
           remote_server_ip: ${{secrets.HOST}}
           ssh_port: ${{secrets.PORT}}
           ssh_login_username: ${{secrets.VIVY_USER}}
@@ -79,7 +79,7 @@ jobs:
       - name: Restart Discord Bot
         uses: garygrossgarten/github-action-ssh@v0.6.3
         with:
-          command: systemctl restart vivy
+          command: sudo systemctl restart vivy
           host: ${{secrets.HOST}}
           username: ${{secrets.USER}}
           port: ${{secrets.PORT}}
