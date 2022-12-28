@@ -71,7 +71,7 @@ jobs:
         uses: yeshan333/rsync-deploy-action@v1.0.0
         with:
           source_path: ./basura
-          destination_path: /home
+          destination_path: /var/lib/
           remote_server_ip: ${{secrets.HOST}}
           ssh_port: ${{secrets.PORT}}
           ssh_login_username: ${{secrets.BASURA_USER}}
@@ -80,7 +80,7 @@ jobs:
       - name: Restart Discord Bot
         uses: garygrossgarten/github-action-ssh@v0.6.3
         with:
-          command: systemctl restart basura
+          command: sudo systemctl restart basura
           host: ${{secrets.HOST}}
           username: ${{secrets.USER}}
           port: ${{secrets.PORT}}
