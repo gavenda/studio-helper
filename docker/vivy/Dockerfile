@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/java17-debian11
+FROM eclipse-temurin:17-jre-alpine
 RUN mkdir /bot
 COPY ./dist/vivy /bot/vivy
 WORKDIR /bot/vivy
