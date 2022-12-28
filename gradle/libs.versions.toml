@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.7.21"
+kotlin = "1.7.22"
 hikari = "5.0.1"
 flyway = "9.10.1"
 ktorm = "3.5.0"
@@ -15,6 +15,7 @@ krontab = "0.8.2"
 copy-down = "1.0"
 
 [libraries]
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }

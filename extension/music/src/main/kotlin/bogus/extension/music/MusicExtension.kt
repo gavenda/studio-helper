@@ -9,10 +9,14 @@ import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.env
+import com.kotlindiscord.kord.extensions.utils.envOrNull
 import com.kotlindiscord.kord.extensions.utils.loadModule
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
+import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameBufferFactory
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer
 import de.sonallux.spotify.api.SpotifyWebApi
@@ -129,8 +133,11 @@ object MusicExtension : Extension() {
         loadModule(createdAtStart = true) {
             single<AudioPlayerManager> {
                 DefaultAudioPlayerManager().apply {
-                    AudioSourceManagers.registerRemoteSources(this)
-                    AudioSourceManagers.registerLocalSource(this)
+                    val email = envOrNull("YOUTUBE_EMAIL")
+                    val password = envOrNull("YOUTUBE_PASSWORD")
+
+                    registerSourceManager(YoutubeAudioSourceManager(true, email, password))
+                    registerSourceManager(LocalAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY))
 
                     configuration.isFilterHotSwapEnabled = true
                     configuration.frameBufferFactory = AudioFrameBufferFactory { bufferDuration, format, stopping ->

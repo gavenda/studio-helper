@@ -14,7 +14,9 @@ dependencies {
     }
     implementation(LAVAPLAYER_NATIVE_EXTRAS)
     implementation(libs.lavaplayer.fork)
-    implementation(libs.lavakord)
+    implementation(libs.lavakord) {
+        exclude("dev.kord")
+    }
     implementation(libs.lavadsp)
     implementation(libs.spotify)
 }

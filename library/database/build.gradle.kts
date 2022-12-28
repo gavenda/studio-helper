@@ -7,7 +7,9 @@ version = "1.0"
 dependencies {
     api(libs.kotlin.stdlib.jdk8)
     api(libs.kordex)
-    api(libs.bundles.database)
+    api(libs.bundles.database) {
+        exclude("org.postgresql")
+    }
     runtimeOnly(libs.postgresql)
 }
 

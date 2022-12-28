@@ -25,9 +25,6 @@
         </RollingFile>
     </appenders>
     <loggers>
-        <logger name="bogus" additivity="false">
-            <appender-ref ref="console"/>
-        </logger>
         <root level="debug">
             <appender-ref ref="console"/>
             <appender-ref ref="rolling"/>
