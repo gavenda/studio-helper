@@ -58,7 +58,5 @@ jobs:
           file: ./docker/lumi/Dockerfile
           context: .
           push: true
-          platforms:
-            - 'linux/amd64'
-            - 'linux/arm64'
+          platforms: 'linux/amd64,linux/arm64'
           tags: gavenda/lumi:latest

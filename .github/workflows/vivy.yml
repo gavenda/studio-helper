@@ -55,9 +55,7 @@ jobs:
           file: ./docker/vivy/Dockerfile
           context: .
           push: true
-          platforms:
-            - 'linux/amd64'
-            - 'linux/arm64'
+          platforms: 'linux/amd64,linux/arm64'
           tags: gavenda/vivy:latest
   deploy:
     name: Deploy
