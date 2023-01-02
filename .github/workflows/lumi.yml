@@ -1,0 +1,61 @@
+name: Lumi
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'gradle/libs.versions.toml'
+      - 'common/**'
+      - 'bot/lumi/**'
+      - 'library/database/**'
+      - 'extension/about/**'
+      - 'extension/administration/**'
+      - 'extension/moderation/**'
+      - 'extension/information/**'
+      - 'extension/utility/**'
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: adopt
+          java-version: 17
+      - name: Build Distribution
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: "bot:lumi:installDist --refresh-dependencies"
+      - name: Upload Distribution
+        uses: actions/upload-artifact@v3
+        with:
+          name: lumi
+          path: ./dist/lumi
+  docker:
+    name: Push to Docker
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download Distribution
+        uses: actions/download-artifact@v3
+        with:
+          name: lumi
+          path: ./dist/lumi
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          file: ./docker/lumi/Dockerfile
+          context: .
+          push: true
+          tags: gavenda/lumi:latest
