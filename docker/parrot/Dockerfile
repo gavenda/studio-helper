@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 RUN mkdir /bot
 COPY ./dist/parrot /bot/parrot
 WORKDIR /bot/parrot
