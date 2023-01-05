@@ -61,8 +61,6 @@ fun AudioTrack.asMusicTrack(clone: Boolean = false): MusicTrack {
         uri = info.uri,
         position = position.milliseconds,
         source = sourceManager.sourceName,
-        artworkUri = if (sourceManager.sourceName == SOURCE_YOUTUBE) {
-            YT.thumbnail(identifier)
-        } else ""
+        artworkUri = info.artworkUrl
     )
 }

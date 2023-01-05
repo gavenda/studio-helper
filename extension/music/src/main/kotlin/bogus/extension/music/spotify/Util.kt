@@ -55,8 +55,8 @@ fun parseSpotifyUri(uri: String): SpotifyURI? {
     }
 
     // `http:` or `https:`
-    val parts = pathname.split('/')
-    return parseParts(uri, parts)
+    // val parts = pathname.split('/')
+    return null
 }
 
 fun parseParts(uri: String, inputParts: List<String>): SpotifyURI? {

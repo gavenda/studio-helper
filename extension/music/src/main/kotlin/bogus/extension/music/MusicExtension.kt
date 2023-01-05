@@ -15,7 +15,15 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.yamusic.YandexMusicAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameBufferFactory
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer
@@ -136,8 +144,19 @@ object MusicExtension : Extension() {
                     val email = envOrNull("YOUTUBE_EMAIL")
                     val password = envOrNull("YOUTUBE_PASSWORD")
 
-                    registerSourceManager(YoutubeAudioSourceManager(true, email, password))
+                    // Local
                     registerSourceManager(LocalAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY))
+
+                    // Remote
+                    registerSourceManager(YandexMusicAudioSourceManager(false))
+                    registerSourceManager(YoutubeAudioSourceManager(true, email, password))
+                    registerSourceManager(SoundCloudAudioSourceManager.createDefault())
+                    registerSourceManager(BandcampAudioSourceManager())
+                    registerSourceManager(VimeoAudioSourceManager())
+                    registerSourceManager(TwitchStreamAudioSourceManager())
+                    registerSourceManager(BeamAudioSourceManager())
+                    registerSourceManager(GetyarnAudioSourceManager())
+                    registerSourceManager(HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY))
 
                     configuration.isFilterHotSwapEnabled = true
                     configuration.frameBufferFactory = AudioFrameBufferFactory { bufferDuration, format, stopping ->
