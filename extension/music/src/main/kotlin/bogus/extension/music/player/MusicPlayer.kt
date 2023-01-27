@@ -15,6 +15,7 @@ import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.MessageChannelBehavior
 import dev.kord.rest.builder.message.EmbedBuilder
+import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -34,6 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
     private val db by inject<Database>()
     private val tp by inject<TranslationsProvider>()
+    protected val registry by inject<MeterRegistry>()
     protected val queue = LinkedBlockingDeque<MusicTrack>()
     protected val log = KotlinLogging.logger {}.asFMTLogger()
     private val queueUpdatePublisher = MutableSharedFlow<Long>(
@@ -74,6 +76,9 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
      */
     val bound: Boolean
         get() = boundPaginator != null
+
+    val queued: Int
+        get() = queue.size
 
     /**
      * The bound text channel id.
@@ -304,6 +309,8 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
         queue.removeAll(removed.toSet())
 
         updateBoundQueue()
+
+        registry.counter(Metric.SONGS_REMOVED).increment()
 
         return removed
     }

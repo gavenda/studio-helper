@@ -14,7 +14,6 @@ import com.kotlindiscord.kord.extensions.utils.loadModule
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager
@@ -35,8 +34,10 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
 import dev.kord.gateway.Intent
 import dev.schlaubi.lavakord.kord.lavakord
+import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
 object MusicExtension : Extension() {
@@ -71,6 +72,7 @@ object MusicExtension : Extension() {
 
                 setupSpotify()
                 setupDatabase()
+                setupMetrics()
             }
         }
         event<GuildCreateEvent> {
@@ -85,6 +87,14 @@ object MusicExtension : Extension() {
                 Jukebox.tryToDisconnect()
             }
         }
+    }
+
+    private fun setupMetrics() {
+        val registry by inject<MeterRegistry>()
+
+        registry.config().commonTags(
+            Metric.Tag.COMMAND
+        )
     }
 
     private fun setupDatabase() {

@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.7.22"
+kotlin = "1.8.0"
 hikari = "5.0.1"
 flyway = "9.10.1"
 ktorm = "3.5.0"
@@ -9,19 +9,22 @@ kordex = "1.5.6-SNAPSHOT"
 lavaplayer-fork = "custom-SNAPSHOT"
 kord = "0.8.x-SNAPSHOT"
 lavadsp = "0.7.7"
-lavakord = "3.7.0"
+lavakord = "3.8.0"
 spotify = "2.4.0"
 krontab = "0.8.2"
 copy-down = "1.0"
+micrometer = "1.10.3"
+prometheus = "0.16.0"
 
 [libraries]
+kotlin-platform = { group = "org.jetbrains.kotlin", name="kotlin-bom", version.ref = "kotlin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
-kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 log4j2-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j2" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2" }
-log4j2-sl4j-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version.ref = "log4j2" }
+log4j2-sl4j-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j2" }
 flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
 ktorm = { group = "org.ktorm", name = "ktorm-core", version.ref = "ktorm" }
 ktorm-support-postgres = { group = "org.ktorm", name = "ktorm-support-postgresql", version.ref = "ktorm" }
@@ -34,6 +37,8 @@ lavadsp = { group = "com.github.natanbc", name = "lavadsp", version.ref = "lavad
 spotify = { group = "de.sonallux.spotify", name = "spotify-web-api-java", version.ref = "spotify" }
 krontab = { group = "dev.inmo", name = "krontab", version.ref = "krontab" }
 copy-down = { group = "io.github.furstenheim", name = "copy_down", version.ref = "copy-down" }
+micrometer = { group = "io.micrometer", name = "micrometer-registry-prometheus", version.ref = "micrometer" }
+prometheus = { group = "io.prometheus", name = "simpleclient_httpserver", version.ref = "prometheus" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -42,3 +47,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 [bundles]
 log4j2 = ["log4j2-api", "log4j2-core", "log4j2-sl4j-impl"]
 database = ["flyway", "ktorm", "ktorm-support-postgres", "hikari"]
+metrics = ["micrometer", "prometheus"]

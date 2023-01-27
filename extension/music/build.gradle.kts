@@ -7,6 +7,7 @@ version = "2.0"
 dependencies {
     implementation(projects.common)
     implementation(projects.library.database)
+    implementation(projects.library.metrics)
     implementation(libs.kord) {
         capabilities {
             requireCapability(KordCapability.VOICE)

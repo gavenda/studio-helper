@@ -20,6 +20,7 @@ include(
     "extension:music",
     "extension:utility",
     "library:database",
+    "library:metrics"
 )
 
 dependencyResolutionManagement {

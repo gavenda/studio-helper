@@ -5,6 +5,7 @@ import bogus.constants.ENVIRONMENT_PROD
 import bogus.extension.about.AboutExtension
 import bogus.extension.music.MusicExtension
 import bogus.lib.database.setupDatabase
+import bogus.lib.metrics.setupMetrics
 import bogus.util.asFMTLogger
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
@@ -47,6 +48,7 @@ suspend fun vivy(
             kordShutdownHook = true
 
             created {
+                setupMetrics()
                 setupDatabase()
             }
 

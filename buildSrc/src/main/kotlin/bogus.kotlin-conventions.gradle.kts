@@ -14,6 +14,10 @@ kotlin {
     }
 }
 
+dependencies {
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+}
+
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {

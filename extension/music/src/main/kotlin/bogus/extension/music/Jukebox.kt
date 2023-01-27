@@ -11,6 +11,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.GuildBehavior
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.channel.GuildMessageChannel
+import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,6 +34,13 @@ object Jukebox : KordExKoinComponent {
     private val players = ConcurrentHashMap<Snowflake, MusicPlayer>()
     private val tp by inject<TranslationsProvider>()
     private val db by inject<Database>()
+    private val registry by inject<MeterRegistry>()
+
+    init {
+        registry.gauge(Metric.SONGS_PLAYING, players.values) {
+            it.map { player -> player.queued }.reduce { acc, queued -> acc + queued }.toDouble()
+        }
+    }
 
     /**
      * Register a guild to this [Jukebox].
@@ -166,6 +174,8 @@ object Jukebox : KordExKoinComponent {
                 guild.player.addFirst(track, update = true)
             }
 
+            registry.counter(Metric.SONGS_QUEUED).increment()
+
             tp.translate(
                 key = "response.jukebox.play-now",
                 bundleName = TRANSLATION_BUNDLE,
@@ -254,6 +264,9 @@ object Jukebox : KordExKoinComponent {
             val track = it.copy(userId = userId, mention = mention)
             val started = guild.player.addFirst(track, update = true)
 
+            // Update metrics
+            registry.counter(Metric.SONGS_QUEUED).increment()
+
             if (started) {
                 tp.translate(
                     key = "response.jukebox.play-now",
@@ -333,6 +346,9 @@ object Jukebox : KordExKoinComponent {
         val trackLoaded: suspend (MusicTrack) -> Unit = {
             val track = it.copy(userId = userId, mention = mention)
             guild.player.add(track, update = true, play = false)
+
+            // Update metrics
+            registry.counter(Metric.SONGS_QUEUED).increment()
         }
         val item = guild.player.loader.loadItem(identifier)
 
@@ -341,6 +357,8 @@ object Jukebox : KordExKoinComponent {
                 trackLoaded(item.track)
             }
             TrackLoadType.PLAYLIST_LOADED -> {
+                // Update metrics
+                registry.counter(Metric.SONGS_QUEUED).increment(item.tracks.size.toDouble())
                 guild.player.add(*item.tracks.toTypedArray(), update = true)
             }
             TrackLoadType.SEARCH_RESULT -> {
@@ -406,6 +424,9 @@ object Jukebox : KordExKoinComponent {
             val track = it.copy(userId = userId, mention = mention)
             val started = guild.player.add(track, update = true)
 
+            // Update metrics
+            registry.counter(Metric.SONGS_QUEUED)
+
             if (started) {
                 tp.translate(
                     key = "response.jukebox.play-now",
@@ -432,6 +453,9 @@ object Jukebox : KordExKoinComponent {
                     .map { it.copy(userId = userId, mention = mention) }
                 val started = guild.player.add(*tracks.toTypedArray(), update = true)
                 val playlistName = item.playlistInfo.name.escapedBackticks
+
+                // Update metrics
+                registry.counter(Metric.SONGS_QUEUED).increment(item.tracks.size.toDouble())
 
                 if (started) {
                     respond(

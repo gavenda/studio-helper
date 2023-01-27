@@ -1,6 +1,7 @@
 package bogus.extension.music.player
 
 import bogus.extension.music.FRAME_BUFFER_SIZE
+import bogus.extension.music.Metric
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.event.*
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
@@ -12,6 +13,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.voice.AudioFrame
 import dev.kord.voice.VoiceConnection
 import io.ktor.util.*
+import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
@@ -70,11 +72,13 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     override suspend fun playTrack(track: MusicTrack) {
         player.playTrack((track.track as AudioTrack).makeClone())
         playingTrackTo(track)
+        registry.counter(Metric.SONGS_PLAYED).increment()
     }
 
     override suspend fun stopTrack() {
         player.stopTrack()
         clearPlayingTrack()
+        registry.counter(Metric.SONGS_STOPPED).increment()
     }
 
     override fun onEvent(event: AudioEvent) = runBlocking {

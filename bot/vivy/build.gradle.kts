@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.bundles.log4j2)
     implementation(projects.common)
     implementation(projects.library.database)
+    implementation(projects.library.metrics)
     implementation(projects.extension.about)
     implementation(projects.extension.music)
 }
