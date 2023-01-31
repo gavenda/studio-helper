@@ -78,7 +78,6 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     override suspend fun stopTrack() {
         player.stopTrack()
         clearPlayingTrack()
-        registry.counter(Metric.SONGS_STOPPED).increment()
     }
 
     override fun onEvent(event: AudioEvent) = runBlocking {

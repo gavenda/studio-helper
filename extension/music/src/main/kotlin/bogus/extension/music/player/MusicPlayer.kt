@@ -252,6 +252,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
      * @return the skipped song, or null if nothing to skip
      */
     suspend fun skip(): MusicTrack? {
+        registry.counter(Metric.SONGS_SKIPPED).increment()
         return playingTrack?.apply {
             stopTrack()
         }
@@ -272,7 +273,10 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
         try {
             boundPaginator?.send()
         } catch (ex: Exception) {
-            log.error(ex) { message = "Unable to send bind message" }
+            log.info {
+                message = "Unable to send bind message"
+                context = mapOf("guildId" to guildId)
+            }
         }
         return boundPaginator?.message?.id
     }
@@ -349,6 +353,7 @@ abstract class MusicPlayer(val guildId: Snowflake) : KordExKoinComponent {
      * Stop the currently playing track.
      */
     suspend fun stop() {
+        registry.counter(Metric.SONGS_STOPPED).increment()
         queue.clear()
         stopTrack()
         updateBoundQueue()

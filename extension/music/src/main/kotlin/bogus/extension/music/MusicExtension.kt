@@ -34,10 +34,8 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.guild.GuildCreateEvent
 import dev.kord.gateway.Intent
 import dev.schlaubi.lavakord.kord.lavakord
-import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
 object MusicExtension : Extension() {
@@ -72,7 +70,6 @@ object MusicExtension : Extension() {
 
                 setupSpotify()
                 setupDatabase()
-                setupMetrics()
             }
         }
         event<GuildCreateEvent> {
@@ -87,14 +84,6 @@ object MusicExtension : Extension() {
                 Jukebox.tryToDisconnect()
             }
         }
-    }
-
-    private fun setupMetrics() {
-        val registry by inject<MeterRegistry>()
-
-        registry.config().commonTags(
-            Metric.Tag.COMMAND
-        )
     }
 
     private fun setupDatabase() {

@@ -122,6 +122,5 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
     override suspend fun stopTrack() {
         player.stopTrack()
         clearPlayingTrack()
-        registry.counter(Metric.SONGS_STOPPED).increment()
     }
 }
