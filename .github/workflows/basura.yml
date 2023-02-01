@@ -62,7 +62,7 @@ jobs:
           tags: gavenda/basura:latest
   deploy:
     name: Deploy
-    needs: build
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       - name: Restart Discord Bot
