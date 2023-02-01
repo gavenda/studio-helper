@@ -23,7 +23,7 @@ kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", vers
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
-log4j2-appender-nodep = { group = "pl.tkowalcz.tjahzi", name = "log4j2-appender", version.ref = "log4j2-appender"}
+log4j2-appender-nodep = { group = "pl.tkowalcz.tjahzi", name = "log4j2-appender-nodep", version.ref = "log4j2-appender"}
 log4j2-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j2" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2" }
 log4j2-sl4j-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j2" }
