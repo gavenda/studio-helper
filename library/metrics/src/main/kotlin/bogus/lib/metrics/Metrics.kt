@@ -13,8 +13,15 @@ import java.net.InetSocketAddress
 /**
  * Sets up metrics for this bot.
  */
-suspend fun setupMetrics() {
+fun setupMetrics() {
+    val enabled = envOrNull("METRICS_ENABLED")?.toBoolean() ?: false
     val log = KotlinLogging.logger { }
+
+    if (!enabled) {
+        log.info { "Metrics not enabled." }
+        return
+    }
+
     val metricsPort = envOrNull("METRICS_PORT")?.toInt() ?: 8080
 
     loadModule {

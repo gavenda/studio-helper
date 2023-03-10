@@ -8,7 +8,7 @@ import bogus.extension.anilist.command.message.userMessageCommand
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.graphql.AniListGraphQL
 import bogus.lib.database.migrate
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.loadModule
@@ -32,7 +32,7 @@ class AniListExtension : Extension() {
     val db by inject<Database>()
     val aniList by inject<AniList>()
     val notifier by inject<NotifyScheduler>()
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     val notifierContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     companion object {
@@ -96,9 +96,7 @@ class AniListExtension : Extension() {
                 schema = EXTENSION_NAME
             )
         } catch (ex: Exception) {
-            log.error(ex) {
-                message = "Error setting up database"
-            }
+            log.error(ex) { "Error setting up database" }
         }
     }
 

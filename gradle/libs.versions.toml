@@ -1,20 +1,20 @@
 [versions]
-kotlin = "1.8.0"
+kotlin = "1.8.10"
 hikari = "5.0.1"
-flyway = "9.10.1"
-ktorm = "3.5.0"
-postgresql = "42.5.1"
-log4j2 = "2.19.0"
+flyway = "9.15.2"
+ktorm = "3.6.0"
+postgresql = "42.5.4"
+log4j2 = "2.20.0"
 log4j2-appender = "0.9.17"
 kordex = "1.5.6-SNAPSHOT"
-lavaplayer-fork = "custom-SNAPSHOT"
+lavaplayer-fork = "ef07585"
 kord = "0.8.x-SNAPSHOT"
-lavadsp = "0.7.7"
+lavadsp = "0.7.7-1"
 lavakord = "3.8.0"
-spotify = "2.4.0"
-krontab = "0.8.2"
+spotify = "3.1.0"
+krontab = "0.9.0"
 copy-down = "1.0"
-micrometer = "1.10.3"
+micrometer = "1.10.4"
 prometheus = "0.16.0"
 
 [libraries]
@@ -33,9 +33,9 @@ ktorm-support-postgres = { group = "org.ktorm", name = "ktorm-support-postgresql
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 kord = { group = "dev.kord", name = "kord-core", version.ref = "kord" }
 kordex = { group = "com.kotlindiscord.kord.extensions", name = "kord-extensions", version.ref = "kordex" }
-lavaplayer-fork = { group = "com.github.walkyst", name = "lavaplayer-fork", version.ref = "lavaplayer-fork" }
+lavaplayer-fork = { group = "com.github.walkyst.lavaplayer-fork", name = "lavaplayer", version.ref = "lavaplayer-fork" }
 lavakord = { group = "dev.schlaubi.lavakord", name = "kord", version.ref = "lavakord" }
-lavadsp = { group = "com.github.natanbc", name = "lavadsp", version.ref = "lavadsp" }
+lavadsp = { group = "com.github.JustRed23", name = "lavadsp", version.ref = "lavadsp" }
 spotify = { group = "de.sonallux.spotify", name = "spotify-web-api-java", version.ref = "spotify" }
 krontab = { group = "dev.inmo", name = "krontab", version.ref = "krontab" }
 copy-down = { group = "io.github.furstenheim", name = "copy_down", version.ref = "copy-down" }

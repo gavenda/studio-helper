@@ -2,7 +2,7 @@ package bogus.extension.anilist.coroutines
 
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.AiringSchedule
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -16,7 +16,7 @@ data class AiringScheduleMedia(
 class AiringSchedulePoller(
     private val medias: List<AiringScheduleMedia>
 ) : KordExKoinComponent {
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
 
     // Empty, gets populated at first run
     private val mediaIdEpisode = mutableMapOf<Long, Int>()
@@ -28,7 +28,7 @@ class AiringSchedulePoller(
             aniList.findAiringMedia(mediaIds)?.forEach {
                 updateMediaEpisode(it.mediaId, it.episode)
             }
-            log.debug { message = "Initialized media list" }
+            log.debug { "Initialized media list" }
         }
     }
 
@@ -42,12 +42,7 @@ class AiringSchedulePoller(
         val airingSchedules = try {
             aniList.findAiringMedia(mediaIds)
         } catch (e: Exception) {
-            log.error(e) {
-                message = "Error retrieving airing medias"
-                context = mapOf(
-                    "error" to e.message
-                )
-            }
+            log.error(e) { "Error retrieving airing medias" }
             emptyList()
         }
         return airingSchedules?.filter { updateMediaEpisode(it.mediaId, it.episode) } ?: emptyList()
@@ -62,7 +57,7 @@ class AiringSchedulePoller(
             mediaIdEpisode.putIfAbsent(it, 0)
         }
 
-        log.debug { message = "Poller updated" }
+        log.debug { "Poller updated" }
     }
 
     /**

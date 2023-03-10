@@ -49,15 +49,6 @@ private suspend fun SlashGroup.nightcore() {
             player.effects.applyNightcore(speed)
             player.updateBoundQueue()
 
-            log.info {
-                message = "Applied filter"
-                context = mapOf(
-                    "filter" to "nightcore",
-                    "user" to user.id,
-                    "speed" to speed
-                )
-            }
-
             respond {
                 content = translate("response.effect.filter.nightcore")
             }
@@ -75,14 +66,6 @@ private suspend fun SlashGroup.karaoke() {
         action {
             player.effects.applyKaraoke()
             player.updateBoundQueue()
-
-            log.info {
-                message = "Applied filter"
-                context = mapOf(
-                    "filter" to "karaoke",
-                    "user" to user.id
-                )
-            }
 
             respond {
                 content = translate("response.effect.filter.karaoke")
@@ -102,14 +85,6 @@ private suspend fun SlashGroup.vaporwave() {
             player.effects.applyVaporwave()
             player.updateBoundQueue()
 
-            log.info {
-                message = "Applied filter"
-                context = mapOf(
-                    "filter" to "vaporwave",
-                    "user" to user.id
-                )
-            }
-
             respond {
                 content = translate("response.effect.filter.vaporwave")
             }
@@ -127,14 +102,6 @@ private suspend fun SlashGroup.rock() {
         action {
             player.effects.applyEqualizer(EqualizerType.ROCK)
             player.updateBoundQueue()
-
-            log.info {
-                message = "Applied equalizer"
-                context = mapOf(
-                    "filter" to EqualizerType.ROCK,
-                    "user" to user.id
-                )
-            }
 
             respond {
                 content = translate("response.effect.equalizer.rock")
@@ -154,14 +121,6 @@ private suspend fun SlashGroup.pop() {
             player.effects.applyEqualizer(EqualizerType.POP)
             player.updateBoundQueue()
 
-            log.info {
-                message = "Applied equalizer"
-                context = mapOf(
-                    "filter" to EqualizerType.POP,
-                    "user" to user.id
-                )
-            }
-
             respond {
                 content = translate("response.effect.equalizer.pop")
             }
@@ -179,14 +138,6 @@ private suspend fun SlashGroup.trebleBass() {
         action {
             player.effects.applyEqualizer(EqualizerType.BASS_BOOST)
             player.updateBoundQueue()
-
-            log.info {
-                message = "Applied equalizer"
-                context = mapOf(
-                    "filter" to EqualizerType.BASS_BOOST,
-                    "user" to user.id
-                )
-            }
 
             respond {
                 content = translate("response.effect.equalizer.bass-boost")

@@ -6,7 +6,7 @@ import bogus.extension.about.AboutExtension
 import bogus.extension.anilist.AniListExtension
 import bogus.extension.listenmoe.AniRadioExtension
 import bogus.lib.database.setupDatabase
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -23,7 +23,7 @@ suspend fun basura(
     testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     return ExtensibleBot(token) {
         AboutExtension.EMBED_COLOR = 0xFF0000
         AniListExtension.EMBED_COLOR = 0xFF0000
@@ -53,10 +53,7 @@ suspend fun basura(
             }
 
             setup {
-                log.info {
-                    message = "Bot started"
-                    context = mapOf("bot" to "basura")
-                }
+                log.info { "Bot started" }
             }
         }
 

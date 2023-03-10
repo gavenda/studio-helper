@@ -44,9 +44,7 @@ suspend fun AniRadioExtension.radio() {
             val theirVoiceChannel = member.getVoiceStateOrNull()?.getChannelOrNull()
 
             if (theirVoiceChannel == null) {
-                log.debug {
-                    message = "No voice channel"
-                }
+                log.debug { "No voice channel" }
                 respond {
                     content = translate("checks.voice-channel.not-in-voice")
                 }
@@ -59,9 +57,7 @@ suspend fun AniRadioExtension.radio() {
                     Permission.Connect
                 )
                 if (!canTalk) {
-                    log.debug {
-                        message = "No permission"
-                    }
+                    log.debug { "No permission" }
                     respond {
                         content = translate("checks.voice-channel.no-permission")
                     }

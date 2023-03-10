@@ -7,7 +7,7 @@ import bogus.extension.anilist.embed.createEmbed
 import bogus.extension.anilist.graphql.AniList
 import bogus.paginator.respondingStandardPaginator
 import bogus.util.abbreviate
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
@@ -33,17 +33,11 @@ suspend fun AniListExtension.character() {
 suspend fun ApplicationCommandContext.findCharacter(query: String) {
     if (this !is PublicInteractionContext) return
 
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     val aniList by inject<AniList>()
     val characters = aniList.findCharacter(query)
 
-    log.info {
-        message = "Looking up character"
-        context = mapOf(
-            "query" to query,
-            "userId" to user.id
-        )
-    }
+    log.info { "Looking up character [ query = $query, userId = ${user.id} ]" }
 
     if (characters == null || characters.isEmpty()) {
         respond {

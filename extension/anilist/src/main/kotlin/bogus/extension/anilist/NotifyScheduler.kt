@@ -5,7 +5,7 @@ import bogus.extension.anilist.coroutines.AiringScheduleMedia
 import bogus.extension.anilist.coroutines.AiringSchedulePoller
 import bogus.extension.anilist.db.airingAnimes
 import bogus.extension.anilist.db.guilds
-import bogus.util.asFMTLogger
+
 import bogus.util.idLong
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
 import com.kotlindiscord.kord.extensions.utils.botHasPermissions
@@ -30,7 +30,7 @@ import org.ktorm.entity.map
 
 class NotifyScheduler(val kord: Kord) : KordExKoinComponent {
     private val db by inject<Database>()
-    private val log = KotlinLogging.logger { }.asFMTLogger()
+    private val log = KotlinLogging.logger { }
     private val pollers = mutableMapOf<Snowflake, AiringSchedulePoller>()
     private val kronScheduler = buildSchedule {
         minutes {
@@ -93,12 +93,7 @@ class NotifyScheduler(val kord: Kord) : KordExKoinComponent {
             return
         }
 
-        log.warn {
-            message = "No media id given, will not poll"
-            context = mapOf(
-                "guildId" to guild.id
-            )
-        }
+        log.warn { "No media id given, will not poll" }
     }
 
 }

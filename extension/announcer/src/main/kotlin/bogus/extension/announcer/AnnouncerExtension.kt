@@ -1,7 +1,7 @@
 package bogus.extension.announcer
 
 import bogus.collection.RollingList
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -66,7 +66,7 @@ class AnnouncerExtension(
     private val buffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
     private val player: AudioPlayer = playerManager.createPlayer()
-    private val log = KotlinLogging.logger { }.asFMTLogger()
+    private val log = KotlinLogging.logger { }
     private val announceList = RollingList<AnnounceLog>()
     private val kronJobs = mutableListOf<Job>()
     private val kronContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -237,13 +237,8 @@ class AnnouncerExtension(
 
             override fun playlistLoaded(playlist: AudioPlaylist) {}
             override fun noMatches() {}
-            override fun loadFailed(exception: FriendlyException) {
-                log.error {
-                    message = "Audio file failed to load"
-                    context = mapOf(
-                        "reason" to exception.message
-                    )
-                }
+            override fun loadFailed(ex: FriendlyException) {
+                log.error(ex) { "Audio file failed to load: ${ex.message}" }
             }
         })
     }

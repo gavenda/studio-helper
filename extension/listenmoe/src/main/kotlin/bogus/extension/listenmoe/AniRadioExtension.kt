@@ -3,7 +3,7 @@ package bogus.extension.listenmoe
 import bogus.extension.listenmoe.command.disconnect
 import bogus.extension.listenmoe.command.playing
 import bogus.extension.listenmoe.command.radio
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
@@ -39,7 +39,7 @@ class AniRadioExtension : Extension() {
     val scheduler = Scheduler()
     val webSocketPool: ExecutorService = Executors.newSingleThreadExecutor()
     val webSocketScope = CoroutineScope(webSocketPool.asCoroutineDispatcher())
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     val client = HttpClient(CIO) {
         install(WebSockets) {
             contentConverter = AniRadioFrameConverter()
@@ -71,10 +71,7 @@ class AniRadioExtension : Extension() {
                 } catch (ex: Throwable) {
                     setupKpopGateway()
                     val closeReason = closeReason.await()
-                    log.error(ex) {
-                        message = ex.message
-                        context = mapOf("reason" to closeReason)
-                    }
+                    log.error(ex) { ex.message }
                 }
             }
         }
@@ -92,17 +89,14 @@ class AniRadioExtension : Extension() {
                 } catch (ex: Throwable) {
                     setupKpopGateway()
                     val closeReason = closeReason.await()
-                    log.error(ex) {
-                        message = ex.message
-                        context = mapOf("reason" to closeReason)
-                    }
+                    log.error(ex) { ex.message }
                 }
             }
         }
     }
 
     suspend fun setupWebSocket() {
-        log.info { message = "Setting up websockets" }
+        log.info { "Setting up websockets" }
 
         setupJpopGateway()
         setupKpopGateway()
@@ -111,45 +105,25 @@ class AniRadioExtension : Extension() {
     suspend fun DefaultClientWebSocketSession.receivePlayback(playback: (ListenSong) -> Unit) {
         val frame = receiveDeserialized<ListenFrame>()
 
-        log.debug {
-            message = "Received op code"
-            context = mapOf(
-                "op" to frame.op,
-            )
-        }
+        log.debug { "Received op code [ op = ${frame.op} ]" }
 
         if (frame.op == ListenOp.WELCOME) {
-            log.info {
-                message = "Received welcome message"
-                context = mapOf(
-                    "message" to frame.data?.message,
-                    "heartbeat" to frame.data?.heartbeat
-                )
-            }
+            log.info { "Received welcome message" }
 
             if (frame.data?.heartbeat != null) {
                 val duration = frame.data.heartbeat.milliseconds
 
                 scheduler.schedule(duration, repeat = true) {
-                    log.debug {
-                        message = "Sent heartbeat"
-                    }
+                    log.debug { "Sent heartbeat" }
                     sendSerialized(ListenFrame(op = ListenOp.HEARTBEAT))
                 }
             } else {
-                log.warn {
-                    message = "Heartbeat data is null"
-                }
+                log.warn { "Heartbeat data is null" }
             }
         }
 
         if (frame.op == ListenOp.PLAYBACK) {
-            log.debug {
-                message = "Playback changed"
-                context = mapOf(
-                    "music" to frame.data?.song?.title
-                )
-            }
+            log.debug { "Playback changed" }
             frame.data?.song?.let {
                 playback(it)
             }

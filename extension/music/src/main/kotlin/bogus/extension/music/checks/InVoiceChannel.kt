@@ -5,7 +5,7 @@ import bogus.extension.music.TRANSLATION_BUNDLE
 import bogus.extension.music.player
 import bogus.extension.music.player.LavaMusicPlayer
 import bogus.extension.music.player.LinkMusicPlayer
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.checks.guildFor
 import com.kotlindiscord.kord.extensions.checks.memberFor
 import com.kotlindiscord.kord.extensions.checks.types.CheckContext
@@ -24,7 +24,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         return
     }
 
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     val guild = guildFor(event)
 
     if (guild == null) {
@@ -48,7 +48,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
     val theirVoiceChannel = member.getVoiceStateOrNull()?.getChannelOrNull()
 
     if (theirVoiceChannel == null) {
-        log.debug { message = "No voice channel" }
+        log.debug { "No voice channel" }
         fail(translate("check.voice-channel.fail", TRANSLATION_BUNDLE))
         return
     }
@@ -59,7 +59,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
             Permission.Connect
         )
         if (!canTalk) {
-            log.debug { message = "No permission" }
+            log.debug { "No permission" }
             fail(translate("check.voice-channel-permission.fail", TRANSLATION_BUNDLE))
             return
         }
@@ -67,10 +67,10 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
         guild.player.assureConnection()
 
         if (LAVAKORD_ENABLED) {
-            log.debug { message = "Connected using lava link" }
+            log.debug { "Connected using lava link" }
             (guild.player as LinkMusicPlayer).link.connectAudio(theirVoiceChannel.id)
         } else {
-            log.debug { message = "Connected using lava player" }
+            log.debug { "Connected using lava player" }
 
             val lava = (guild.player as LavaMusicPlayer)
             val voiceConnection = theirVoiceChannel.connect {
@@ -87,7 +87,7 @@ suspend fun <T : Event> CheckContext<T>.inVoiceChannel() {
     if (theirVoiceChannel == ourVoiceChannel) {
         pass()
     } else {
-        log.debug { message = "Not in same channel" }
+        log.debug { "Not in same channel" }
         fail(translate("check.voice-channel-same.fail", TRANSLATION_BUNDLE))
     }
 

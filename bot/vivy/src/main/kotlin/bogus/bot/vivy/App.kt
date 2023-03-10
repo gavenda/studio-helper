@@ -6,7 +6,7 @@ import bogus.extension.about.AboutExtension
 import bogus.extension.music.MusicExtension
 import bogus.lib.database.setupDatabase
 import bogus.lib.metrics.setupMetrics
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -22,7 +22,7 @@ suspend fun vivy(
     token: String,
     testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
 
     AboutExtension.EMBED_COLOR = 0x00FFFF
@@ -53,10 +53,7 @@ suspend fun vivy(
             }
 
             setup {
-                log.info {
-                    message = "Bot started"
-                    context = mapOf("bot" to "vivy")
-                }
+                log.info { "Bot started" }
             }
         }
 

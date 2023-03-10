@@ -1,7 +1,7 @@
 package bogus.extension.moderation.command
 
 import bogus.extension.moderation.ModerationExtension
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.hasPermission
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -17,7 +17,6 @@ import mu.KotlinLogging
 
 suspend fun ModerationExtension.move() {
     val log = KotlinLogging.logger { }
-        .asFMTLogger()
 
     ephemeralSlashCommand(::MoveArgs) {
         name = "move"
@@ -36,13 +35,7 @@ suspend fun ModerationExtension.move() {
                 member.edit { voiceChannelId = toVoice.id }
             }
 
-            log.info {
-                message = "Moved voice channel users"
-                context = mapOf(
-                    "from" to fromVoice.id,
-                    "to" to toVoice.id
-                )
-            }
+            log.info { "Moved voice channel users" }
 
             respond {
                 content = "Moved users from ${fromVoice.mention} to ${toVoice.mention}."

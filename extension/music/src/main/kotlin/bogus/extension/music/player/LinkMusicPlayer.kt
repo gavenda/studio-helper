@@ -17,24 +17,13 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
     val link = Lava.linkFor(guildId)
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error(exception) {
-                message = "Track error"
-                context = mapOf(
-                    "errorMessage" to exception.message
-                )
-            }
+            log.error(exception) { "Track error" }
 
             updateBoundQueue()
         }
 
         on<TrackStuckEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error {
-                message = "Track stuck"
-                context = mapOf(
-                    "track" to track,
-                    "duration" to "${threshold.inWholeMilliseconds}ms"
-                )
-            }
+            log.error { "Track stuck" }
         }
 
         on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
@@ -57,12 +46,7 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
             when (reason) {
                 TrackEndEvent.EndReason.LOAD_FAILED -> {
 
-                    log.debug {
-                        message = "Track load failed"
-                        context = mapOf(
-                            "track" to track.title
-                        )
-                    }
+                    log.debug { "Track load failed" }
 
                     val musicTrack = track.asMusicTrack()
                     val currentTrack = this@LinkMusicPlayer.playingTrack
@@ -76,12 +60,7 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
                     }
                 }
                 else -> {
-                    log.debug {
-                        message = "Track end"
-                        context = mapOf(
-                            "track" to track.title
-                        )
-                    }
+                    log.debug { "Track end" }
                     playFromQueue()
                 }
             }

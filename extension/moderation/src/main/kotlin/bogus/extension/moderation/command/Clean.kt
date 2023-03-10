@@ -1,7 +1,7 @@
 package bogus.extension.moderation.command
 
 import bogus.extension.moderation.ModerationExtension
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.checks.hasPermission
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -21,7 +21,6 @@ import mu.KotlinLogging
 
 suspend fun ModerationExtension.clean() {
     val log = KotlinLogging.logger { }
-        .asFMTLogger()
 
     ephemeralSlashCommand(::CleanArgs) {
         name = "clean"
@@ -39,14 +38,7 @@ suspend fun ModerationExtension.clean() {
 
             val limit = arguments.amount
 
-            log.info {
-                message = "Cleaning messages"
-                context = mapOf(
-                    "amount" to arguments.amount,
-                    "lastMessageId" to lastMessageId,
-                    "reason" to arguments.reason
-                )
-            }
+            log.info { "Cleaning messages" }
 
             val deleteOlder = arguments.older ?: false
             val messages = channel.getMessagesBefore(lastMessageId, limit)

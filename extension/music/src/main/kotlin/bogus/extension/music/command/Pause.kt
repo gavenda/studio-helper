@@ -23,12 +23,7 @@ suspend fun MusicExtension.pause() {
             } else {
                 player.pause()
 
-                log.info {
-                    message = "Player paused"
-                    context = mapOf(
-                        "user" to user.id
-                    )
-                }
+                log.info { "Player paused" }
 
                 respond {
                     content = translate("response.pause.success")

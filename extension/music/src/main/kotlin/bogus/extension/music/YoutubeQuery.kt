@@ -1,6 +1,6 @@
 package bogus.extension.music
 
-import bogus.util.asFMTLogger
+
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -14,7 +14,7 @@ object YT {
     private val responsePattern = Regex("""\["(.+?(?="))".+?(?=]])]]""")
     private val youtubeEndpoint = Url("https://suggestqueries-clients6.youtube.com/complete/search")
     private val client = HttpClient()
-    private val logger = KotlinLogging.logger { }.asFMTLogger()
+    private val logger = KotlinLogging.logger { }
 
     suspend fun query(query: String): List<String> {
         val response = client.get(youtubeEndpoint) {
@@ -28,10 +28,7 @@ object YT {
 
         val responseList = responsePattern.findAll(response.bodyAsText()).map { it.groupValues[1] }.toList()
 
-        logger.debug {
-            message = "Youtube query"
-            context = mapOf("response" to responseList)
-        }
+        logger.debug { "Youtube query" }
 
         return responseList
     }

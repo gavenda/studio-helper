@@ -9,7 +9,7 @@ import bogus.extension.information.InformationExtension
 import bogus.extension.moderation.ModerationExtension
 import bogus.extension.utility.UtilityExtension
 import bogus.lib.database.setupDatabase
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
@@ -28,7 +28,7 @@ suspend fun lumi(
     testGuildId: Snowflake = Snowflake(envOrNull("TEST_GUILD_ID") ?: "0"),
 ): ExtensibleBot {
     val environment = envOrNull("ENVIRONMENT") ?: ENVIRONMENT_PROD
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
 
     return ExtensibleBot(token) {
         AboutExtension.EMBED_COLOR = BOT_EMBED_COLOR
@@ -63,10 +63,7 @@ suspend fun lumi(
             }
 
             setup {
-                log.info {
-                    message = "Bot started"
-                    context = mapOf("bot" to "lumi")
-                }
+                log.info { "Bot started" }
             }
         }
 

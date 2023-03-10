@@ -13,7 +13,6 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.voice.AudioFrame
 import dev.kord.voice.VoiceConnection
 import io.ktor.util.*
-import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
@@ -120,12 +119,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
 
         when (endReason) {
             AudioTrackEndReason.LOAD_FAILED -> {
-                log.debug {
-                    message = "Track load failed"
-                    context = mapOf(
-                        "track" to musicTrack.title
-                    )
-                }
+                log.debug { "Track load failed" }
 
                 val trackToRetry = if (currentTrack != null && musicTrack.uri == currentTrack.uri) {
                     currentTrack
@@ -137,12 +131,7 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
                 }
             }
             else -> {
-                log.debug {
-                    message = "Track end"
-                    context = mapOf(
-                        "track" to musicTrack.title
-                    )
-                }
+                log.debug { "Track end" }
                 playFromQueue()
             }
         }
@@ -151,23 +140,12 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     }
 
     private fun onTrackException(exception: FriendlyException) {
-        log.error(exception) {
-            message = "Track error"
-            context = mapOf(
-                "errorMessage" to exception.message
-            )
-        }
+        log.error(exception) { "Track error" }
 
         updateBoundQueue()
     }
 
     private fun onTrackStuck(track: AudioTrack, thresholdMs: Long) {
-        log.error {
-            message = "Track stuck"
-            context = mapOf(
-                "track" to track,
-                "duration" to "${thresholdMs}ms"
-            )
-        }
+        log.error { "Track stuck" }
     }
 }

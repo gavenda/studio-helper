@@ -160,13 +160,7 @@ private suspend fun EphemeralSlashCommand<*, *>.create() {
 
             db.playlists.add(dbPlaylist)
 
-            log.info {
-                message = "Playlist created"
-                context = mapOf(
-                    "name" to arguments.name,
-                    "user" to user.id
-                )
-            }
+            log.info { "Playlist created" }
 
             respond {
                 content = translate(
@@ -195,13 +189,7 @@ private suspend fun EphemeralSlashCommand<*, *>.delete() {
             if (dbPlaylist != null) {
                 dbPlaylist.delete()
 
-                log.info {
-                    message = "Player deleted"
-                    context = mapOf(
-                        "user" to user.id,
-                        "name" to arguments.name
-                    )
-                }
+                log.info { "Player deleted" }
 
                 respond {
                     content = translate(

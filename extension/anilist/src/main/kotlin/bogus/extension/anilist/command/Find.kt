@@ -6,7 +6,7 @@ import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaType
 import bogus.extension.anilist.sendMediaResult
 import bogus.util.abbreviate
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.ApplicationCommandContext
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
@@ -51,15 +51,9 @@ suspend fun ApplicationCommandContext.findMedia(
     if (this !is PublicInteractionContext) return
 
     val aniList by inject<AniList>()
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
 
-    log.info {
-        message = "Looking up media"
-        context = mapOf(
-            "query" to query,
-            "userId" to user.id
-        )
-    }
+    log.info { "Looking up media [ query = $query, userId = ${user.id} ]" }
 
     val hentai = true
     val media = aniList.findMedia(query, type, hentai)

@@ -1,6 +1,6 @@
 package bogus.extension.listenmoe
 
-import bogus.util.asFMTLogger
+
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
@@ -19,7 +19,7 @@ import java.nio.ByteBuffer
 class RadioPlayer(
     val playerManager: AudioPlayerManager
 ) {
-    val log = KotlinLogging.logger { }.asFMTLogger()
+    val log = KotlinLogging.logger { }
     var voiceConnection: VoiceConnection? = null
     val buffer: ByteBuffer = ByteBuffer.allocate(FRAME_BUFFER_SIZE)
     val frame: MutableAudioFrame = MutableAudioFrame().apply { setBuffer(buffer) }
@@ -35,12 +35,7 @@ class RadioPlayer(
             override fun playlistLoaded(playlist: AudioPlaylist) {}
             override fun noMatches() {}
             override fun loadFailed(exception: FriendlyException) {
-                log.error {
-                    message = "Audio file failed to load"
-                    context = mapOf(
-                        "reason" to exception.message
-                    )
-                }
+                log.error(exception) { "Audio file failed to load: ${exception.message}" }
             }
         })
     }

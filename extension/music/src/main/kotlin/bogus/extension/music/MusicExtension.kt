@@ -5,7 +5,7 @@ import bogus.extension.music.command.message.playLater
 import bogus.extension.music.command.message.playNext
 import bogus.extension.music.command.message.playNow
 import bogus.lib.database.migrate
-import bogus.util.asFMTLogger
+
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.env
@@ -41,7 +41,7 @@ import kotlin.concurrent.thread
 object MusicExtension : Extension() {
     override val name: String = EXTENSION_NAME
     override val bundle: String = TRANSLATION_BUNDLE
-    internal val log = KotlinLogging.logger { }.asFMTLogger()
+    internal val log = KotlinLogging.logger { }
 
     var EMBED_COLOR = 0
 
@@ -80,7 +80,7 @@ object MusicExtension : Extension() {
         }
         event<Event> {
             action {
-                log.debug { message = "Attempt disconnect" }
+                log.debug { "Attempt disconnect" }
                 Jukebox.tryToDisconnect()
             }
         }
@@ -95,7 +95,7 @@ object MusicExtension : Extension() {
 
     private fun setupSpotify() {
         if (!SPOTIFY_ENABLED) return
-        log.info { message = "Using Spotify Client" }
+        log.info { "Using Spotify Client" }
         loadModule {
             factory<SpotifyWebApi> {
                 val credentials = ClientCredentialsFlow(
@@ -106,7 +106,7 @@ object MusicExtension : Extension() {
                 try {
                     credentials.authorize()
                 } catch (e: SpotifyAuthorizationException) {
-                    log.error(e) { message = "Unable to authorize spotify" }
+                    log.error(e) { "Unable to authorize spotify" }
                 }
 
                 SpotifyWebApi.builder().authorization(credentials).build()
@@ -115,7 +115,7 @@ object MusicExtension : Extension() {
     }
 
     private fun setupLavaKord() {
-        log.info { message = "Using Lava Link" }
+        log.info { "Using Lava Link" }
         loadModule(createdAtStart = true) {
             single {
                 val linkPasswords = env("LINK_PASSWORDS").split(";")
@@ -136,7 +136,7 @@ object MusicExtension : Extension() {
     }
 
     private fun setupLavaPlayer() {
-        log.info { message = "Using Lava Player" }
+        log.info { "Using Lava Player" }
         loadModule(createdAtStart = true) {
             single<AudioPlayerManager> {
                 DefaultAudioPlayerManager().apply {
