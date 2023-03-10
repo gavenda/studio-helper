@@ -3,7 +3,9 @@
 My mission is to make everyone happy by singing.
 
 ## Let me sing?
+
 In a simple docker compose configuration:
+
 ```yaml
 version: '3'
 services:
@@ -28,5 +30,7 @@ services:
       POSTGRES_PASSWORD: vivy
       POSTGRES_DB: vivy
 ```
+
 ## Running as a service
+
 An example [systemd unit file](systemd/vivy.service) is included in the repository.

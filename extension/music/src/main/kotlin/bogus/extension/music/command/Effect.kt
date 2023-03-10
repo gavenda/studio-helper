@@ -1,7 +1,9 @@
 package bogus.extension.music.command
 
-import bogus.extension.music.*
-import bogus.extension.music.MusicExtension.log
+import bogus.extension.music.MusicExtension
+import bogus.extension.music.NIGHTCORE_MAX
+import bogus.extension.music.NIGHTCORE_MIN
+import bogus.extension.music.player
 import bogus.extension.music.player.EqualizerType
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -153,11 +155,21 @@ private class NightcoreArgs : Arguments() {
 
         validate {
             if (value > NIGHTCORE_MAX) {
-                fail(translate("command.effect.filter.nightcore.args.speed.validate.max.fail", replacements = arrayOf(NIGHTCORE_MAX)))
+                fail(
+                    translate(
+                        "command.effect.filter.nightcore.args.speed.validate.max.fail",
+                        replacements = arrayOf(NIGHTCORE_MAX)
+                    )
+                )
                 return@validate
             }
             if (value < NIGHTCORE_MIN) {
-                fail(translate("command.effect.filter.nightcore.args.speed.validate.min.fail", replacements = arrayOf(NIGHTCORE_MIN)))
+                fail(
+                    translate(
+                        "command.effect.filter.nightcore.args.speed.validate.min.fail",
+                        replacements = arrayOf(NIGHTCORE_MIN)
+                    )
+                )
                 return@validate
             }
 

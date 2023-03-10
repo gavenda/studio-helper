@@ -9,7 +9,6 @@ import dev.kord.core.behavior.MemberBehavior
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.getChannelOf
 import dev.kord.core.entity.Guild
-import dev.kord.core.entity.Member
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.guild.MemberJoinEvent
 import org.koin.core.component.inject

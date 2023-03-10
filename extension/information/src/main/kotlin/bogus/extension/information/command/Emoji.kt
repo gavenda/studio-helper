@@ -9,7 +9,6 @@ import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSub
 import com.kotlindiscord.kord.extensions.commands.converters.impl.emoji
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.Color
-import dev.kord.rest.Image
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.toJavaInstant
 

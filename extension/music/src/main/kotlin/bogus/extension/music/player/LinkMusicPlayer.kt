@@ -5,10 +5,8 @@ import bogus.extension.music.Metric
 import dev.kord.common.entity.Snowflake
 import dev.schlaubi.lavakord.audio.*
 import dev.schlaubi.lavakord.audio.player.Track
-import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import org.koin.core.component.inject
 
 /**
  * Music player using lava link.

@@ -12,10 +12,8 @@ import dev.kord.common.Color
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.optional.value
 import dev.kord.core.behavior.channel.asChannelOf
-import dev.kord.core.entity.channel.GuildMessageChannel
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.entity.channel.VoiceChannel
-import dev.kord.rest.Image
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.toJavaInstant
 

@@ -3,7 +3,6 @@ package bogus.extension.listenmoe
 import bogus.extension.listenmoe.command.disconnect
 import bogus.extension.listenmoe.command.playing
 import bogus.extension.listenmoe.command.radio
-
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry
@@ -15,10 +14,10 @@ import dev.kord.gateway.Intent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
-import io.ktor.util.Identity.decode
-import io.ktor.websocket.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
@@ -63,7 +62,7 @@ class AniRadioExtension : Extension() {
         webSocketScope.launch {
             client.wss(JPOP_RADIO_GATEWAY) {
                 try {
-                    while(isActive) {
+                    while (isActive) {
                         receivePlayback {
                             songs[RadioType.JPOP] = it
                         }
@@ -81,7 +80,7 @@ class AniRadioExtension : Extension() {
         webSocketScope.launch {
             client.wss(KPOP_RADIO_GATEWAY) {
                 try {
-                    while(isActive) {
+                    while (isActive) {
                         receivePlayback {
                             songs[RadioType.KPOP] = it
                         }

@@ -18,7 +18,7 @@ suspend fun MusicExtension.disconnect() {
             player.stop()
             player.disconnect()
 
-            log.info {"Disconnected from voice" }
+            log.info { "Disconnected from voice" }
 
             respond {
                 content = translate("response.disconnect")

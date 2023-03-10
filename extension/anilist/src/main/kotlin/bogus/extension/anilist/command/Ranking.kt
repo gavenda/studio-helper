@@ -17,7 +17,7 @@ suspend fun AniListExtension.ranking() {
         name = "command.ranking"
         description = "command.ranking.description"
         action {
-            log.info { "Looking up ranking [ arguments = $arguments, userId = ${user.id} ]"}
+            log.info { "Looking up ranking [ arguments = $arguments, userId = ${user.id} ]" }
 
             val hentai = true
             val mediaSeason = arguments.season?.let { MediaSeason.valueOf(it) }

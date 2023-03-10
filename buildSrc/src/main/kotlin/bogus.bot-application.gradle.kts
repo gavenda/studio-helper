@@ -1,10 +1,3 @@
-import org.gradle.api.tasks.Sync
-import org.gradle.api.tasks.bundling.Tar
-import org.gradle.api.tasks.bundling.Zip
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.withType
-
 plugins {
     application
 }

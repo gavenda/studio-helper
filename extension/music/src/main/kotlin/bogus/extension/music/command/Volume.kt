@@ -1,6 +1,9 @@
 package bogus.extension.music.command
 
-import bogus.extension.music.*
+import bogus.extension.music.MusicExtension
+import bogus.extension.music.VOLUME_MAX
+import bogus.extension.music.VOLUME_MIN
+import bogus.extension.music.player
 import com.kotlindiscord.kord.extensions.checks.anyGuild
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.int

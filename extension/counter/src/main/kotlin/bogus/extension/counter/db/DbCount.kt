@@ -9,7 +9,6 @@ import org.ktorm.schema.long
 import org.ktorm.schema.timestamp
 import org.ktorm.schema.varchar
 import java.time.Instant
-import java.util.Date
 
 interface DbGuildCount : Entity<DbGuildCount> {
     companion object : Entity.Factory<DbGuildCount>()

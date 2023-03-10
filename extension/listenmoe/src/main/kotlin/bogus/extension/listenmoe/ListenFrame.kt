@@ -3,8 +3,8 @@
 package bogus.extension.listenmoe
 
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -23,7 +23,7 @@ object ListenOpSerializer : KSerializer<ListenOp> {
         PrimitiveSerialDescriptor("kotlinx.serialization.IntAsListenOpSerializer", PrimitiveKind.INT)
 
     override fun deserialize(decoder: Decoder): ListenOp {
-        return when(decoder.decodeInt()) {
+        return when (decoder.decodeInt()) {
             0 -> ListenOp.WELCOME
             1 -> ListenOp.PLAYBACK
             9 -> ListenOp.HEARTBEAT

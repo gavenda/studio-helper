@@ -2,7 +2,9 @@
 <configuration packages="pl.tkowalcz.tjahzi.log4j2">
     <properties>
         <property name="name">vivy</property>
-        <property name="pattern">%highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green bold, DEBUG=green, TRACE=cyan} | %m%n</property>
+        <property name="pattern">%highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green bold,
+            DEBUG=green, TRACE=cyan} | %m%n
+        </property>
         <property name="log4j.skipJansi" value="false"/>
     </properties>
     <appenders>

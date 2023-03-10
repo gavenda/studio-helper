@@ -17,7 +17,6 @@ import com.kotlindiscord.kord.extensions.utils.scheduling.Task
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.core.behavior.UserBehavior
 import dev.kord.core.entity.ReactionEmoji
-import dev.kord.rest.builder.message.EmbedBuilder
 import java.util.*
 
 /**
