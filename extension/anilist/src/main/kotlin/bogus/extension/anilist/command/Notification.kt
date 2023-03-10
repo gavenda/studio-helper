@@ -2,10 +2,7 @@ package bogus.extension.anilist.command
 
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
 import bogus.extension.anilist.AniListExtension
-import bogus.extension.anilist.db.DbAiringAnime
-import bogus.extension.anilist.db.DbGuild
-import bogus.extension.anilist.db.airingAnimes
-import bogus.extension.anilist.db.guilds
+import bogus.extension.anilist.db.*
 import bogus.extension.anilist.graphql.AniList
 import bogus.extension.anilist.model.MediaType
 import bogus.util.idLong
@@ -21,15 +18,16 @@ import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.botHasPermissions
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Permission
-import dev.kord.core.behavior.interaction.suggestInt
 import dev.kord.core.behavior.interaction.suggestInteger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import org.ktorm.dsl.and
+import org.ktorm.dsl.delete
 import org.ktorm.dsl.eq
 import org.ktorm.entity.add
+import org.ktorm.entity.filter
 import org.ktorm.entity.firstOrNull
 import java.util.*
 
@@ -144,6 +142,24 @@ suspend fun AniListExtension.notification() {
                 }
             }
         }
+
+        ephemeralSubCommand() {
+            name = "command.notification.clear"
+            description = "command.notification.clear.description"
+            check {
+                anyGuild()
+                requirePermission(Permission.Administrator)
+            }
+            action {
+                val guild = guild ?: return@action
+
+                db.delete(DbAiringAnimes) { it.discordGuildId eq guild.idLong }
+
+                respond {
+                    content = translate("notification.clear.response")
+                }
+            }
+        }
     }
 }
 
@@ -160,11 +176,11 @@ private class AiringAnimeArgs : KordExKoinComponent, Arguments() {
                 aniList.findMediaTitles(input, MediaType.ANIME)
                     ?.take(AUTOCOMPLETE_ITEMS_LIMIT)
                     ?.forEach { media ->
-                    val mediaTitle = media.title?.english ?: media.title?.romaji
-                    if (mediaTitle != null) {
-                        choice(mediaTitle, media.id)
+                        val mediaTitle = media.title?.english ?: media.title?.romaji
+                        if (mediaTitle != null) {
+                            choice(mediaTitle, media.id)
+                        }
                     }
-                }
             }
         }
     }
