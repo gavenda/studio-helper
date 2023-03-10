@@ -42,7 +42,6 @@ suspend fun lumi(
             add(::InformationExtension)
             add(::ModerationExtension)
             add(::UtilityExtension)
-            add(::NeilBogoExtension)
 
             help {
                 enableBundledExtension = false
@@ -68,7 +67,7 @@ suspend fun lumi(
         }
 
         presence {
-            watching("Amnesia")
+            watching("Euphie")
         }
     }
 }
