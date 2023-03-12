@@ -40,7 +40,7 @@ fun parseSpotifyUri(uri: String): SpotifyURI? {
     val pathname = url.path
     val query = url.query
 
-    if (hostname == "embed.spotify.com" || hostname == "open.spotify.com") {
+    if (hostname == "embed.spotify.com") {
         val parsedQueryString = parseQueryString(query)
         return parseSpotifyUri(parsedQueryString.getOrDefault("uri", ""))
     }
@@ -54,15 +54,18 @@ fun parseSpotifyUri(uri: String): SpotifyURI? {
         throw IllegalArgumentException("No pathname")
     }
 
-    // `http:` or `https:`
-    // val parts = pathname.split('/')
+    if (hostname == "open.spotify.com") {
+        val parts = pathname.split('/')
+        return parseParts(uri, parts)
+    }
+
     return null
 }
 
 fun parseParts(uri: String, inputParts: List<String>): SpotifyURI? {
     var parts = inputParts
     val len = parts.size
-    if (parts[1] == "embed") {
+    if (parts[1] == "embed" || parts[1] == "open") {
         parts = parts.slice(0..1)
     }
     if (parts[1] == "search") {
