@@ -40,7 +40,7 @@ fun parseSpotifyUri(uri: String): SpotifyURI? {
     val pathname = url.path
     val query = url.query
 
-    if (hostname == "embed.spotify.com") {
+    if (hostname == "embed.spotify.com" || hostname == "open.spotify.com") {
         val parsedQueryString = parseQueryString(query)
         return parseSpotifyUri(parsedQueryString.getOrDefault("uri", ""))
     }
