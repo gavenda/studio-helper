@@ -65,7 +65,7 @@ fun parseSpotifyUri(uri: String): SpotifyURI? {
 fun parseParts(uri: String, inputParts: List<String>): SpotifyURI? {
     var parts = inputParts
     val len = parts.size
-    if (parts[1] == "embed" || parts[1] == "open") {
+    if (parts[1] == "embed") {
         parts = parts.slice(0..1)
     }
     if (parts[1] == "search") {
