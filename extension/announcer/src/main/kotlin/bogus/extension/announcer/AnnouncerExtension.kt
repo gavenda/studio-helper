@@ -114,9 +114,15 @@ class AnnouncerExtension(
                 respond {
                     content = translate("response.announce")
                 }
-                filePaths[arguments.name]?.let {
+
+                val path = filePaths[arguments.name]
+
+                if (path != null) {
+                    log.info { "Found path [ $path ]" }
                     announceList.add(AnnounceLog(user.mention, arguments.name, Instant.now()))
-                    playAudio(it)
+                    playAudio(path)
+                } else {
+                    log.info { "No paths found for argument [ ${arguments.name} ]" }
                 }
             }
         }
@@ -231,12 +237,15 @@ class AnnouncerExtension(
         val filePathStr = path.toAbsolutePath().toString()
         playerManager.loadItem(filePathStr, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) = runBlocking {
+                log.info { "Playing audio [ ${track.info.uri} ]" }
                 delay(delay)
                 player.playTrack(track)
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {}
-            override fun noMatches() {}
+            override fun noMatches() {
+                log.info { "No matches found" }
+            }
             override fun loadFailed(ex: FriendlyException) {
                 log.error(ex) { "Audio file failed to load: ${ex.message}" }
             }

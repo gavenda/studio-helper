@@ -21,6 +21,11 @@ class AutoMoveExtension(
     private val log = KotlinLogging.logger { }
     override val name = "automove"
     override suspend fun setup() {
+        if (deafChannel == Snowflake(0L) || defaultChannel == Snowflake(0L)) {
+            log.info { "Auto move disabled, deaf channel or default channel is zero" }
+            return
+        }
+
         intents += Intent.GuildVoiceStates
 
         event<VoiceStateUpdateEvent> {
