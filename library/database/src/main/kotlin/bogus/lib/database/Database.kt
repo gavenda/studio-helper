@@ -19,6 +19,7 @@ suspend fun setupDatabase() {
         single<DataSource>(createdAtStart = true) {
             log.info { "Initializing data source" }
             HikariDataSource(HikariConfig().apply {
+                driverClassName = "com.mysql.cj.jdbc.Driver"
                 maximumPoolSize = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(2)
                 jdbcUrl = env("DB_URL")
                 username = env("DB_USER")
