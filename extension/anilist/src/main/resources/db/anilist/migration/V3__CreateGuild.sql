@@ -1,6 +1,0 @@
-CREATE TABLE guild (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
-  discord_guild_id BIGINT NOT NULL,
-  hentai BOOLEAN NOT NULL DEFAULT false,
-  locale VARCHAR(20) NOT NULL DEFAULT 'en-US'
-);

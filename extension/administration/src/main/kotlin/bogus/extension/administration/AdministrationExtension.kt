@@ -42,8 +42,7 @@ class AdministrationExtension : Extension() {
 
     private fun setupDatabase() {
         migrate(
-            path = "classpath:db/administration/migration",
-            schema = EXTENSION_NAME
+            path = "classpath:db/administration/migration"
         )
     }
 

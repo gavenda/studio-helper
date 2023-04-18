@@ -22,8 +22,7 @@ interface DbGuildCount : Entity<DbGuildCount> {
 }
 
 object DbGuildCounts : Table<DbGuildCount>(
-    tableName = "guild_count",
-    schema = EXTENSION_NAME
+    tableName = "counter_guild_count"
 ) {
     val guildCountId = long("guild_count_id").primaryKey().bindTo { it.guildCountId }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }

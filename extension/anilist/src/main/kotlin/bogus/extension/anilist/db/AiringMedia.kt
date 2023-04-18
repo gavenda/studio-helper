@@ -17,8 +17,7 @@ interface DbAiringAnime : Entity<DbAiringAnime> {
 }
 
 object DbAiringAnimes : Table<DbAiringAnime>(
-    tableName = "anime_airing_schedule",
-    schema = EXTENSION_NAME
+    tableName = "anilist_anime_airing_schedule"
 ) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }

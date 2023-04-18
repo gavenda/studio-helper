@@ -27,8 +27,7 @@ interface DbPlaylistSong : Entity<DbPlaylistSong> {
 }
 
 object DbPlaylistSongs : Table<DbPlaylistSong>(
-    tableName = "playlist_song",
-    schema = EXTENSION_NAME
+    tableName = "music_playlist_song"
 ) {
     val playlistSongId = long("playlist_song_id").primaryKey().bindTo { it.playlistSongId }
     val playlistId = long("playlist_id").primaryKey().bindTo { it.playlistId }
@@ -38,8 +37,7 @@ object DbPlaylistSongs : Table<DbPlaylistSong>(
 }
 
 object DbPlaylists : Table<DbPlaylist>(
-    tableName = "playlist",
-    schema = EXTENSION_NAME
+    tableName = "music_playlist"
 ) {
     val playlistId = long("playlist_id").primaryKey().bindTo { it.playlistId }
     val discordUserId = long("discord_user_id").bindTo { it.discordUserId }

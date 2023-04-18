@@ -70,7 +70,7 @@ class AniRadioExtension : Extension() {
                 } catch (ex: Throwable) {
                     setupKpopGateway()
                     val closeReason = closeReason.await()
-                    log.error(ex) { ex.message }
+                    log.error(ex) { "Connection closed: $closeReason" }
                 }
             }
         }
@@ -88,7 +88,7 @@ class AniRadioExtension : Extension() {
                 } catch (ex: Throwable) {
                     setupKpopGateway()
                     val closeReason = closeReason.await()
-                    log.error(ex) { ex.message }
+                    log.error(ex) { "Connection closed: $closeReason" }
                 }
             }
         }

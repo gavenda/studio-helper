@@ -19,8 +19,7 @@ interface DbUser : Entity<DbUser> {
 }
 
 object DbUsers : Table<DbUser>(
-    tableName = "user",
-    schema = EXTENSION_NAME
+    tableName = "anilist_user"
 ) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordId = long("discord_id").bindTo { it.discordId }
@@ -38,8 +37,7 @@ interface DbUserLocale : Entity<DbUserLocale> {
 }
 
 object DbUserLocales : Table<DbUserLocale>(
-    tableName = "user_locale",
-    schema = EXTENSION_NAME
+    tableName = "anilist_user_locale"
 ) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordId = long("discord_id").bindTo { it.discordId }

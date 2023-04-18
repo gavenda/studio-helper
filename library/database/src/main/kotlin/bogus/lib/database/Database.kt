@@ -6,7 +6,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging
 import org.ktorm.database.Database
-import org.ktorm.support.postgresql.PostgreSqlDialect
+import org.ktorm.support.mysql.MySqlDialect
 import javax.sql.DataSource
 
 /**
@@ -19,7 +19,7 @@ suspend fun setupDatabase() {
         single<DataSource>(createdAtStart = true) {
             log.info { "Initializing data source" }
             HikariDataSource(HikariConfig().apply {
-                maximumPoolSize = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(4)
+                maximumPoolSize = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(2)
                 jdbcUrl = env("DB_URL")
                 username = env("DB_USER")
                 password = env("DB_PASS")
@@ -28,7 +28,7 @@ suspend fun setupDatabase() {
         single {
             Database.connect(
                 dataSource = get(),
-                dialect = PostgreSqlDialect()
+                dialect = MySqlDialect()
             )
         }
     }

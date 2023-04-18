@@ -3,12 +3,11 @@ kotlin = "1.8.10"
 hikari = "5.0.1"
 flyway = "9.15.2"
 ktorm = "3.6.0"
-postgresql = "42.5.4"
 log4j2 = "2.20.0"
 log4j2-appender = "0.9.17"
-kordex = "1.5.6-SNAPSHOT"
+kordex = "1.5.6"
 lavaplayer-fork = "ef07585"
-kord = "0.8.x-SNAPSHOT"
+kord = "0.8.0"
 lavadsp = "0.7.7-1"
 lavakord = "3.8.0"
 spotify = "3.1.0"
@@ -16,6 +15,7 @@ krontab = "0.9.0"
 copy-down = "1.0"
 micrometer = "1.10.4"
 prometheus = "0.16.0"
+mysql = "8.0.32"
 
 [libraries]
 kotlin-platform = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
@@ -29,11 +29,11 @@ log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version
 log4j2-sl4j-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j2" }
 flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
 ktorm = { group = "org.ktorm", name = "ktorm-core", version.ref = "ktorm" }
-ktorm-support-postgres = { group = "org.ktorm", name = "ktorm-support-postgresql", version.ref = "ktorm" }
-postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
+ktorm-support-mysql = { group = "org.ktorm", name = "ktorm-support-mysql", version.ref = "ktorm" }
+mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql" }
 kord = { group = "dev.kord", name = "kord-core", version.ref = "kord" }
 kordex = { group = "com.kotlindiscord.kord.extensions", name = "kord-extensions", version.ref = "kordex" }
-lavaplayer-fork = { group = "com.github.walkyst.lavaplayer-fork", name = "lavaplayer", version.ref = "lavaplayer-fork" }
+lavaplayer-fork = { group = "com.github.Walkyst.lavaplayer-fork", name = "lavaplayer", version.ref = "lavaplayer-fork" }
 lavakord = { group = "dev.schlaubi.lavakord", name = "kord", version.ref = "lavakord" }
 lavadsp = { group = "com.github.JustRed23", name = "lavadsp", version.ref = "lavadsp" }
 spotify = { group = "de.sonallux.spotify", name = "spotify-web-api-java", version.ref = "spotify" }
@@ -48,5 +48,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 
 [bundles]
 log4j2 = ["log4j2-api", "log4j2-core", "log4j2-sl4j-impl", "log4j2-appender-nodep"]
-database = ["flyway", "ktorm", "ktorm-support-postgres", "hikari"]
+database = ["flyway", "ktorm", "ktorm-support-mysql", "hikari"]
 metrics = ["micrometer", "prometheus"]

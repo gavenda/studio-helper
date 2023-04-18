@@ -8,9 +8,9 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kordex)
     api(libs.bundles.database) {
-        exclude("org.postgresql")
+        exclude("com.mysql")
     }
-    runtimeOnly(libs.postgresql)
+    runtimeOnly(libs.mysql)
 }
 
 tasks {

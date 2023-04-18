@@ -26,8 +26,8 @@ import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
+import org.ktorm.dsl.like
 import org.ktorm.entity.*
-import org.ktorm.support.postgresql.ilike
 import java.time.Instant
 
 suspend fun CounterExtension.count() {
@@ -54,7 +54,7 @@ private suspend fun PublicSlashCommand<*, *>.increase() = publicSubCommand(::Cou
     action {
         val guild = guild?.asGuildOrNull() ?: return@action
         val dbGuildCount = db.counts.firstOrNull {
-            (it.discordGuildId eq guild.idLong) and (it.countName ilike arguments.counter)
+            (it.discordGuildId eq guild.idLong) and (it.countName like arguments.counter)
         } ?: DbGuildCount {
             discordGuildId = guild.idLong
             countName = arguments.counter.capitalizeWords()
@@ -158,7 +158,7 @@ private class CounterArgs : KordExKoinComponent, Arguments() {
 
                 if (focusedOption.value.isNotBlank()) {
                     db.counts.filter {
-                        (it.discordGuildId eq guildIdLong) and (it.countName ilike "${focusedOption.value}%")
+                        (it.discordGuildId eq guildIdLong) and (it.countName like "${focusedOption.value}%")
                     }
                         .take(AUTOCOMPLETE_ITEMS_LIMIT)
                         .forEach {

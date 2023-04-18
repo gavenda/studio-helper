@@ -10,7 +10,7 @@ import javax.sql.DataSource
  * Migrate a database with the specified resource path.
  * @param path resource path
  */
-fun Extension.migrate(path: String, schema: String) {
+fun Extension.migrate(path: String) {
     val hikari by inject<DataSource>()
     val log = KotlinLogging.logger { }
 
@@ -19,7 +19,6 @@ fun Extension.migrate(path: String, schema: String) {
     Flyway.configure()
         .dataSource(hikari)
         .locations(path)
-        .defaultSchema(schema)
         .load()
         .migrate()
 }

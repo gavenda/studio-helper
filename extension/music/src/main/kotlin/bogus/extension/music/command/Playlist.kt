@@ -33,7 +33,6 @@ import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 import org.ktorm.entity.*
-import org.ktorm.support.postgresql.ilike
 
 suspend fun MusicExtension.playlist() {
     ephemeralSlashCommand {
@@ -100,7 +99,7 @@ private suspend fun EphemeralSlashCommand<*, *>.show() {
         }
         action {
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
             }
 
             if (dbPlaylist != null) {
@@ -183,7 +182,7 @@ private suspend fun EphemeralSlashCommand<*, *>.delete() {
         }
         action {
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
             }
 
             if (dbPlaylist != null) {
@@ -221,7 +220,7 @@ private suspend fun EphemeralSlashCommand<*, *>.add() {
         action {
             val guild = guild ?: return@action
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
             }
 
             if (dbPlaylist != null) {
@@ -312,7 +311,7 @@ private suspend fun EphemeralSlashCommand<*, *>.remove() {
         }
         action {
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name ilike arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
             }
 
             if (dbPlaylist != null) {
@@ -363,7 +362,7 @@ private suspend fun EphemeralSlashCommand<*, *>.queue() {
             val identifiers = db.from(DbPlaylists)
                 .leftJoin(DbPlaylistSongs, on = DbPlaylists.playlistId eq DbPlaylistSongs.playlistId)
                 .select(DbPlaylistSongs.uri)
-                .where { (DbPlaylists.name ilike arguments.name) and (DbPlaylists.discordUserId eq user.idLong) }
+                .where { (DbPlaylists.name like arguments.name) and (DbPlaylists.discordUserId eq user.idLong) }
                 .map { it.getString(1).toString() }
             val guild = guild!!.asGuild()
             val response = Jukebox.playLater(
@@ -392,7 +391,7 @@ private suspend fun AutoCompleteInteraction.suggestPlaylist(db: Database) {
         val input = focusedOption.value
         if (input.isNotBlank()) {
             db.playlists.filter {
-                (it.discordUserId eq user.idLong) and (it.name ilike "$input%")
+                (it.discordUserId eq user.idLong) and (it.name like "$input%")
             }
                 .take(AUTOCOMPLETE_ITEMS_LIMIT)
                 .forEach {

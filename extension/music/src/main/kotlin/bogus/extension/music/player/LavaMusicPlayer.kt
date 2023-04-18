@@ -146,6 +146,6 @@ class LavaMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId), AudioEventList
     }
 
     private fun onTrackStuck(track: AudioTrack, thresholdMs: Long) {
-        log.error { "Track stuck" }
+        log.error { "Track stuck [ track: $track, threshold: $thresholdMs ]" }
     }
 }

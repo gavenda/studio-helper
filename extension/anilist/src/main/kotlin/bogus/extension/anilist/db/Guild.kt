@@ -20,8 +20,7 @@ interface DbGuild : Entity<DbGuild> {
 }
 
 object DbGuilds : Table<DbGuild>(
-    tableName = "guild",
-    schema = EXTENSION_NAME
+    tableName = "anilist_guild"
 ) {
     val id = long("id").primaryKey().bindTo { it.id }
     val discordGuildId = long("discord_guild_id").bindTo { it.discordGuildId }
