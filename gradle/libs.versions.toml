@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.8.10"
 hikari = "5.0.1"
-flyway = "9.15.2"
+flyway = "9.16.3"
 ktorm = "3.6.0"
 log4j2 = "2.20.0"
 log4j2-appender = "0.9.17"
@@ -28,6 +28,7 @@ log4j2-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.r
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2" }
 log4j2-sl4j-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j2" }
 flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
+flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway" }
 ktorm = { group = "org.ktorm", name = "ktorm-core", version.ref = "ktorm" }
 ktorm-support-mysql = { group = "org.ktorm", name = "ktorm-support-mysql", version.ref = "ktorm" }
 mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql" }
@@ -48,5 +49,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 
 [bundles]
 log4j2 = ["log4j2-api", "log4j2-core", "log4j2-sl4j-impl", "log4j2-appender-nodep"]
-database = ["flyway", "ktorm", "ktorm-support-mysql", "hikari"]
+database = ["flyway", "flyway-mysql", "ktorm", "ktorm-support-mysql", "hikari"]
 metrics = ["micrometer", "prometheus"]
