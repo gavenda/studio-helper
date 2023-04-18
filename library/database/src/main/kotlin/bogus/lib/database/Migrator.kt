@@ -20,6 +20,7 @@ fun Extension.migrate(path: String, schema: String) {
         .table("${schema}_schema_history")
         .dataSource(hikari)
         .locations(path)
+        .baselineOnMigrate(true)
         .load()
         .migrate()
 }
