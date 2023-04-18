@@ -23,7 +23,8 @@ class CounterExtension : Extension() {
 
     private fun setupDatabase() {
         migrate(
-            path = "classpath:db/counter/migration"
+            path = "classpath:db/counter/migration",
+            schema = EXTENSION_NAME
         )
     }
 }

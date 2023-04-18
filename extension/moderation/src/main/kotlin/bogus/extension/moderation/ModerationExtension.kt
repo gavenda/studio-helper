@@ -33,7 +33,8 @@ class ModerationExtension : Extension() {
 
     private fun setupDatabase() {
         migrate(
-            path = "classpath:db/moderation/migration"
+            path = "classpath:db/moderation/migration",
+            schema = EXTENSION_NAME
         )
     }
 

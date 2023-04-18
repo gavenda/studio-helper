@@ -88,7 +88,8 @@ object MusicExtension : Extension() {
 
     private fun setupDatabase() {
         migrate(
-            path = "classpath:db/music/migration"
+            path = "classpath:db/music/migration",
+            schema = EXTENSION_NAME
         )
     }
 

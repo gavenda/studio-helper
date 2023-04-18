@@ -92,7 +92,8 @@ class AniListExtension : Extension() {
     private fun setupDatabase() {
         try {
             migrate(
-                path = "classpath:db/anilist/migration"
+                path = "classpath:db/anilist/migration",
+                schema = EXTENSION_NAME
             )
         } catch (ex: Exception) {
             log.error(ex) { "Error setting up database" }
