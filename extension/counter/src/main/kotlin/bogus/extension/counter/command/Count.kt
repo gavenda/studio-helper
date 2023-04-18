@@ -54,7 +54,7 @@ private suspend fun PublicSlashCommand<*, *>.increase() = publicSubCommand(::Cou
     action {
         val guild = guild?.asGuildOrNull() ?: return@action
         val dbGuildCount = db.counts.firstOrNull {
-            (it.discordGuildId eq guild.idLong) and (it.countName like arguments.counter)
+            (it.discordGuildId eq guild.idLong) and (it.countName like arguments.counter + "%")
         } ?: DbGuildCount {
             discordGuildId = guild.idLong
             countName = arguments.counter.capitalizeWords()

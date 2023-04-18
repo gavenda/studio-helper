@@ -99,7 +99,7 @@ private suspend fun EphemeralSlashCommand<*, *>.show() {
         }
         action {
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name + "%")
             }
 
             if (dbPlaylist != null) {
@@ -182,7 +182,7 @@ private suspend fun EphemeralSlashCommand<*, *>.delete() {
         }
         action {
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name + "%")
             }
 
             if (dbPlaylist != null) {
@@ -220,7 +220,7 @@ private suspend fun EphemeralSlashCommand<*, *>.add() {
         action {
             val guild = guild ?: return@action
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name + "%")
             }
 
             if (dbPlaylist != null) {
@@ -311,7 +311,7 @@ private suspend fun EphemeralSlashCommand<*, *>.remove() {
         }
         action {
             val dbPlaylist = db.playlists.find {
-                (it.discordUserId eq user.idLong) and (it.name like arguments.name)
+                (it.discordUserId eq user.idLong) and (it.name like arguments.name + "%")
             }
 
             if (dbPlaylist != null) {
@@ -362,7 +362,7 @@ private suspend fun EphemeralSlashCommand<*, *>.queue() {
             val identifiers = db.from(DbPlaylists)
                 .leftJoin(DbPlaylistSongs, on = DbPlaylists.playlistId eq DbPlaylistSongs.playlistId)
                 .select(DbPlaylistSongs.uri)
-                .where { (DbPlaylists.name like arguments.name) and (DbPlaylists.discordUserId eq user.idLong) }
+                .where { (DbPlaylists.name like arguments.name + "%") and (DbPlaylists.discordUserId eq user.idLong) }
                 .map { it.getString(1).toString() }
             val guild = guild!!.asGuild()
             val response = Jukebox.playLater(
