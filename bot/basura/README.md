@@ -5,7 +5,7 @@ of [Annie May](https://github.com/AlexanderColen/Annie-May-Discord-Bot).
 
 Highly consider this project a love child or bastard of **Annie**.
 
-Consider this gateway version as deprecated. As the serverless version is much more scalable compared to this.
+Consider this gateway version as deprecated. As the [serverless version](https://github.com/gavenda/basura-cloudflare-worker) is much more scalable compared to this.
 The only difference is that it can no longer stream anime radio from [Listen.MOE](https://listen.moe/).
 
 ## Can I contribute to the code?
