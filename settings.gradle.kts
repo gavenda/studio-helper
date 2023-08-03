@@ -5,15 +5,11 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
     "common",
     "bot:lumi",
-    "bot:parrot",
     "bot:vivy",
     "extension:about",
     "extension:administration",
-    "extension:announcer",
-    "extension:automove",
     "extension:counter",
     "extension:information",
-    "extension:listenmoe",
     "extension:moderation",
     "extension:music",
     "extension:utility",
@@ -27,7 +23,11 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         maven {
-            name = "Sonatype Snapshots"
+            name = "Kordex Snapshots"
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
+        }
+        maven {
+            name = "Kord Snapshots"
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
         }
         maven {
