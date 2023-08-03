@@ -4,13 +4,11 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(
     "common",
-    "bot:basura",
     "bot:lumi",
     "bot:parrot",
     "bot:vivy",
     "extension:about",
     "extension:administration",
-    "extension:anilist",
     "extension:announcer",
     "extension:automove",
     "extension:counter",
