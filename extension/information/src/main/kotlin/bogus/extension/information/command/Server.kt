@@ -28,7 +28,7 @@ suspend fun EphemeralSlashCommand<*, *>.server() {
                     color = Color(InformationExtension.EMBED_COLOR)
 
                     thumbnail {
-                        url = guild.getIconUrl(Image.Format.WEBP) ?: ""
+                        url = guild.icon?.cdnUrl?.toUrl { format = Image.Format.WEBP } ?: ""
                     }
 
                     field {
