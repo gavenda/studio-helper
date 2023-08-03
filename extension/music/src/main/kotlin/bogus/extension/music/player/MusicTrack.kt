@@ -1,10 +1,8 @@
 package bogus.extension.music.player
 
-import bogus.extension.music.SOURCE_YOUTUBE
-import bogus.extension.music.YT
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import dev.arbjerg.lavalink.protocol.v4.Track
 import dev.kord.common.entity.Snowflake
-import dev.schlaubi.lavakord.audio.player.Track
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -34,18 +32,16 @@ data class MusicTrack(
 fun Track.asMusicTrack(): MusicTrack {
     return MusicTrack(
         track = this,
-        title = title,
-        author = author,
-        length = length,
-        identifier = identifier,
-        streamable = isStream,
-        seekable = isSeekable,
-        uri = uri ?: "",
-        position = position,
-        source = source,
-        artworkUri = if (source == SOURCE_YOUTUBE) {
-            YT.thumbnail(identifier)
-        } else ""
+        title = info.title,
+        author = info.author,
+        length = info.length.milliseconds,
+        identifier = info.identifier,
+        streamable = info.isStream,
+        seekable = info.isSeekable,
+        uri = info.uri ?: "",
+        position = info.position.milliseconds,
+        source = info.sourceName,
+        artworkUri = info.artworkUrl ?: ""
     )
 }
 

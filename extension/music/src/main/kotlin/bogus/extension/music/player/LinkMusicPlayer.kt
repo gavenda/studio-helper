@@ -2,9 +2,10 @@ package bogus.extension.music.player
 
 import bogus.extension.music.Lava
 import bogus.extension.music.Metric
+import dev.arbjerg.lavalink.protocol.v4.Message
+import dev.arbjerg.lavalink.protocol.v4.Track
 import dev.kord.common.entity.Snowflake
 import dev.schlaubi.lavakord.audio.*
-import dev.schlaubi.lavakord.audio.player.Track
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -15,8 +16,7 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
     val link = Lava.linkFor(guildId)
     private val player = link.player.apply {
         on<TrackExceptionEvent>(CoroutineScope(Dispatchers.IO)) {
-            log.error(exception) { "Track error" }
-
+            log.error { "Track error" }
             updateBoundQueue()
         }
 
@@ -26,8 +26,8 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
 
         on<TrackStartEvent>(CoroutineScope(Dispatchers.IO)) {
             updateBoundQueue()
-            if (track.isSeekable) {
-                updateLastPlayMillis(track.length.inWholeMilliseconds)
+            if (track.info.isSeekable) {
+                updateLastPlayMillis(track.info.length)
             }
         }
 
@@ -42,7 +42,7 @@ class LinkMusicPlayer(guildId: Snowflake) : MusicPlayer(guildId) {
             }
 
             when (reason) {
-                TrackEndEvent.EndReason.LOAD_FAILED -> {
+                Message.EmittedEvent.TrackEndEvent.AudioTrackEndReason.LOAD_FAILED -> {
 
                     log.debug { "Track load failed" }
 

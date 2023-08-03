@@ -31,13 +31,13 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
 
             if (filters.contains(Filter.NIGHTCORE)) {
                 timescale {
-                    rate = nightcoreRate / 100f
+                    rate = nightcoreRate / 100.0
                 }
             }
 
             if (filters.contains(Filter.VAPORWAVE)) {
                 timescale {
-                    speed = 0.5f
+                    speed = 0.5
                 }
                 tremolo {
                     depth = 0.3f
@@ -58,13 +58,13 @@ class LinkMusicEffects(private val player: Player) : MusicEffects {
                 EqualizerType.BASS_BOOST -> applyBassBoostEqualizer()
                 EqualizerType.POP -> applyPopEqualizer()
                 EqualizerType.ROCK -> applyRockEqualizer()
-                EqualizerType.NONE -> bands.clear()
+                EqualizerType.NONE -> reset()
             }
         }
     }
 
     override suspend fun clearEqualizer() {
-        player.applyFilters { bands.clear() }
+        player.applyFilters { reset() }
         equalizer = EqualizerType.NONE
     }
 
