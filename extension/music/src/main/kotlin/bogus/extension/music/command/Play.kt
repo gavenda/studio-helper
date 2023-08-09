@@ -2,6 +2,7 @@ package bogus.extension.music.command
 
 import bogus.checks.limit
 import bogus.constants.AUTOCOMPLETE_ITEMS_LIMIT
+import bogus.constants.AUTOCOMPLETE_ITEM_LENGTH
 import bogus.extension.music.*
 import bogus.extension.music.checks.inVoiceChannel
 import com.kotlindiscord.kord.extensions.checks.anyGuild
@@ -151,7 +152,13 @@ private class PlayArgs : Arguments() {
                         val youtubeResult = YT.query(input)
                         youtubeResult.take(delta)
                             .forEach {
-                                choice(it, it)
+                                var suggestion = it
+
+                                if (suggestion.length > AUTOCOMPLETE_ITEM_LENGTH) {
+                                    suggestion = it.take(AUTOCOMPLETE_ITEM_LENGTH - 3) + "..."
+                                }
+
+                                choice(suggestion, suggestion)
                             }
                     }
                 }
