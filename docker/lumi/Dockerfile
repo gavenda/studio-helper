@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:19-jre
 RUN mkdir /bot
 COPY ./dist/lumi /bot/lumi
 WORKDIR /bot/lumi
