@@ -6,7 +6,7 @@ ktorm = "3.6.0"
 log4j2 = "2.20.0"
 log4j2-appender = "0.9.17"
 kordex = "1.5.8-SNAPSHOT"
-lavaplayer-fork = "74e6c4d"
+lavaplayer-fork = "2.0.0"
 kord = "0.10.0"
 lavadsp = "0.7.7-1"
 lavakord = "5.1.6"
@@ -35,7 +35,7 @@ mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql"
 kord = { group = "dev.kord", name = "kord-core", version.ref = "kord" }
 kord-voice = { group = "dev.kord", name = "kord-voice", version.ref = "kord" }
 kordex = { group = "com.kotlindiscord.kord.extensions", name = "kord-extensions", version.ref = "kordex" }
-lavaplayer-fork = { group = "com.github.Walkyst.lavaplayer-fork", name = "lavaplayer", version.ref = "lavaplayer-fork" }
+lavaplayer-fork = { group = "dev.arbjerg", name = "lavaplayer", version.ref = "lavaplayer-fork" }
 lavakord = { group = "dev.schlaubi.lavakord", name = "kord", version.ref = "lavakord" }
 lavadsp = { group = "com.github.JustRed23", name = "lavadsp", version.ref = "lavadsp" }
 spotify = { group = "de.sonallux.spotify", name = "spotify-web-api-java", version.ref = "spotify" }
