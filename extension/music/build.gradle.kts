@@ -9,7 +9,6 @@ dependencies {
     implementation(projects.library.database)
     implementation(projects.library.metrics)
     implementation(libs.kord.voice)
-    implementation(LAVAPLAYER_NATIVE_EXTRAS)
     implementation(libs.lavaplayer.fork)
     implementation(libs.lavakord) {
         exclude("dev.kord")
