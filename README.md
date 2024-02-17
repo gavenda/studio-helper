@@ -1,4 +1,5 @@
-[![Basura](https://github.com/gavenda/studio-helper/actions/workflows/basura.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/basura.yml)
+## NOTE: No longer being maintained, the massive maintenance I have to do every new discord update for Kord is just insane. I'll be moving my bots to simply use discord.js or cloudflare workers if I have no need for the gateway.
+
 [![Vivy](https://github.com/gavenda/studio-helper/actions/workflows/vivy.yml/badge.svg)](https://github.com/gavenda/studio-helper/actions/workflows/vivy.yml)
 
 # Studio Helper Bots
@@ -9,7 +10,6 @@ An all-in-one repository for the Discord server I am making bots in.
 
 - [Vivy](bot/vivy) - A modern music bot
 - [Basura](bot/basura) - An AniList bot
-- [Lumi](bot/lumi) - A management bot
 
 ## Extension List
 
